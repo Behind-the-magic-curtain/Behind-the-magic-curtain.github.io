@@ -512,6 +512,11 @@ section {
 }
 .listing-item p {
     margin-bottom: 0.5em;
+
+    /* This adds a bit of space above the new button */
+.listing-item .btn {
+    margin-top: 15px; 
+}
 }
 
 /* ---------------------------------- */
