@@ -544,7 +544,34 @@ section {
     margin-top: 40px;
 }
 
-.site-footer p {
+.footer-social-tagline {
+    font-family: var(--font-subheading);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-bg-white);
+    margin: 0 0 15px 0;
+}
+
+.footer-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 25px; /* Space between icons */
+    margin-bottom: 25px;
+}
+
+.footer-social-links a {
+    color: var(--color-bg-white);
+    font-size: 1.8rem; /* How big the icons are */
+    transition: all 0.3s ease;
+    display: inline-block; /* Allows for transform */
+}
+
+.footer-social-links a:hover {
+    color: var(--color-secondary); /* Hover turns them gold! */
+    transform: scale(1.1) translateY(-3px); /* Makes them "pop" */
+}
+
+.footer-copyright {
     font-size: 0.9rem;
     color: var(--color-border);
     margin: 0;
