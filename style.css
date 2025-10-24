@@ -578,6 +578,40 @@ section {
 }
 
 /* ---------------------------------- */
+/* Review Page Specifics         */
+/* ---------------------------------- */
+
+.review-header .card-tags {
+    justify-content: center;
+}
+
+.review-subtitle {
+    font-family: var(--font-subheading);
+    font-size: 1.25rem;
+    color: var(--color-text-light);
+    margin-bottom: 0;
+}
+
+.review-main-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 2.5em;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.content-article article {
+    margin-bottom: 2em;
+}
+
+.content-article article h3 {
+    font-family: var(--font-subheading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+
+
+/* ---------------------------------- */
 /* Mobile Responsive Design      */
 /* ---------------------------------- */
 
