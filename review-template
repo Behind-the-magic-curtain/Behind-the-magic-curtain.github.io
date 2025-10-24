@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
@@ -50,6 +51,31 @@
             <div class="container content-article">
                 
                 <img src="images/image-link.jpg" alt="insert alt image text" class="review-main-image">
+
+<div class="review-gallery">
+    <h2>Gallery</h2>
+
+    <div class="swiper">
+        <div class="swiper-wrapper">
+
+            <div class="swiper-slide">
+                <img src="https://via.placeholder.com/800x500/f4f4f4/bdbdbd?text=Gallery+Image+1" alt="A photo from the show">
+            </div>
+            <div class="swiper-slide">
+                <img src="https://via.placeholder.com/800x500/f4f4f4/bdbdbd?text=Gallery+Image+2" alt="Another photo from the show">
+            </div>
+            <div class="swiper-slide">
+                <img src="https://via.placeholder.com/800x500/f4f4f4/bdbdbd?text=Gallery+Image+3" alt="A third photo from the show">
+            </div>
+            </div>
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+        <div class="swiper-pagination"></div>
+    </div>
+</div>
+
 
                 <h2>Our Family Verdict</h2>
                 <p>This is where you write your main review. You can use <strong>strong text</strong>, <em>italics</em>, and just write as much as you want. This is the main body of your review, where you share your personal story and insights.</p>
@@ -97,6 +123,8 @@
     
         </div>
     </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script src="script.js"></script>
 </body>
