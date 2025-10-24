@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Post Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #f4f4f4;
+        }
+        .tool-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .tool-container h1 {
+            color: #bd2419;
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            border: 1px solid #bdbdbd;
+            border-radius: 5px;
+        }
+        .form-group textarea {
+            min-height: 200px;
+            line-height: 1.6;
+        }
+        .form-group .checkbox-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .form-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        .form-group small {
+            display: block;
+            font-family: 'Poppins', sans-serif;
+            color: #555;
+            margin-top: 5px;
+        }
+        .btn-generate {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            background: #ffd700;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn-generate:hover {
+            background: #ffc700;
+        }
+        .output-container {
+            margin-top: 40px;
+        }
+        .output-container textarea {
+            width: 100%;
+            min-height: 500px;
+            font-family: monospace;
+            background: #2d2d2d;
+            color: #90ee90;
+            padding: 20px;
+        }
+        .btn-copy {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            background: #00b2bf;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tool-container">
+        <h1>Review Post Generator</h1>
+        <p>Fill in the fields below to generate the complete HTML for your new review page. Then, just create a new file on GitHub and paste the code!</p>
+        
+        <form id="review-form">
+            
+            <div class="form-group">
+                <label for="review-title">Review Title</label>
+                <input type="text" id="review-title" placeholder="e.g., Madagascar The Musical" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="page-subtitle">Page Subtitle</label>
+                <input type="text" id="page-subtitle" placeholder="A short, catchy tagline for the review page." required>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label for="main-image">Main Image Filename</label>
+                <input type="text" id="main-image" placeholder="e.g., madagascar-review.jpg" required>
+                <small><strong>Important:</strong> You must upload this image to your <code>/images/</code> folder on GitHub separately.</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="alt-text">Image Alt Text</label>
+                <input type="text" id="alt-text" placeholder="Describe the image (e.g., The cast of Madagascar on stage)" required>
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label>Review Tags</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tag-adhd">
+                    <label for="tag-adhd">ADHD-Friendly Guide</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tag-sensory">
+                    <label for="tag-sensory">Sensory Notes</label>
+                </div>
+                <div style="height: 15px;"></div>
+                <label for="tag-age">Ages Tag (Text)</label>
+                <input type="text" id="tag-age" placeholder="e.g., Ages 3+">
+            </div>
+
+            <hr>
+
+            <div class="form-group">
+                <label for="review-body">Main Review Body</label>
+                <textarea id="review-body" placeholder="Write your full review here. Just press 'Enter' for new paragraphs."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="parent-tips">Parent's Guide / Key Info</label>
+                <textarea id="parent-tips" placeholder="Write your tips for parents here. Press 'Enter' to create a new bullet point."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="gallery-images">Image Gallery (Optional)</label>
+                <textarea id="gallery-images" placeholder="List your extra gallery image filenames, ONE per line. e.g.,
+madagascar-2.jpg
+madagascar-3.jpg
+madagascar-4.jpg"></textarea>
+                <small>These images must also be uploaded to your <code>/images/</code> folder.</small>
+            </div>
+
+            <hr>
+
+            <button type="submit" class="btn-generate" id="generate-btn">Generate Review HTML</button>
+        </form>
+        
+        <div class="output-container" id="output-container" style="display: none;">
+            <h2>HTML Code Ready to Copy</h2>
+            <textarea id="output-html" readonly></textarea>
+            <button class="btn-copy" id="copy-btn">Copy to Clipboard</button>
+        </div>
+    </div>
+    
+    <script>
+        // This is the JavaScript that powers your tool
+        
+        // --- This function handles paragraph tags ---
+        function formatTextToHtml(text) {
+            if (!text) return '';
+            // 1. Split text by new lines
+            // 2. Filter out any empty lines
+            // 3. Wrap each remaining line in <p> or <li> tags
+            return text.split('\n')
+                       .filter(line => line.trim() !== '')
+                       .map(line => `    <p>${line.trim()}</p>`)
+                       .join('\n');
+        }
+
+        function formatListToHtml(text) {
+            if (!text) return '';
+            const items = text.split('\n')
+                              .filter(line => line.trim() !== '')
+                              .map(line => `        <li>${line.trim()}</li>`)
+                              .join('\n');
+            return `<ul>\n${items}\n    </ul>`;
+        }
+
+        function formatGallery(text) {
+            if (!text) return '';
+            const images = text.split('\n')
+                               .filter(line => line.trim() !== '')
+                               .map(line => `
+                <div class="swiper-slide">
+                    <img src="images/${line.trim()}" alt="Gallery image">
+                </div>
+                `)
+                               .join('');
+            
+            return `
+        <div class="review-gallery">
+            <h2>Gallery</h2>
+            <div class="swiper">
+                <div class="swiper-wrapper">
+                    ${images}
+                </div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+        `;
+        }
+
+        // --- This function builds the HTML template ---
+        function generateHTML(data) {
+            
+            // Build the tags
+            let tagsHTML = '';
+            if (data.tagAge) {
+                tagsHTML += `    <span class="tag tag-age">${data.tagAge}</span>\n`;
+            }
+            if (data.tagAdhd) {
+                tagsHTML += `    <span class="tag tag-adhd">ADHD-Friendly Guide</span>\n`;
+            }
+            if (data.tagSensory) {
+                tagsHTML += `    <span class="tag tag-sensory">Sensory Notes</span>\n`;
+            }
+
+            // Build the Parent Tips section
+            let tipsHTML = '';
+            if (data.parentTips) {
+                tipsHTML = `
+                <article>
+                    <h3>Key Info for Parents</h3>
+                    ${formatListToHtml(data.parentTips)}
+                </article>
+                `;
+            }
+
+            // Get the HTML for the review body and gallery
+            const reviewBodyHTML = formatTextToHtml(data.reviewBody);
+            const galleryHTML = formatGallery(data.galleryImages);
+
+            // --- THIS IS YOUR FULL PAGE TEMPLATE ---
+            // It includes the carousel scripts automatically!
+            return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review: ${data.title} | Behind the Magic Curtain</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Behind the Magic Curtain</a>
+            </div>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="whats-on.html">What's On</a></li>
+                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                    <li><a href="reviews.html" class="active">Reviews</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        
+        <section class="review-header page-header">
+            <div class="container">
+                <h1>${data.title}</h1>
+                <p class="review-subtitle">${data.subtitle}</p>
+                <div class="card-tags">
+${tagsHTML}
+                </div>
+            </div>
+        </section>
+
+        <section class="page-content">
+            <div class="container content-article">
+                
+                <img src="images/${data.mainImage}" alt="${data.altText}" class="review-main-image">
+
+${galleryHTML}
+
+                <h2>Our Family Verdict</h2>
+${reviewBodyHTML}
+                
+${tipsHTML}
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="footer-social-tagline">Follow us on social media</p>
+            <div class="footer-social-links">
+                <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" aria-label="Visit our Facebook page">
+                    <i class="fa-brands fa-facebook"></i>
+                </a>
+                <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" aria-label="Visit our Instagram page">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+            </div>
+            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+            `;
+            // --- END OF TEMPLATE ---
+        }
+        
+        // --- Add event listeners ---
+        document.getElementById('review-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Stop the form from submitting
+            
+            // 1. Get all the data from the form
+            const data = {
+                title: document.getElementById('review-title').value,
+                subtitle: document.getElementById('page-subtitle').value,
+                mainImage: document.getElementById('main-image').value,
+                altText: document.getElementById('alt-text').value,
+                tagAdhd: document.getElementById('tag-adhd').checked,
+                tagSensory: document.getElementById('tag-sensory').checked,
+                tagAge: document.getElementById('tag-age').value,
+                reviewBody: document.getElementById('review-body').value,
+                parentTips: document.getElementById('parent-tips').value,
+                galleryImages: document.getElementById('gallery-images').value
+            };
+            
+            // 2. Generate the full HTML string
+            const html = generateHTML(data);
+            
+            // 3. Put the HTML into the output box and show it
+            const outputContainer = document.getElementById('output-container');
+            const outputTextarea = document.getElementById('output-html');
+            
+            outputTextarea.value = html.trim(); // Put HTML in the box
+            outputContainer.style.display = 'block'; // Show the box
+            
+            // 4. Scroll to the output box
+            outputContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // --- Clipboard Copy Button ---
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const outputTextarea = document.getElementById('output-html');
+            outputTextarea.select(); // Select the text
+            navigator.clipboard.writeText(outputTextarea.value); // Copy it
+            
+            // Give user feedback
+            this.textContent = 'Copied to Clipboard!';
+            setTimeout(() => {
+                this.textContent = 'Copy to Clipboard';
+            }, 2000);
+        });
+        
+    </script>
+</body>
+</html>
