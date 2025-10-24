@@ -24,3 +24,32 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+
+/*
+ * SWIPER.JS CAROUSEL ACTIVATION
+ *
+ * This code finds the carousel we added and turns it on.
+ *
+ */
+
+// Check if a swiper element exists on the page
+if (document.querySelector('.swiper')) {
+
+    const swiper = new Swiper('.swiper', {
+        // This makes the carousel slide in a continuous loop
+        loop: true,
+
+        // This adds the little clickable dots at the bottom
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+
+        // This enables the left and right arrows
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+    });
+}
