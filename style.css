@@ -612,6 +612,56 @@ section {
 
 
 /* ---------------------------------- */
+/* Swiper.js Carousel Styles     */
+/* ---------------------------------- */
+
+.review-gallery {
+    margin: 3em 0;
+}
+
+.review-gallery h2 {
+    font-family: var(--font-subheading);
+    font-size: 2rem;
+    color: var(--color-primary);
+    text-align: center;
+}
+
+.swiper {
+    width: 100%;
+    height: 500px; /* You can change this height */
+    border-radius: 8px;
+    background: var(--color-bg-light);
+}
+
+.swiper-slide {
+    text-align: center;
+    font-size: 18px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This makes all images fit nicely */
+}
+
+/* This styles the arrows and dots to match your brand! */
+.swiper-button-next,
+.swiper-button-prev {
+    color: var(--color-primary) !important; /* Your brand red */
+}
+
+.swiper-pagination-bullet-active {
+    background: var(--color-primary) !important; /* Your brand red */
+}
+
+
+
+/* ---------------------------------- */
 /* Mobile Responsive Design      */
 /* ---------------------------------- */
 
