@@ -493,6 +493,7 @@ section {
 .tag-adhd { background-color: var(--color-tag-1); }
 .tag-age { background-color: var(--color-tag-2); color: white; }
 .tag-sensory { background-color: var(--color-tag-3); }
+.tag-mature { background-color: #d700ff; color: white; }
 
 /* ---------------------------------- */
 /* Listing Item (What's On)      */
