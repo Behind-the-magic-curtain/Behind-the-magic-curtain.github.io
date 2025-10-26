@@ -39,13 +39,25 @@
             margin-bottom: 8px;
         }
         .form-group input[type="text"],
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select { /* ADDED 'select' */
             width: 100%;
             padding: 12px;
             font-family: 'Poppins', sans-serif;
             font-size: 1rem;
             border: 1px solid #bdbdbd;
             border-radius: 5px;
+        }
+        /* --- NEW STYLE for the dropdown arrow --- */
+        .form-group select {
+            background-color: #fff;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23333%22%3E%3Cpath%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1.2em;
         }
         .form-group textarea {
             min-height: 200px;
@@ -55,6 +67,7 @@
             display: flex;
             gap: 20px;
             align-items: center;
+            margin-bottom: 10px; /* Added for spacing */
         }
         .form-group input[type="checkbox"] {
             width: 18px;
@@ -85,19 +98,27 @@
         }
         .output-container {
             margin-top: 40px;
+            border: 2px solid #f4f4f4;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .output-container h2 {
+            margin-top: 0;
+            font-family: 'Playfair Display', serif;
+            color: #bd2419;
         }
         .output-container textarea {
             width: 100%;
-            min-height: 500px;
+            min-height: 300px;
             font-family: monospace;
             background: #2d2d2d;
             color: #90ee90;
             padding: 20px;
         }
         .btn-copy {
-            display: block;
-            width: 100%;
-            padding: 10px;
+            display: inline-block;
+            width: auto;
+            padding: 10px 20px;
             margin-top: 10px;
             font-family: 'Raleway', sans-serif;
             font-weight: 700;
@@ -113,7 +134,7 @@
 
     <div class="tool-container">
         <h1>Review Post Generator</h1>
-        <p>Fill in the fields below to generate the complete HTML for your new review page. Then, just create a new file on GitHub and paste the code!</p>
+        <p>Fill in the fields below to generate all the code for your new review. This tool will create <strong>TWO</strong> code blocks for you to copy.</p>
         
         <form id="review-form">
             
@@ -123,8 +144,20 @@
             </div>
             
             <div class="form-group">
+                <label for="page-filename">Page Filename</label>
+                <input type="text" id="page-filename" placeholder="e.g., madagascar-review.html" required>
+                <small>This is the name of the new <code>.html</code> file you will create.</small>
+            </div>
+            
+            <div class="form-group">
                 <label for="page-subtitle">Page Subtitle</label>
                 <input type="text" id="page-subtitle" placeholder="A short, catchy tagline for the review page." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="card-summary">Card Summary</label>
+                <textarea id="card-summary" placeholder="The short summary for the review card on the Homepage/Reviews page." style="min-height: 80px;" required></textarea>
+                <small>This is the short teaser text. Keep it to 1-2 sentences.</small>
             </div>
 
             <hr>
@@ -152,9 +185,35 @@
                     <input type="checkbox" id="tag-sensory">
                     <label for="tag-sensory">Sensory Notes</label>
                 </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="tag-mature">
+                    <label for="tag-mature">Mature themes</label>
+                </div>
+                
                 <div style="height: 15px;"></div>
-                <label for="tag-age">Ages Tag (Text)</label>
-                <input type="text" id="tag-age" placeholder="e.g., Ages 3+">
+                
+                <label for="tag-age">Ages Tag</label>
+                <select id="tag-age">
+                    <option value="">-- Select Age Rating --</option>
+                    <option value="Ages 0+">Ages 0+</option>
+                    <option value="Ages 1+">Ages 1+</option>
+                    <option value="Ages 2+">Ages 2+</option>
+                    <option value="Ages 3+">Ages 3+</option>
+                    <option value="Ages 4+">Ages 4+</option>
+                    <option value="Ages 5+">Ages 5+</option>
+                    <option value="Ages 6+">Ages 6+</option>
+                    <option value="Ages 7+">Ages 7+</option>
+                    <option value="Ages 8+">Ages 8+</option>
+                    <option value="Ages 9+">Ages 9+</option>
+                    <option value="Ages 10+">Ages 10+</option>
+                    <option value="Ages 11+">Ages 11+</option>
+                    <option value="Ages 12+">Ages 12+</option>
+                    <option value="Ages 13+">Ages 13+</option>
+                    <option value="Ages 14+">Ages 14+</option>
+                    <option value="Ages 15+">Ages 15+</option>
+                    <option value="Ages 16+">Ages 16+</option>
+                    <option value="Grown ups">Grown ups</option>
+                </select>
             </div>
 
             <hr>
@@ -180,25 +239,28 @@ madagascar-4.jpg"></textarea>
 
             <hr>
 
-            <button type="submit" class="btn-generate" id="generate-btn">Generate Review HTML</button>
+            <button type="submit" class="btn-generate" id="generate-btn">Generate Both Code Blocks</button>
         </form>
         
-        <div class="output-container" id="output-container" style="display: none;">
-            <h2>HTML Code Ready to Copy</h2>
-            <textarea id="output-html" readonly></textarea>
-            <button class="btn-copy" id="copy-btn">Copy to Clipboard</button>
+        <div class="output-container" id="output-container-card" style="display: none;">
+            <h2>1. Review Card HTML</h2>
+            <p>Paste this card code into <code>index.html</code> (Featured Reviews) and <code>reviews.html</code> (main list).</p>
+            <textarea id="output-html-card" readonly></textarea>
+            <button class="btn-copy" id="copy-btn-card">Copy Card Code</button>
+        </div>
+
+        <div class="output-container" id="output-container-page" style="display: none;">
+            <h2>2. Full Review Page HTML</h2>
+            <p>Create a new file (e.g., <code>madagascar-review.html</code>) and paste this code in.</p>
+            <textarea id="output-html-page" readonly></textarea>
+            <button class="btn-copy" id="copy-btn-page">Copy Page Code</button>
         </div>
     </div>
     
     <script>
-        // This is the JavaScript that powers your tool
-        
-        // --- This function handles paragraph tags ---
+        // --- Helper Functions (No changes) ---
         function formatTextToHtml(text) {
             if (!text) return '';
-            // 1. Split text by new lines
-            // 2. Filter out any empty lines
-            // 3. Wrap each remaining line in <p> or <li> tags
             return text.split('\n')
                        .filter(line => line.trim() !== '')
                        .map(line => `    <p>${line.trim()}</p>`)
@@ -240,10 +302,8 @@ madagascar-4.jpg"></textarea>
         `;
         }
 
-        // --- This function builds the HTML template ---
-        function generateHTML(data) {
-            
-            // Build the tags
+        // --- NEW/UPDATED Tag Builder Function ---
+        function buildTagsHTML(data) {
             let tagsHTML = '';
             if (data.tagAge) {
                 tagsHTML += `    <span class="tag tag-age">${data.tagAge}</span>\n`;
@@ -254,8 +314,36 @@ madagascar-4.jpg"></textarea>
             if (data.tagSensory) {
                 tagsHTML += `    <span class="tag tag-sensory">Sensory Notes</span>\n`;
             }
+            // --- NEW TAG ADDED ---
+            if (data.tagMature) {
+                tagsHTML += `    <span class="tag tag-mature">Mature themes</span>\n`;
+            }
+            return tagsHTML;
+        }
 
-            // Build the Parent Tips section
+        // --- Card Generator Function (UPDATED) ---
+        function generateCardHTML(data) {
+            const tagsHTML = buildTagsHTML(data); // Use the new function
+
+            return `
+<div class="card">
+    <img src="images/${data.mainImage}" alt="${data.altText}">
+    <div class="card-content">
+        <h3>${data.title}</h3>
+        <div class="card-tags">
+${tagsHTML.trim()}
+        </div>
+        <p>${data.cardSummary}</p>
+        <a href="${data.pageFilename}" class="btn btn-secondary">Read Full Review</a>
+    </div>
+</div>
+`;
+        }
+
+        // --- Full Page Generator Function (UPDATED) ---
+        function generatePageHTML(data) {
+            const tagsHTML = buildTagsHTML(data); // Use the new function
+
             let tipsHTML = '';
             if (data.parentTips) {
                 tipsHTML = `
@@ -266,12 +354,9 @@ madagascar-4.jpg"></textarea>
                 `;
             }
 
-            // Get the HTML for the review body and gallery
             const reviewBodyHTML = formatTextToHtml(data.reviewBody);
             const galleryHTML = formatGallery(data.galleryImages);
 
-            // --- THIS IS YOUR FULL PAGE TEMPLATE ---
-            // It includes the carousel scripts automatically!
             return `
 <!DOCTYPE html>
 <html lang="en">
@@ -282,7 +367,7 @@ madagascar-4.jpg"></textarea>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;7Data;swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="stylesheet" href="style.css">
@@ -359,52 +444,62 @@ ${tipsHTML}
 </body>
 </html>
             `;
-            // --- END OF TEMPLATE ---
         }
         
-        // --- Add event listeners ---
+        // --- Main Submit Event (UPDATED) ---
         document.getElementById('review-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop the form from submitting
+            e.preventDefault(); 
             
-            // 1. Get all the data from the form
             const data = {
                 title: document.getElementById('review-title').value,
+                pageFilename: document.getElementById('page-filename').value,
                 subtitle: document.getElementById('page-subtitle').value,
+                cardSummary: document.getElementById('card-summary').value,
                 mainImage: document.getElementById('main-image').value,
                 altText: document.getElementById('alt-text').value,
                 tagAdhd: document.getElementById('tag-adhd').checked,
                 tagSensory: document.getElementById('tag-sensory').checked,
-                tagAge: document.getElementById('tag-age').value,
+                tagMature: document.getElementById('tag-mature').checked, // --- NEWLY ADDED ---
+                tagAge: document.getElementById('tag-age').value, // --- THIS NOW GETS VALUE FROM DROPDOWN ---
                 reviewBody: document.getElementById('review-body').value,
                 parentTips: document.getElementById('parent-tips').value,
                 galleryImages: document.getElementById('gallery-images').value
             };
             
-            // 2. Generate the full HTML string
-            const html = generateHTML(data);
+            // Generate Card HTML
+            const cardHtml = generateCardHTML(data);
+            const outputCardContainer = document.getElementById('output-container-card');
+            const outputCardTextarea = document.getElementById('output-html-card');
+            outputCardTextarea.value = cardHtml.trim();
+            outputCardContainer.style.display = 'block';
+
+            // Generate Page HTML
+            const pageHtml = generatePageHTML(data);
+            const outputPageContainer = document.getElementById('output-container-page');
+            const outputPageTextarea = document.getElementById('output-html-page');
+            outputPageTextarea.value = pageHtml.trim();
+            outputPageContainer.style.display = 'block';
             
-            // 3. Put the HTML into the output box and show it
-            const outputContainer = document.getElementById('output-container');
-            const outputTextarea = document.getElementById('output-html');
-            
-            outputTextarea.value = html.trim(); // Put HTML in the box
-            outputContainer.style.display = 'block'; // Show the box
-            
-            // 4. Scroll to the output box
-            outputContainer.scrollIntoView({ behavior: 'smooth' });
+            outputCardContainer.scrollIntoView({ behavior: 'smooth' });
         });
         
-        // --- Clipboard Copy Button ---
-        document.getElementById('copy-btn').addEventListener('click', function() {
-            const outputTextarea = document.getElementById('output-html');
-            outputTextarea.select(); // Select the text
-            navigator.clipboard.writeText(outputTextarea.value); // Copy it
+        // --- Clipboard Copy Buttons (No changes) ---
+        document.getElementById('copy-btn-card').addEventListener('click', function() {
+            const outputTextarea = document.getElementById('output-html-card');
+            outputTextarea.select();
+            navigator.clipboard.writeText(outputTextarea.value);
             
-            // Give user feedback
-            this.textContent = 'Copied to Clipboard!';
-            setTimeout(() => {
-                this.textContent = 'Copy to Clipboard';
-            }, 2000);
+            this.textContent = 'Copied!';
+            setTimeout(() => { this.textContent = 'Copy Card Code'; }, 2000);
+        });
+
+        document.getElementById('copy-btn-page').addEventListener('click', function() {
+            const outputTextarea = document.getElementById('output-html-page');
+            outputTextarea.select();
+            navigator.clipboard.writeText(outputTextarea.value);
+            
+            this.textContent = 'Copied!';
+            setTimeout(() => { this.textContent = 'Copy Page Code'; }, 2000);
         });
         
     </script>
