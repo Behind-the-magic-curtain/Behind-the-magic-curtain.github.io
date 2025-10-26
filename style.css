@@ -660,7 +660,41 @@ section {
     background: var(--color-primary) !important; /* Your brand red */
 }
 
+/* ---------------------------------- */
+/* Star Rating System            */
+/* ---------------------------------- */
 
+.star-rating {
+    position: relative;
+    display: inline-block; /* Makes it sit nicely in the flow */
+    font-size: 1.2rem; /* Controls the size of the stars */
+    margin-bottom: 10px;
+}
+
+.stars-empty,
+.stars-full {
+    display: flex;
+    gap: 3px; /* Space between stars */
+}
+
+.stars-empty {
+    color: #bdbdbd; /* Color of the empty stars (grey) */
+}
+
+.stars-full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden; /* This is the magic! */
+    white-space: nowrap; /* Keeps stars on one line */
+    color: var(--color-secondary); /* Your brand gold! */
+}
+
+/* Make stars on the review page header bigger */
+.review-header .star-rating {
+    font-size: 1.5rem;
+    margin-top: 10px;
+}
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
