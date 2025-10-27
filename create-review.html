@@ -80,8 +80,6 @@
             margin-top: 5px;
         }
         
-        /* --- No more 'Generate' button --- */
-
         .output-container {
             margin-top: 40px;
             border: 2px solid #f4f4f4;
@@ -228,7 +226,9 @@ madagascar-4.jpg"></textarea>
                 <small>These images must also be uploaded to your <code>/images/</code> folder.</small>
             </div>
 
-        </div> <div class="output-container" id="output-container-card">
+        </div> 
+        
+        <div class="output-container" id="output-container-card">
             <h2>1. Review Card HTML</h2>
             <p>Paste this card code into <code>index.html</code> (Featured Reviews) and <code>reviews.html</code> (main list).</p>
             <textarea id="output-html-card" readonly></textarea>
@@ -244,293 +244,297 @@ madagascar-4.jpg"></textarea>
     </div>
     
     <script>
-        // --- Helper Functions (No changes) ---
-        function formatTextToHtml(text) {
-            if (!text) return '';
-            return text.split('\n')
-                       .filter(line => line.trim() !== '')
-                       .map(line => `    <p>${line.trim()}</p>`)
-                       .join('\n');
-        }
-
-        function formatListToHtml(text) {
-            if (!text) return '';
-            const items = text.split('\n')
-                              .filter(line => line.trim() !== '')
-                              .map(line => `        <li>${line.trim()}</li>`)
-                              .join('\n');
-            return `<ul>\n${items}\n    </ul>`;
-        }
-
-        function formatGallery(text) {
-            if (!text) return '';
-            const images = text.split('\n')
-                               .filter(line => line.trim() !== '')
-                               .map(line => `
-                <div class="swiper-slide">
-                    <img src="images/${line.trim()}" alt="Gallery image">
-                </div>
-                `)
-                               .join('');
+        // --- This is the "safety net" ---
+        // It waits for the whole page to load before running any code.
+        document.addEventListener('DOMContentLoaded', function() {
             
-            return `
-        <div class="review-gallery">
-            <h2>Gallery</h2>
-            <div class="swiper">
-                <div class="swiper-wrapper">
-                    ${images}
+            // --- Helper Functions (No changes) ---
+            function formatTextToHtml(text) {
+                if (!text) return '';
+                return text.split('\n')
+                           .filter(line => line.trim() !== '')
+                           .map(line => `    <p>${line.trim()}</p>`)
+                           .join('\n');
+            }
+
+            function formatListToHtml(text) {
+                if (!text) return '';
+                const items = text.split('\n')
+                                  .filter(line => line.trim() !== '')
+                                  .map(line => `        <li>${line.trim()}</li>`)
+                                  .join('\n');
+                return `<ul>\n${items}\n    </ul>`;
+            }
+
+            function formatGallery(text) {
+                if (!text) return '';
+                const images = text.split('\n')
+                                   .filter(line => line.trim() !== '')
+                                   .map(line => `
+                    <div class="swiper-slide">
+                        <img src="images/${line.trim()}" alt="Gallery image">
+                    </div>
+                    `)
+                                   .join('');
+                
+                return `
+            <div class="review-gallery">
+                <h2>Gallery</h2>
+                <div class="swiper">
+                    <div class="swiper-wrapper">
+                        ${images}
+                    </div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-pagination"></div>
                 </div>
-                <div class="swiper-button-prev"></div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-pagination"></div>
             </div>
-        </div>
-        `;
-        }
+            `;
+            }
 
-        function buildStarsHTML(rating) {
-            if (!rating) return '';
-            const ratingPercent = (parseFloat(rating) / 5) * 100;
-            return `
-        <div class="star-rating">
-            <div class="stars-empty">
-                <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+            function buildStarsHTML(rating) {
+                if (!rating) return '';
+                const ratingPercent = (parseFloat(rating) / 5) * 100;
+                return `
+            <div class="star-rating">
+                <div class="stars-empty">
+                    <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+                </div>
+                <div class="stars-full" style="width: ${ratingPercent}%;">
+                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
             </div>
-            <div class="stars-full" style="width: ${ratingPercent}%;">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            `;
+            }
+
+            function buildTagsHTML(data) {
+                let tagsHTML = '';
+                if (data.tagAge) {
+                    tagsHTML += `    <span class="tag tag-age">${data.tagAge}</span>\n`;
+                }
+                if (data.tagAdhd) {
+                    tagsHTML += `    <span class="tag tag-adhd">ADHD-Friendly Guide</span>\n`;
+                }
+                if (data.tagSensory) {
+                    tagsHTML += `    <span class="tag tag-sensory">Sensory Notes</span>\n`;
+                }
+                if (data.tagMature) {
+                    tagsHTML += `    <span class="tag tag-mature">Mature themes</span>\n`;
+                }
+                return tagsHTML;
+            }
+
+            function generateCardHTML(data) {
+                const tagsHTML = buildTagsHTML(data);
+                const starsHTML = buildStarsHTML(data.starRating);
+
+                return `
+    <div class="card">
+        <img src="images/${data.mainImage}" alt="${data.altText}">
+        <div class="card-content">
+    ${starsHTML}
+            <h3>${data.title}</h3>
+            <div class="card-tags">
+    ${tagsHTML.trim()}
             </div>
+            <p>${data.cardSummary}</p>
+            <a href="${data.pageFilename}" class="btn btn-secondary">Read Full Review</a>
         </div>
-        `;
-        }
-
-        function buildTagsHTML(data) {
-            let tagsHTML = '';
-            if (data.tagAge) {
-                tagsHTML += `    <span class="tag tag-age">${data.tagAge}</span>\n`;
-            }
-            if (data.tagAdhd) {
-                tagsHTML += `    <span class="tag tag-adhd">ADHD-Friendly Guide</span>\n`;
-            }
-            if (data.tagSensory) {
-                tagsHTML += `    <span class="tag tag-sensory">Sensory Notes</span>\n`;
-            }
-            if (data.tagMature) {
-                tagsHTML += `    <span class="tag tag-mature">Mature themes</span>\n`;
-            }
-            return tagsHTML;
-        }
-
-        function generateCardHTML(data) {
-            const tagsHTML = buildTagsHTML(data);
-            const starsHTML = buildStarsHTML(data.starRating);
-
-            return `
-<div class="card">
-    <img src="images/${data.mainImage}" alt="${data.altText}">
-    <div class="card-content">
-${starsHTML}
-        <h3>${data.title}</h3>
-        <div class="card-tags">
-${tagsHTML.trim()}
-        </div>
-        <p>${data.cardSummary}</p>
-        <a href="${data.pageFilename}" class="btn btn-secondary">Read Full Review</a>
     </div>
-</div>
-`;
-        }
+    `;
+            }
 
-        function generatePageHTML(data) {
-            const tagsHTML = buildTagsHTML(data);
-            const starsHTML = buildStarsHTML(data.starRating);
+            function generatePageHTML(data) {
+                const tagsHTML = buildTagsHTML(data);
+                const starsHTML = buildStarsHTML(data.starRating);
 
-            let tipsHTML = '';
-            if (data.parentTips) {
-                tipsHTML = `
-                <article>
-                    <h3>Key Info for Parents</h3>
-                    ${formatListToHtml(data.parentTips)}
-                </article>
+                let tipsHTML = '';
+                if (data.parentTips) {
+                    tipsHTML = `
+                    <article>
+                        <h3>Key Info for Parents</h3>
+                        ${formatListToHtml(data.parentTips)}
+                    </article>
+                    `;
+                }
+
+                const reviewBodyHTML = formatTextToHtml(data.reviewBody);
+                const galleryHTML = formatGallery(data.galleryImages);
+
+                return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Review: ${data.title} | Behind the Magic Curtain</title>
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    </head>
+    <body>
+
+        <header class="site-header">
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html">Behind the Magic Curtain</a>
+                </div>
+                <nav class="main-nav">
+                    <button class="nav-toggle" aria-label="toggle navigation">
+                        <span class="hamburger"></span>
+                    </button>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="whats-on.html">What's On</a></li>
+                        <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                        <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                        <li><a href="reviews.html" class="active">Reviews</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            
+            <section class="review-header page-header">
+                <div class="container">
+                    <h1>${data.title}</h1>
+                    <p class="review-subtitle">${data.subtitle}</p>
+    ${starsHTML}
+                    <div class="card-tags">
+    ${tagsHTML}
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-content">
+                <div class="container content-article">
+                    
+                    <img src="images/${data.mainImage}" alt="${data.altText}" class="review-main-image">
+
+    ${galleryHTML}
+
+                    <h2>Our Family Verdict</h2>
+    ${reviewBodyHTML}
+                    
+    ${tipsHTML}
+
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <p class="footer-social-tagline">Follow us on social media</p>
+                <div class="footer-social-links">
+                    <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" aria-label="Visit our Facebook page">
+                        <i class="fa-brands fa-facebook"></i>
+                    </a>
+                    <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" aria-label="Visit our Instagram page">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                </div>
+                <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script src="script.js"></script>
+    </body>
+    </html>
                 `;
             }
+            
+            // --- THIS IS THE "LIVE UPDATE" SCRIPT ---
 
-            const reviewBodyHTML = formatTextToHtml(data.reviewBody);
-            const galleryHTML = formatGallery(data.galleryImages);
-
-            return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review: ${data.title} | Behind the Magic Curtain</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-</head>
-<body>
-
-    <header class="site-header">
-        <div class="container">
-            <div class="logo">
-                <a href="index.html">Behind the Magic Curtain</a>
-            </div>
-            <nav class="main-nav">
-                <button class="nav-toggle" aria-label="toggle navigation">
-                    <span class="hamburger"></span>
-                </button>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="whats-on.html">What's On</a></li>
-                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
-                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
-                    <li><a href="reviews.html" class="active">Reviews</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        
-        <section class="review-header page-header">
-            <div class="container">
-                <h1>${data.title}</h1>
-                <p class="review-subtitle">${data.subtitle}</p>
-${starsHTML}
-                <div class="card-tags">
-${tagsHTML}
-                </div>
-            </div>
-        </section>
-
-        <section class="page-content">
-            <div class="container content-article">
-                
-                <img src="images/${data.mainImage}" alt="${data.altText}" class="review-main-image">
-
-${galleryHTML}
-
-                <h2>Our Family Verdict</h2>
-${reviewBodyHTML}
-                
-${tipsHTML}
-
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p class="footer-social-tagline">Follow us on social media</p>
-            <div class="footer-social-links">
-                <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" aria-label="Visit our Facebook page">
-                    <i class="fa-brands fa-facebook"></i>
-                </a>
-                <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" aria-label="Visit our Instagram page">
-                    <i class="fa-brands fa-instagram"></i>
-                </a>
-            </div>
-            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
-            `;
-        }
-        
-        // --- THIS IS THE NEW "LIVE UPDATE" SCRIPT ---
-
-        // 1. Get references to all INPUTS
-        const inputs = {
-            title: document.getElementById('review-title'),
-            pageFilename: document.getElementById('page-filename'),
-            subtitle: document.getElementById('page-subtitle'),
-            cardSummary: document.getElementById('card-summary'),
-            starRating: document.getElementById('star-rating'),
-            mainImage: document.getElementById('main-image'),
-            altText: document.getElementById('alt-text'),
-            tagAdhd: document.getElementById('tag-adhd'),
-            tagSensory: document.getElementById('tag-sensory'),
-            tagMature: document.getElementById('tag-mature'),
-            tagAge: document.getElementById('tag-age'),
-            reviewBody: document.getElementById('review-body'),
-            parentTips: document.getElementById('parent-tips'),
-            galleryImages: document.getElementById('gallery-images')
-        };
-
-        // 2. Get references to all OUTPUTS
-        const outputs = {
-            card: document.getElementById('output-html-card'),
-            page: document.getElementById('output-html-page')
-        };
-
-        // 3. Main function to get data and update textareas
-        function updateLiveOutput() {
-            // Get all values from the form
-            const data = {
-                title: inputs.title.value,
-                pageFilename: inputs.pageFilename.value,
-                subtitle: inputs.subtitle.value,
-                cardSummary: inputs.cardSummary.value,
-                starRating: inputs.starRating.value,
-                mainImage: inputs.mainImage.value,
-                altText: inputs.altText.value,
-                tagAdhd: inputs.tagAdhd.checked,
-                tagSensory: inputs.tagSensory.checked,
-                tagMature: inputs.tagMature.checked,
-                tagAge: inputs.tagAge.value,
-                reviewBody: inputs.reviewBody.value,
-                parentTips: inputs.parentTips.value,
-                galleryImages: inputs.galleryImages.value
+            // 1. Get references to all INPUTS
+            const inputs = {
+                title: document.getElementById('review-title'),
+                pageFilename: document.getElementById('page-filename'),
+                subtitle: document.getElementById('page-subtitle'),
+                cardSummary: document.getElementById('card-summary'),
+                starRating: document.getElementById('star-rating'),
+                mainImage: document.getElementById('main-image'),
+                altText: document.getElementById('alt-text'),
+                tagAdhd: document.getElementById('tag-adhd'),
+                tagSensory: document.getElementById('tag-sensory'),
+                tagMature: document.getElementById('tag-mature'),
+                tagAge: document.getElementById('tag-age'),
+                reviewBody: document.getElementById('review-body'),
+                parentTips: document.getElementById('parent-tips'),
+                galleryImages: document.getElementById('gallery-images')
             };
 
-            // Generate the HTML
-            const cardHtml = generateCardHTML(data);
-            const pageHtml = generatePageHTML(data);
+            // 2. Get references to all OUTPUTS
+            const outputs = {
+                card: document.getElementById('output-html-card'),
+                page: document.getElementById('output-html-page')
+            };
 
-            // Update the textareas
-            outputs.card.value = cardHtml.trim();
-            outputs.page.value = pageHtml.trim();
-        }
+            // 3. Main function to get data and update textareas
+            function updateLiveOutput() {
+                // Get all values from the form
+                const data = {
+                    title: inputs.title.value,
+                    pageFilename: inputs.pageFilename.value,
+                    subtitle: inputs.subtitle.value,
+                    cardSummary: inputs.cardSummary.value,
+                    starRating: inputs.starRating.value,
+                    mainImage: inputs.mainImage.value,
+                    altText: inputs.altText.value,
+                    tagAdhd: inputs.tagAdhd.checked,
+                    tagSensory: inputs.tagSensory.checked,
+                    tagMature: inputs.tagMature.checked,
+                    tagAge: inputs.tagAge.value,
+                    reviewBody: inputs.reviewBody.value,
+                    parentTips: inputs.parentTips.value,
+                    galleryImages: inputs.galleryImages.value
+                };
 
-        // 4. Attach an event listener to EVERY input
-        // 'Object.values(inputs)' gets all the input elements from step 1
-        Object.values(inputs).forEach(inputElement => {
-            // Add a listener that fires on 'input' (for text) or 'change' (for checkboxes)
-            inputElement.addEventListener('input', updateLiveOutput);
-            inputElement.addEventListener('change', updateLiveOutput);
-        });
+                // Generate the HTML
+                const cardHtml = generateCardHTML(data);
+                const pageHtml = generatePageHTML(data);
 
-        // 5. Run the function once on load to fill the textareas
-        updateLiveOutput();
+                // Update the textareas
+                outputs.card.value = cardHtml.trim();
+                outputs.page.value = pageHtml.trim();
+            }
+
+            // 4. Attach an event listener to EVERY input
+            Object.values(inputs).forEach(inputElement => {
+                inputElement.addEventListener('input', updateLiveOutput);
+                inputElement.addEventListener('change', updateLiveOutput);
+            });
+
+            // 5. Run the function once on load to fill the textareas
+            updateLiveOutput();
+            
+            // --- Clipboard Copy Buttons (No changes) ---
+            document.getElementById('copy-btn-card').addEventListener('click', function() {
+                const outputTextarea = document.getElementById('output-html-card');
+                outputTextarea.select();
+                navigator.clipboard.writeText(outputTextarea.value);
+                
+                this.textContent = 'Copied!';
+                setTimeout(() => { this.textContent = 'Copy Card Code'; }, 2000);
+            });
+
+            document.getElementById('copy-btn-page').addEventListener('click', function() {
+                const outputTextarea = document.getElementById('output-html-page');
+                outputTextarea.select();
+                navigator.clipboard.writeText(outputTextarea.value);
+                
+                this.textContent = 'Copied!';
+                setTimeout(() => { this.textContent = 'Copy Page Code'; }, 2000);
+            });
         
-        // --- Clipboard Copy Buttons (No changes) ---
-        document.getElementById('copy-btn-card').addEventListener('click', function() {
-            const outputTextarea = document.getElementById('output-html-card');
-            outputTextarea.select();
-            navigator.clipboard.writeText(outputTextarea.value);
-            
-            this.textContent = 'Copied!';
-            setTimeout(() => { this.textContent = 'Copy Card Code'; }, 2000);
-        });
-
-        document.getElementById('copy-btn-page').addEventListener('click', function() {
-            const outputTextarea = document.getElementById('output-html-page');
-            outputTextarea.select();
-            navigator.clipboard.writeText(outputTextarea.value);
-            
-            this.textContent = 'Copied!';
-            setTimeout(() => { this.textContent = 'Copy Page Code'; }, 2000);
-        });
+        }); // --- End of the "safety net" listener ---
         
     </script>
 </body>
