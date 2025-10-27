@@ -79,23 +79,9 @@
             color: #555;
             margin-top: 5px;
         }
-        .btn-generate {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            font-family: 'Raleway', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #333;
-            background: #ffd700;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        .btn-generate:hover {
-            background: #ffc700;
-        }
+        
+        /* --- No more 'Generate' button --- */
+
         .output-container {
             margin-top: 40px;
             border: 2px solid #f4f4f4;
@@ -134,9 +120,9 @@
 
     <div class="tool-container">
         <h1>Review Post Generator</h1>
-        <p>Fill in the fields below to generate all the code for your new review. This tool will create <strong>TWO</strong> code blocks for you to copy.</p>
+        <p>Fill in the fields below. The code boxes at the bottom will update in real-time. <strong>There is no "Generate" button.</strong></p>
         
-        <form id="review-form">
+        <div id="review-form">
             
             <div class="form-group">
                 <label for="review-title">Review Title</label>
@@ -242,19 +228,14 @@ madagascar-4.jpg"></textarea>
                 <small>These images must also be uploaded to your <code>/images/</code> folder.</small>
             </div>
 
-            <hr>
-
-            <button type="submit" class="btn-generate" id="generate-btn">Generate Both Code Blocks</button>
-        </form>
-        
-        <div class="output-container" id="output-container-card" style="display: none;">
+        </div> <div class="output-container" id="output-container-card">
             <h2>1. Review Card HTML</h2>
             <p>Paste this card code into <code>index.html</code> (Featured Reviews) and <code>reviews.html</code> (main list).</p>
             <textarea id="output-html-card" readonly></textarea>
             <button class="btn-copy" id="copy-btn-card">Copy Card Code</button>
         </div>
 
-        <div class="output-container" id="output-container-page" style="display: none;">
+        <div class="output-container" id="output-container-page">
             <h2>2. Full Review Page HTML</h2>
             <p>Create a new file (e.g., <code>madagascar-review.html</code>) and paste this code in.</p>
             <textarea id="output-html-page" readonly></textarea>
@@ -466,46 +447,71 @@ ${tipsHTML}
             `;
         }
         
-        // --- Main Submit Event (THE FIX IS HERE) ---
-        document.getElementById('review-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Stop the form from submitting
-            
-            // 1. Get all the data from the form
-            const data = {
-                title: document.getElementById('review-title').value,
-                pageFilename: document.getElementById('page-filename').value,
-                subtitle: document.getElementById('page-subtitle').value,
-                cardSummary: document.getElementById('card-summary').value,
-                starRating: document.getElementById('star-rating').value,
-                mainImage: document.getElementById('main-image').value,
-                // --- THIS IS THE CORRECTED LINE ---
-                altText: document.getElementById('alt-text').value, 
-                tagAdhd: document.getElementById('tag-adhd').checked,
-                tagSensory: document.getElementById('tag-sensory').checked,
-                tagMature: document.getElementById('tag-mature').checked,
-                tagAge: document.getElementById('tag-age').value,
-                reviewBody: document.getElementById('review-body').value,
-                parentTips: document.getElementById('parent-tips').value,
-                galleryImages: document.getElementById('gallery-images').value
-            };
-            
-            // 2. Generate Card HTML
-            const cardHtml = generateCardHTML(data);
-            const outputCardContainer = document.getElementById('output-container-card');
-            const outputCardTextarea = document.getElementById('output-html-card');
-            outputCardTextarea.value = cardHtml.trim();
-            outputCardContainer.style.display = 'block';
+        // --- THIS IS THE NEW "LIVE UPDATE" SCRIPT ---
 
-            // 3. Generate Page HTML
+        // 1. Get references to all INPUTS
+        const inputs = {
+            title: document.getElementById('review-title'),
+            pageFilename: document.getElementById('page-filename'),
+            subtitle: document.getElementById('page-subtitle'),
+            cardSummary: document.getElementById('card-summary'),
+            starRating: document.getElementById('star-rating'),
+            mainImage: document.getElementById('main-image'),
+            altText: document.getElementById('alt-text'),
+            tagAdhd: document.getElementById('tag-adhd'),
+            tagSensory: document.getElementById('tag-sensory'),
+            tagMature: document.getElementById('tag-mature'),
+            tagAge: document.getElementById('tag-age'),
+            reviewBody: document.getElementById('review-body'),
+            parentTips: document.getElementById('parent-tips'),
+            galleryImages: document.getElementById('gallery-images')
+        };
+
+        // 2. Get references to all OUTPUTS
+        const outputs = {
+            card: document.getElementById('output-html-card'),
+            page: document.getElementById('output-html-page')
+        };
+
+        // 3. Main function to get data and update textareas
+        function updateLiveOutput() {
+            // Get all values from the form
+            const data = {
+                title: inputs.title.value,
+                pageFilename: inputs.pageFilename.value,
+                subtitle: inputs.subtitle.value,
+                cardSummary: inputs.cardSummary.value,
+                starRating: inputs.starRating.value,
+                mainImage: inputs.mainImage.value,
+                altText: inputs.altText.value,
+                tagAdhd: inputs.tagAdhd.checked,
+                tagSensory: inputs.tagSensory.checked,
+                tagMature: inputs.tagMature.checked,
+                tagAge: inputs.tagAge.value,
+                reviewBody: inputs.reviewBody.value,
+                parentTips: inputs.parentTips.value,
+                galleryImages: inputs.galleryImages.value
+            };
+
+            // Generate the HTML
+            const cardHtml = generateCardHTML(data);
             const pageHtml = generatePageHTML(data);
-            const outputPageContainer = document.getElementById('output-container-page');
-            const outputPageTextarea = document.getElementById('output-html-page');
-            outputPageTextarea.value = pageHtml.trim();
-            outputPageContainer.style.display = 'block';
-            
-            // 4. Scroll to the output box
-            outputCardContainer.scrollIntoView({ behavior: 'smooth' });
+
+            // Update the textareas
+            outputs.card.value = cardHtml.trim();
+            outputs.page.value = pageHtml.trim();
+        }
+
+        // 4. Attach an event listener to EVERY input
+        // 'Object.values(inputs)' gets all the input elements from step 1
+        Object.values(inputs).forEach(inputElement => {
+            // Add a listener that fires on 'input' (for text) or 'change' (for checkboxes)
+            inputElement.addEventListener('input', updateLiveOutput);
+            inputElement.addEventListener('change', updateLiveOutput);
         });
+
+        // 5. Run the function once on load to fill the textareas
+        updateLiveOutput();
         
         // --- Clipboard Copy Buttons (No changes) ---
         document.getElementById('copy-btn-card').addEventListener('click', function() {
