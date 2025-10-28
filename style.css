@@ -665,52 +665,53 @@ section {
 /* ---------------------------------- */
 
 .star-rating {
-    position: relative;
-    display: inline-block; /* Makes it sit nicely in the flow */
-    font-size: 1.2rem; /* Controls the size of the stars */
+    /* Establish positioning context */
+    position: relative; 
+    display: inline-block; 
+    font-size: 1.2rem; 
     margin-bottom: 10px;
+    /* Ensure it's not affected by flex alignment issues */
+    align-self: flex-start; 
 }
 
 .stars-empty,
 .stars-full {
     display: flex;
-    gap: 3px; /* Space between stars */
+    gap: 3px; 
 }
 
 .stars-empty {
-    color: #bdbdbd; /* Color of the empty stars (grey) */
+    color: #bdbdbd; 
 }
 
 .stars-full {
-    position: absolute;
+    /* Crucial for clipping */
+    position: absolute; 
     top: 0;
     left: 0;
-    overflow: hidden; /* This is the magic! */
-    white-space: nowrap; /* Keeps stars on one line */
-    color: var(--color-secondary); /* Your brand gold! */
+    white-space: nowrap; 
+    overflow: hidden; 
+    color: var(--color-secondary); /* Your brand gold */
+}
+
+/* Target stars specifically inside card content */
+.card-content .star-rating {
+   /* Optional: Add slightly more space if needed */
+   /* margin-bottom: 15px; */
 }
 
 /* Make stars on the review page header bigger */
 .review-header .star-rating {
     font-size: 1.5rem;
     margin-top: 10px;
-}
-
-/* --- Fix for stars inside cards --- */
-.card-content .star-rating {
-    /* Ensure it takes up its own line if needed */
+    /* Center stars on review page */
     display: block; 
-    /* Make sure positioning context is clear if needed */
-    position: relative; 
+    text-align: center;
 }
-
-/* Re-assert the crucial styles for the full stars specifically within cards */
-.card-content .stars-full {
-    position: absolute;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    white-space: nowrap;
+.review-header .stars-empty,
+.review-header .stars-full {
+    /* Ensure centering works */
+   display: inline-flex; 
 }
 
 /* ---------------------------------- */
