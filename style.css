@@ -696,6 +696,23 @@ section {
     margin-top: 10px;
 }
 
+/* --- Fix for stars inside cards --- */
+.card-content .star-rating {
+    /* Ensure it takes up its own line if needed */
+    display: block; 
+    /* Make sure positioning context is clear if needed */
+    position: relative; 
+}
+
+/* Re-assert the crucial styles for the full stars specifically within cards */
+.card-content .stars-full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
 /* ---------------------------------- */
