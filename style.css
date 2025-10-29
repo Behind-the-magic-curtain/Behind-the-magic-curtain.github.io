@@ -665,18 +665,17 @@ section {
 /* ---------------------------------- */
 
 .star-rating {
-    /* Establish positioning context */
     position: relative; 
-    display: inline-block; 
+    display: inline-block; /* Changed back to inline-block */
     font-size: 1.2rem; 
     margin-bottom: 10px;
-    /* Ensure it's not affected by flex alignment issues */
-    align-self: flex-start; 
+    /* Vertical alignment might help in some layouts */
+    vertical-align: middle; 
 }
 
 .stars-empty,
 .stars-full {
-    display: flex;
+    display: flex; /* Keep flex for alignment */
     gap: 3px; 
 }
 
@@ -685,34 +684,32 @@ section {
 }
 
 .stars-full {
-    /* Crucial for clipping */
     position: absolute; 
     top: 0;
     left: 0;
     white-space: nowrap; 
     overflow: hidden; 
-    color: var(--color-secondary); /* Your brand gold */
+    color: var(--color-secondary); 
 }
 
 /* Target stars specifically inside card content */
 .card-content .star-rating {
-   /* Optional: Add slightly more space if needed */
-   /* margin-bottom: 15px; */
+   display: block; /* Make it block level inside cards to ensure width */
+   margin-bottom: 15px; /* Add a bit more space below stars in cards */
 }
 
-/* Make stars on the review page header bigger */
+/* Make stars on the review page header bigger AND center the container */
 .review-header .star-rating {
     font-size: 1.5rem;
-    margin-top: 10px;
-    /* Center stars on review page */
-    display: block; 
-    text-align: center;
+    margin-top: 15px; /* Add space above */
+    margin-bottom: 15px; /* Add space below */
+    display: block; /* Make the container block-level */
+    width: max-content; /* Shrink container width to fit stars */
+    margin-left: auto; /* Center the block container */
+    margin-right: auto; /* Center the block container */
 }
-.review-header .stars-empty,
-.review-header .stars-full {
-    /* Ensure centering works */
-   display: inline-flex; 
-}
+
+/* No special flex rules needed for empty/full stars on header anymore */
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
