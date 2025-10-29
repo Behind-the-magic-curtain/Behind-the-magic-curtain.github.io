@@ -665,17 +665,17 @@ section {
 /* ---------------------------------- */
 
 .star-rating {
-    position: relative; 
-    display: inline-block; /* Changed back to inline-block */
+    /* Base styles - keep inline-block for flow */
+    display: inline-block; 
+    position: relative; /* Essential for containing the absolute .stars-full */
     font-size: 1.2rem; 
     margin-bottom: 10px;
-    /* Vertical alignment might help in some layouts */
     vertical-align: middle; 
 }
 
 .stars-empty,
 .stars-full {
-    display: flex; /* Keep flex for alignment */
+    display: flex; 
     gap: 3px; 
 }
 
@@ -684,32 +684,37 @@ section {
 }
 
 .stars-full {
+    /* Absolute positioning relative to .star-rating */
     position: absolute; 
     top: 0;
     left: 0;
     white-space: nowrap; 
-    overflow: hidden; 
+    overflow: hidden; /* This clips the stars */
     color: var(--color-secondary); 
 }
 
-/* Target stars specifically inside card content */
+/* --- Styles specifically for stars INSIDE cards --- */
 .card-content .star-rating {
-   display: block; /* Make it block level inside cards to ensure width */
-   margin-bottom: 15px; /* Add a bit more space below stars in cards */
+   display: block; /* Make it block level inside cards */
+   margin-bottom: 15px; 
+   /* Ensure it has its own positioning context, separate from flex */
+   position: relative; 
 }
+/* No need for extra .card-content .stars-full rules if the above works */
 
-/* Make stars on the review page header bigger AND center the container */
+
+/* --- Styles specifically for stars on Review Page Header --- */
 .review-header .star-rating {
-    font-size: 1.5rem;
-    margin-top: 15px; /* Add space above */
-    margin-bottom: 15px; /* Add space below */
-    display: block; /* Make the container block-level */
-    width: max-content; /* Shrink container width to fit stars */
-    margin-left: auto; /* Center the block container */
-    margin-right: auto; /* Center the block container */
+    font-size: 1.5rem; /* Make header stars bigger */
+    margin-top: 15px; 
+    margin-bottom: 15px; 
+    display: block; /* Make container block */
+    width: max-content; /* Size container to stars */
+    margin-left: auto; /* Center the container block */
+    margin-right: auto; /* Center the container block */
+    /* position: relative; is already set by the base .star-rating rule */
 }
 
-/* No special flex rules needed for empty/full stars on header anymore */
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
