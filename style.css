@@ -661,60 +661,68 @@ section {
 }
 
 /* ---------------------------------- */
-/* Star Rating System            */
+/* 1. Card Star Rating           */
 /* ---------------------------------- */
 
-.star-rating {
-    /* Base styles - keep inline-block for flow */
-    display: inline-block; 
-    position: relative; /* Essential for containing the absolute .stars-full */
+.card-star-rating {
+    position: relative; 
+    display: block; /* Make it block level */
     font-size: 1.2rem; 
-    margin-bottom: 10px;
-    vertical-align: middle; 
+    margin-bottom: 15px;
 }
 
-.stars-empty,
-.stars-full {
+.card-stars-empty,
+.card-stars-full {
     display: flex; 
     gap: 3px; 
 }
 
-.stars-empty {
+.card-stars-empty {
     color: #bdbdbd; 
 }
 
-.stars-full {
-    /* Absolute positioning relative to .star-rating */
+.card-stars-full {
     position: absolute; 
     top: 0;
     left: 0;
     white-space: nowrap; 
-    overflow: hidden; /* This clips the stars */
+    overflow: hidden; 
     color: var(--color-secondary); 
 }
 
-/* --- Styles specifically for stars INSIDE cards --- */
-.card-content .star-rating {
-   display: block; /* Make it block level inside cards */
-   margin-bottom: 15px; 
-   /* Ensure it has its own positioning context, separate from flex */
-   position: relative; 
-}
-/* No need for extra .card-content .stars-full rules if the above works */
+/* ---------------------------------- */
+/* 2. Review Page Header Stars   */
+/* ---------------------------------- */
 
-
-/* --- Styles specifically for stars on Review Page Header --- */
-.review-header .star-rating {
+.header-star-rating {
+    position: relative;
     font-size: 1.5rem; /* Make header stars bigger */
-    margin-top: 15px; 
-    margin-bottom: 15px; 
-    display: block; /* Make container block */
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
     width: max-content; /* Size container to stars */
     margin-left: auto; /* Center the container block */
     margin-right: auto; /* Center the container block */
-    /* position: relative; is already set by the base .star-rating rule */
 }
 
+.header-stars-empty,
+.header-stars-full {
+    display: flex;
+    gap: 3px;
+}
+
+.header-stars-empty {
+    color: #bdbdbd;
+}
+
+.header-stars-full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--color-secondary);
+}
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
