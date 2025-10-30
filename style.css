@@ -512,14 +512,14 @@ section {
     margin-top: 0;
 }
 .listing-item p {
-    margin-bottom: 0.5em;
-} /* <--- This brace closes the rule above */
+    margin-bottom: 0.5em;
+}
 
 /* This adds a bit of space above the new button */
 .listing-item .btn {
-    margin-top: 15px; 
+    margin-top: 15px; 
 }
-}
+
 
 /* ---------------------------------- */
 /* Article Item (Tips)           */
@@ -662,45 +662,45 @@ section {
 }
 
 /* ---------------------------------- */
-/* 1. Card Star Rating (FIXED)      */
+/* 1. Card Star Rating (Using the logic that worked) */
 /* ---------------------------------- */
 
 .card-star-rating {
-    position: relative; /* This is essential for clipping */
-    display: block; 
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
+    display: block; /* Make it block level inside cards */
+    position: relative; /* Essential for containing the absolute .stars-full */
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
 }
 
 .card-stars-empty,
 .card-stars-full {
-    /* We removed 'display: flex' */
-    /* We use letter-spacing to space out the icons */
-    letter-spacing: 3px; 
+    display: flex; /* Use flex as it worked before */
+    gap: 3px; 
 }
 
 .card-stars-empty {
-    color: #bdbdbd; 
+    color: #bdbdbd; 
 }
 
 .card-stars-full {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap; 
-    overflow: hidden; /* This is the clipping */
-    color: var(--color-secondary); 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; 
+    color: var(--color-secondary); 
 }
 
 /* ---------------------------------- */
-/* 2. Review Page Header Stars    */
+/* 2. Review Page Header Stars (Using the logic that centers) */
 /* ---------------------------------- */
+
 .header-star-rating {
-    position: relative;
+    position: relative; /* This is essential for clipping */
     font-size: 1.5rem;
     margin-top: 15px;
     margin-bottom: 15px;
-    display: block;
+    display: block; /* Block is fine here */
     width: max-content; 
     margin-left: auto; 
     margin-right: auto; 
@@ -708,7 +708,7 @@ section {
 
 .header-stars-empty,
 .header-stars-full {
-    display: flex;
+    display: flex; /* Flex is also fine here */
     gap: 3px;
 }
 
@@ -724,6 +724,7 @@ section {
     overflow: hidden;
     color: var(--color-secondary);
 }
+
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
