@@ -665,24 +665,25 @@ section {
 /* ---------------------------------- */
 
 .card-star-rating {
-    position: relative; 
-    display: block; /* Make it block level */
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
+    position: relative; 
+    display: block;
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
 }
 
 .card-stars-empty {
-    color: #bdbdbd; 
-    /* No display:flex needed */
+    color: #bdbdbd;
+    /* We don't need flex, the icons will line up */
 }
 
 .card-stars-full {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap; 
-    overflow: hidden; /* This is the clipping */
-    color: var(--color-secondary); 
+    /* This is the magic: position it ON TOP of the empty stars */
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; /* This clips the stars */
+    color: var(--color-secondary); 
 }
 
 /* ---------------------------------- */
@@ -690,30 +691,32 @@ section {
 /* ---------------------------------- */
 
 .header-star-rating {
-    position: relative;
-    font-size: 1.5rem; /* Make header stars bigger */
-    margin-top: 15px;
-    margin-bottom: 15px;
-    display: block;
-    width: max-content; /* Size container to stars */
-    margin-left: auto; /* Center the container block */
-    margin-right: auto; /* Center the container block */
+    position: relative; /* This is essential for the clipping */
+    font-size: 1.5rem;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    
+    /* This group of styles centers the star block */
+    display: block;
+    width: max-content; 
+    margin-left: auto; 
+    margin-right: auto; 
 }
 
 .header-stars-empty {
-    color: #bdbdbd;
-    /* No display:flex needed */
+    color: #bdbdbd;
+    /* No flex needed */
 }
 
 .header-stars-full {
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    color: var(--color-secondary);
+    /* Position it ON TOP of the empty stars */
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--color-secondary);
 }
-
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
