@@ -661,21 +661,19 @@ section {
 }
 
 /* ---------------------------------- */
-/* 1. Card Star Rating            */
-/* (Uses the logic from the old, working version) */
+/* 1. Card Star Rating (Using the logic that worked) */
 /* ---------------------------------- */
 
 .card-star-rating {
-    position: relative; 
-    display: inline-block; /* Use inline-block like the old version */
+    display: block; /* Make it block level inside cards */
+    position: relative; /* Essential for containing the absolute .stars-full */
     font-size: 1.2rem; 
     margin-bottom: 15px;
-    align-self: flex-start; /* This helps in a flex container */
 }
 
 .card-stars-empty,
 .card-stars-full {
-    display: flex; /* This was also in the old working version */
+    display: flex; /* Use flex as it worked before */
     gap: 3px; 
 }
 
@@ -693,8 +691,7 @@ section {
 }
 
 /* ---------------------------------- */
-/* 2. Review Page Header Stars    */
-/* (Uses the logic that correctly centers) */
+/* 2. Review Page Header Stars (Using the logic that centers) */
 /* ---------------------------------- */
 
 .header-star-rating {
