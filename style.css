@@ -661,68 +661,59 @@ section {
 }
 
 /* ---------------------------------- */
-/* 1. Card Star Rating           */
+/* 1. Card Star Rating            */
 /* ---------------------------------- */
 
 .card-star-rating {
-    position: relative; 
-    display: block; /* Make it block level */
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
-}
-
-.card-stars-empty,
-.card-stars-full {
-    display: flex; 
-    gap: 3px; 
+    position: relative; 
+    display: block; /* Make it block level */
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
 }
 
 .card-stars-empty {
-    color: #bdbdbd; 
+    color: #bdbdbd; 
+    /* No display:flex needed */
 }
 
 .card-stars-full {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap; 
-    overflow: hidden; 
-    color: var(--color-secondary); 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; /* This is the clipping */
+    color: var(--color-secondary); 
 }
 
 /* ---------------------------------- */
-/* 2. Review Page Header Stars   */
+/* 2. Review Page Header Stars    */
 /* ---------------------------------- */
 
 .header-star-rating {
-    position: relative;
-    font-size: 1.5rem; /* Make header stars bigger */
-    margin-top: 15px;
-    margin-bottom: 15px;
-    display: block;
-    width: max-content; /* Size container to stars */
-    margin-left: auto; /* Center the container block */
-    margin-right: auto; /* Center the container block */
-}
-
-.header-stars-empty,
-.header-stars-full {
-    display: flex;
-    gap: 3px;
+    position: relative;
+    font-size: 1.5rem; /* Make header stars bigger */
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
+    width: max-content; /* Size container to stars */
+    margin-left: auto; /* Center the container block */
+    margin-right: auto; /* Center the container block */
 }
 
 .header-stars-empty {
-    color: #bdbdbd;
+    color: #bdbdbd;
+    /* No display:flex needed */
 }
 
 .header-stars-full {
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    color: var(--color-secondary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--color-secondary);
 }
+
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
