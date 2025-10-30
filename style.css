@@ -662,61 +662,71 @@ section {
 
 /* ---------------------------------- */
 /* 1. Card Star Rating            */
+/* (Uses the logic from the old, working version) */
 /* ---------------------------------- */
 
 .card-star-rating {
-    position: relative; 
-    display: block;
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
+    position: relative; 
+    display: inline-block; /* Use inline-block like the old version */
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
+    align-self: flex-start; /* This helps in a flex container */
+}
+
+.card-stars-empty,
+.card-stars-full {
+    display: flex; /* This was also in the old working version */
+    gap: 3px; 
 }
 
 .card-stars-empty {
-    color: #bdbdbd;
-    /* We don't need flex, the icons will line up */
+    color: #bdbdbd; 
 }
 
 .card-stars-full {
-    /* This is the magic: position it ON TOP of the empty stars */
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap; 
-    overflow: hidden; /* This clips the stars */
-    color: var(--color-secondary); 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; 
+    color: var(--color-secondary); 
 }
 
 /* ---------------------------------- */
 /* 2. Review Page Header Stars    */
+/* (Uses the logic that correctly centers) */
 /* ---------------------------------- */
 
 .header-star-rating {
-    position: relative; /* This is essential for the clipping */
-    font-size: 1.5rem;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    
-    /* This group of styles centers the star block */
-    display: block;
-    width: max-content; 
-    margin-left: auto; 
-    margin-right: auto; 
+    position: relative; /* This is essential for clipping */
+    font-size: 1.5rem;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block; /* Block is fine here */
+    width: max-content; 
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+.header-stars-empty,
+.header-stars-full {
+    display: flex; /* Flex is also fine here */
+    gap: 3px;
 }
 
 .header-stars-empty {
-    color: #bdbdbd;
-    /* No flex needed */
+    color: #bdbdbd;
 }
 
 .header-stars-full {
-    /* Position it ON TOP of the empty stars */
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    color: var(--color-secondary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--color-secondary);
 }
+
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
