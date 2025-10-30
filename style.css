@@ -662,32 +662,34 @@ section {
 }
 
 /* ---------------------------------- */
-/* 1. Card Star Rating            */
+/* 1. Card Star Rating (FIXED)      */
 /* ---------------------------------- */
+
 .card-star-rating {
-    display: block;
-    position: relative;
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
+    position: relative; /* This is essential for clipping */
+    display: block; 
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
 }
 
 .card-stars-empty,
 .card-stars-full {
-    display: flex;
-    gap: 3px; 
+    /* We removed 'display: flex' */
+    /* We use letter-spacing to space out the icons */
+    letter-spacing: 3px; 
 }
 
 .card-stars-empty {
-    color: #bdbdbd; 
+    color: #bdbdbd; 
 }
 
 .card-stars-full {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap; 
-    overflow: hidden; 
-    color: var(--color-secondary); 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; /* This is the clipping */
+    color: var(--color-secondary); 
 }
 
 /* ---------------------------------- */
