@@ -662,69 +662,66 @@ section {
 }
 
 /* ---------------------------------- */
-/* 1. Card Star Rating (Using the logic that worked) */
+/* 1. Card Star Rating            */
 /* ---------------------------------- */
-
 .card-star-rating {
-    display: block; /* Make it block level inside cards */
-    position: relative; /* Essential for containing the absolute .stars-full */
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
+    display: block;
+    position: relative;
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
 }
 
 .card-stars-empty,
 .card-stars-full {
-    display: flex; /* Use flex as it worked before */
-    gap: 3px; 
+    display: flex;
+    gap: 3px; 
 }
 
 .card-stars-empty {
-    color: #bdbdbd; 
+    color: #bdbdbd; 
 }
 
 .card-stars-full {
-    position: absolute; 
-    top: 0;
-    left: 0;
-    white-space: nowrap; 
-    overflow: hidden; 
-    color: var(--color-secondary); 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; 
+    color: var(--color-secondary); 
 }
 
 /* ---------------------------------- */
-/* 2. Review Page Header Stars (Using the logic that centers) */
+/* 2. Review Page Header Stars    */
 /* ---------------------------------- */
-
 .header-star-rating {
-    position: relative; /* This is essential for clipping */
-    font-size: 1.5rem;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    display: block; /* Block is fine here */
-    width: max-content; 
-    margin-left: auto; 
-    margin-right: auto; 
+    position: relative;
+    font-size: 1.5rem;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
+    width: max-content; 
+    margin-left: auto; 
+    margin-right: auto; 
 }
 
 .header-stars-empty,
 .header-stars-full {
-    display: flex; /* Flex is also fine here */
-    gap: 3px;
+    display: flex;
+    gap: 3px;
 }
 
 .header-stars-empty {
-    color: #bdbdbd;
+    color: #bdbdbd;
 }
 
 .header-stars-full {
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    color: var(--color-secondary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--color-secondary);
 }
-
 
 /* ---------------------------------- */
 /* Mobile Responsive Design      */
