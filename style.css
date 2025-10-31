@@ -1,5 +1,9 @@
 /*
  * BEHIND THE MAGIC CURTAIN - STYLESHEET
+ *
+ * This file controls all the colours, fonts, and layout.
+ * You don't need to edit this unless you want to change the brand.
+ *
  */
 
 /* ---------------------------------- */
@@ -25,8 +29,10 @@
     --color-tag-3: #00bf0d; /* sensory */
 
     /* Fonts */
-    --font-heading: 'Raleway', sans-serif;
-    --font-subheading: 'Playfair Display', serif;
+    /* --- UPDATED as per your request --- */
+    --font-heading: 'Raleway', sans-serif;         /* Was Playfair Display */
+    --font-subheading: 'Playfair Display', serif;  /* Was Raleway */
+    /* --- End Update --- */
     --font-body: 'Poppins', sans-serif;
 
     /* Layout */
@@ -640,3 +646,179 @@ section {
 
 .swiper-slide img {
     display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This makes all images fit nicely */
+}
+
+/* This styles the arrows and dots to match your brand! */
+.swiper-button-next,
+.swiper-button-prev {
+    color: var(--color-primary) !important; /* Your brand red */
+}
+
+.swiper-pagination-bullet-active {
+    background: var(--color-primary) !important; /* Your brand red */
+}
+
+/* ---------------------------------- */
+/* 1. Card Star Rating (Using the logic that worked) */
+/* ---------------------------------- */
+
+.card-star-rating {
+    display: block; /* Make it block level inside cards */
+    position: relative; /* Essential for containing the absolute .stars-full */
+    font-size: 1.2rem; 
+    margin-bottom: 15px;
+}
+
+.card-stars-empty,
+.card-stars-full {
+    display: flex; /* Use flex as it worked before */
+    gap: 3px; 
+}
+
+.card-stars-empty {
+    color: #bdbdbd; 
+}
+
+.card-stars-full {
+    position: absolute; 
+    top: 0;
+    left: 0;
+    white-space: nowrap; 
+    overflow: hidden; 
+    color: var(--color-secondary); 
+}
+
+/* ---------------------------------- */
+/* 2. Review Page Header Stars (Using the logic that centers) */
+/* ---------------------------------- */
+
+.header-star-rating {
+    position: relative; /* This is essential for clipping */
+    font-size: 1.5rem;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block; /* Block is fine here */
+    width: max-content; 
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+.header-stars-empty,
+.header-stars-full {
+    display: flex; /* Flex is also fine here */
+    gap: 3px;
+}
+
+.header-stars-empty {
+    color: #bdbdbd;
+}
+
+.header-stars-full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: var(--color-secondary);
+}
+
+
+/* ---------------------------------- */
+/* Mobile Responsive Design      */
+/* ---------------------------------- */
+
+@media (max-width: 768px) {
+    h1 { font-size: 2.5rem; }
+    .hero h1 { font-size: 3rem; }
+    h2 { font-size: 2rem; }
+
+    /* Show mobile menu toggle */
+    .nav-toggle {
+        display: block;
+    }
+
+    /* Mobile Nav styles */
+    .main-nav {
+        position: relative;
+    }
+
+    .main-nav ul {
+        display: none; /* Hide nav by default */
+        position: absolute;
+        top: calc(var(--header-height) - 30px); /* Position below header */
+        right: -20px;
+        width: 250px;
+        flex-direction: column;
+        background: var(--color-primary);
+        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        padding: 10px;
+        gap: 0;
+    }
+
+    /* This class is toggled by JavaScript */
+    .main-nav.nav-open ul {
+        display: flex;
+    }
+
+    .main-nav li {
+        width: 100%;
+    }
+
+    .main-nav a {
+        display: block;
+        padding: 15px;
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .main-nav a:hover,
+    .main-nav a.active {
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+        background: rgba(0,0,0,0.1);
+    }
+
+    /* Mobile "X" icon */
+    .nav-open .hamburger {
+        background: transparent;
+    }
+    .nav-open .hamburger::before {
+        transform: rotate(45deg) translate(5px, 6px);
+    }
+    .nav-open .hamburger::after {
+        transform: rotate(-45deg) translate(5px, -6px);
+    }
+
+
+    /* Stack review cards */
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+    
+   /* --- NEW: Welcome Section Mobile Styles --- */
+    .btmc-feature-block,
+    .btmc-feature-block.reversed {
+        /* Stacks the columns on top of each other */
+        grid-template-columns: 1fr; 
+    }
+
+    .btmc-feature-block.reversed .btmc-feature-image,
+    .btmc-feature-block.reversed .btmc-feature-text {
+        order: 0; /* Resets the order for mobile */
+    }
+
+    .btmc-feature-image {
+        margin-bottom: 20px;
+    }
+
+    .btmc-welcome-intro h2 {
+        font-size: 32px; 
+    }
+
+    .btmc-feature-text h3 {
+        font-size: 1.75rem;
+    }
+    /* --- END: Welcome Section Mobile Styles --- */
+}
