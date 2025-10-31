@@ -496,28 +496,101 @@ section {
 .tag-mature { background-color: #d700ff; color: white; }
 
 /* ---------------------------------- */
-/* Listing Item (What's On)      */
+/* Listing Card (What's On)       */
 /* ---------------------------------- */
 
-.listing-item {
+.listing-card {
+    display: grid;
+    /* This creates the two columns: 250px for image, rest for text */
+    grid-template-columns: 250px 1fr; 
+    gap: 30px;
+    background: var(--color-bg-white);
     border: 1px solid var(--color-border);
     border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 25px;
-    background: var(--color-bg-light);
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-bottom: 30px; /* Space between cards */
 }
-.listing-item h3 {
+
+.listing-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills the space */
+}
+
+.listing-content {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.listing-content h3 {
     font-family: var(--font-heading);
     color: var(--color-primary);
     margin-top: 0;
-}
-.listing-item p {
-    margin-bottom: 0.5em;
+    margin-bottom: 10px;
 }
 
-/* This adds a bit of space above the new button */
-.listing-item .btn {
-    margin-top: 15px; 
+.listing-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px; 
+}
+
+/* We need to define the 'Touring' tag style */
+.tag-touring {
+    background-color: #00bf0d; /* Picked one of your tertiary colors */
+    color: var(--color-text);
+}
+
+.listing-info {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+}
+
+.listing-info li {
+    font-family: var(--font-subheading);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.listing-info li i {
+    color: var(--color-primary); /* Make icons red */
+    font-size: 1.1rem;
+    width: 20px; /* Aligns the text */
+    text-align: center;
+}
+
+.listing-content p {
+    font-size: 0.95rem;
+    flex-grow: 1; /* Pushes links to the bottom */
+    margin-bottom: 15px;
+}
+
+.listing-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: auto; /* Pushes this to the bottom */
+}
+
+/* --- Add this to your Mobile Responsive section --- */
+@media (max-width: 768px) {
+    .listing-card {
+        /* Stacks the card on mobile */
+        grid-template-columns: 1fr;
+    }
+
+    .listing-image img {
+        width: 100%;
+        height: 250px; /* Give mobile image a fixed height */
+        object-fit: cover;
+    }
 }
 
 
