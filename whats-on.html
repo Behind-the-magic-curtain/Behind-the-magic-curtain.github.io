@@ -9,29 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
 </head>
 <body>
 
     <header class="site-header">
-        <div class="container">
-            <div class="logo">
-                <a href="index.html">Behind the Magic Curtain</a>
-            </div>
-            <nav class="main-nav">
-                <button class="nav-toggle" aria-label="toggle navigation">
-                    <span class="hamburger"></span>
-                </button>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="whats-on.html" class="active">What's On</a></li>
-                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
-                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
-                    <li><a href="reviews.html">Reviews</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+        </header>
 
     <main>
         <section class="page-header">
@@ -45,53 +27,84 @@
             <div class="container content-article">
                 
                 <h2>Upcoming Shows We're Excited About</h2>
-                <p>Here's a look at what's hitting the stage soon. We'll be reviewing as many as we can!</p>
 
-               <div class="listing-item">
-    <h3>Disney's Frozen</h3>
-    <p><strong>Where:</strong> Theatre Royal Drury Lane</p>
-    <p><strong>When:</strong> Booking until October 2026</p>
-    <p><strong>Our Thoughts:</strong> A true spectacle! We've seen this one and our review is coming soon. It's magical, but be prepared for some powerful singing and icy blasts!</p>
-    
-    <a href="https://www.officiallondontheatre.com/tickets/" class="btn btn-secondary">Buy Tickets</a>
-    
-</div>
-                <div class="listing-item">
-                    <h3>Bluey's Big Play</h3>
-                    <p><strong>Where:</strong> UK Tour</p>
-                    <p><strong>When:</strong> Check local listings</p>
-                    <p><strong>Our Thoughts:</strong> For real life?! Bluey is coming to the stage. This is top of our list for younger children. We're booking tickets as we speak.</p>
+                <div class="listing-card">
+                    <div class="listing-image">
+                        <img src="images/frozen-show.jpg" alt="Elsa and Anna on stage in Frozen The Musical">
+                    </div>
+                    <div class="listing-content">
+                        <h3>Disney's Frozen</h3>
+                        
+                        <div class="listing-tags">
+                            <span class="tag tag-age">Ages 6+</span>
+                            <span class="tag tag-sensory">Relaxed Performance</span>
+                        </div>
+                        
+                        <ul class="listing-info">
+                            <li>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Theatre Royal Drury Lane</span>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <span>Booking until October 2026</span>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-clock"></i>
+                                <span>2hrs 15mins (incl. interval)</span>
+                            </li>
+                        </ul>
+                        
+                        <p>A true spectacle! We've seen this one and our review is coming soon. It's magical, but be prepared for some powerful singing and icy blasts!</p>
+                        
+                        <div class="listing-links">
+                            <a href="#" class="btn btn-secondary" target="_blank">Book Tickets</a>
+                            <a href="#" class="btn btn-secondary" target="_blank">Production Website</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="listing-item">
-                    <h3>Horrible Histories: Terrible Tudors</h3>
-                    <p><strong>Where:</strong> Garrick Theatre</p>
-                    <p><strong>When:</strong> Summer Run</p>
-                    <p><strong>Our Thoughts:</strong> A fantastic way to get kids into history. Always hilarious, a bit rude, and secretly educational. Great for ages 7-12.</p>
+                <div class="listing-card">
+                    <div class="listing-image">
+                        <img src="images/bluey-show.jpg" alt="Bluey puppet on stage">
+                    </div>
+                    <div class="listing-content">
+                        <h3>Bluey's Big Play</h3>
+                        
+                        <div class="listing-tags">
+                            <span class="tag tag-touring">UK Tour</span>
+                            <span class="tag tag-age">Ages 3+</span>
+                        </div>
+                        
+                        <ul class="listing-info">
+                            <li>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>UK Tour (Check local theatre)</span>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <span>Currently Touring</span>
+                            </li>
+                            <li>
+                                <i class="fa-solid fa-clock"></i>
+                                <span>50 mins (no interval)</span>
+                            </li>
+                        </ul>
+                        
+                        <p>For real life?! Bluey is coming to the stage. This is top of our list for younger children. We're booking tickets as we speak.</p>
+                        
+                        <div class="listing-links">
+                            <a href="#" class="btn btn-secondary" target="_blank">Book Tickets</a>
+                            <a href="#" class="btn btn-secondary" target="_blank">Production Website</a>
+                        </div>
+                    </div>
                 </div>
                 </div>
         </section>
 
     </main>
 
-<footer class="site-footer">
-    <div class="container">
-
-        <p class="footer-social-tagline">Follow us on social media</p>
-
-        <div class="footer-social-links">
-            <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" aria-label="Visit our Facebook page">
-                <i class="fa-brands fa-facebook"></i>
-            </a>
-            <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" aria-label="Visit our Instagram page">
-                <i class="fa-brands fa-instagram"></i>
-            </a>
-        </div>
-
-        <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
-
-    </div>
-</footer>
-
+    <footer class="site-footer">
+        </footer>
 
     <script src="script.js"></script>
 </body>
