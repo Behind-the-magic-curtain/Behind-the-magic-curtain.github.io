@@ -860,4 +860,18 @@ section {
         font-size: 1.75rem;
     }
     /* --- END: Welcome Section Mobile Styles --- */
-}
+
+    /* --- What's On Card Mobile --- */
+    .listing-card {
+        /* Stacks the card on mobile */
+        grid-template-columns: 1fr;
+    }
+
+    .listing-image img {
+        width: 100%;
+        height: 250px; /* Give mobile image a fixed height */
+        object-fit: cover;
+    }
+    /* --- END: What's On Card Mobile --- */
+
+} /* <-- This is the FINAL closing brace */
