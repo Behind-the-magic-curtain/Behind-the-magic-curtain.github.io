@@ -3,457 +3,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Post Generator</title>
+    <title>Review Studio & Generator | Behind the Magic Curtain</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
     
+    <!-- Styles & Icons -->
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         body {
-            background: #f4f4f4;
+            background-color: #f4f6f8;
+            min-height: 100vh;
         }
-        .tool-container {
-            max-width: 900px;
-            margin: 40px auto;
+
+        /* --- PIN Gate Screen --- */
+        #pin-gate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .pin-card {
+            background: #ffffff;
             padding: 40px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .tool-container h1 {
-            color: #bd2419;
-            font-family: 'Playfair Display', serif;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .pin-card h2 {
             margin-top: 0;
+            color: var(--color-primary);
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
         }
+
+        .pin-input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 8px;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .pin-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        /* --- Main Tool Container --- */
+        #admin-panel {
+            display: none; /* Displayed upon correct PIN */
+            padding: 40px 0 80px 0;
+        }
+
+        .tool-container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+        }
+
+        .tool-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tool-header-bar h1 {
+            color: var(--color-primary);
+            font-family: var(--font-heading);
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 22px;
         }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
         .form-group label {
-            font-family: 'Raleway', sans-serif;
+            font-family: var(--font-heading);
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             display: block;
             margin-bottom: 8px;
+            color: var(--color-text);
         }
+
         .form-group input[type="text"],
         .form-group input[type="number"],
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 12px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            border: 1px solid #bdbdbd;
-            border-radius: 5px;
+            padding: 12px 16px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            transition: border-color 0.25s ease;
         }
-        .form-group select {
-            background-color: #fff;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23333%22%3E%3Cpath%20d%3D%22M5.293%207.293a1%201%200%20011.414%200L10%2010.586l3.293-3.293a1%201%200%20111.414%201.414l-4%204a1%201%200%2001-1.414%200l-4-4a1%201%200%20010-1.414z%22%20%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 1.2em;
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
         }
+
         .form-group textarea {
-            min-height: 200px;
+            min-height: 140px;
             line-height: 1.6;
+            resize: vertical;
         }
-        .form-group .checkbox-group {
+
+        .checkbox-container {
             display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .form-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-        }
-        .form-group small {
-            display: block;
-            font-family: 'Poppins', sans-serif;
-            color: #555;
+            flex-wrap: wrap;
+            gap: 15px;
             margin-top: 5px;
         }
-        
-        .output-container {
-            margin-top: 40px;
-            border: 2px solid #f4f4f4;
-            padding: 20px;
-            border-radius: 8px;
+
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--color-bg-light);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid var(--color-border);
         }
+
+        .form-group small {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+            margin-top: 6px;
+        }
+
+        /* --- Output Containers --- */
+        .output-container {
+            margin-top: 35px;
+            border: 1.5px solid var(--color-border);
+            padding: 25px;
+            border-radius: var(--radius-md);
+            background: #fafafa;
+        }
+
         .output-container h2 {
             margin-top: 0;
-            font-family: 'Playfair Display', serif;
-            color: #bd2419;
+            font-family: var(--font-heading);
+            color: var(--color-primary);
+            font-size: 1.4rem;
         }
+
         .output-container textarea {
             width: 100%;
-            min-height: 300px;
+            min-height: 250px;
             font-family: monospace;
-            background: #2d2d2d;
-            color: #90ee90;
-            padding: 20px;
-        }
-        .btn-copy {
-            display: inline-block;
-            width: auto;
-            padding: 10px 20px;
-            margin-top: 10px;
-            font-family: 'Raleway', sans-serif;
-            font-weight: 700;
-            color: #fff;
-            background: #00b2bf;
+            font-size: 0.85rem;
+            background: #1e1e1e;
+            color: #4ec9b0;
+            padding: 18px;
+            border-radius: var(--radius-sm);
             border: none;
-            border-radius: 5px;
+            resize: vertical;
+        }
+
+        .btn-copy {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            margin-top: 12px;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ffffff;
+            background: var(--color-accent);
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-copy:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .tool-header-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="tool-container">
-        <h1>Review Post Generator</h1>
-        <p>Fill in the fields below. The code boxes at the bottom will update in real-time. <strong>There is no "Generate" button.</strong></p>
-        
-        <div id="review-form">
-            
-            <div class="form-group">
-                <label for="review-title">Review Title</label>
-                <input type="text" id="review-title" placeholder="e.g., Madagascar The Musical">
-            </div>
-            
-            <div class="form-group">
-                <label for="page-filename">Page Filename</label>
-                <input type="text" id="page-filename" placeholder="e.g., madagascar-review.html">
-                <small>This is the name of the new <code>.html</code> file you will create.</small>
-            </div>
-            
-            <div class="form-group">
-                <label for="page-subtitle">Page Subtitle</label>
-                <input type="text" id="page-subtitle" placeholder="A short, catchy tagline for the review page.">
-            </div>
-            
-            <div class="form-group">
-                <label for="card-summary">Card Summary</label>
-                <textarea id="card-summary" placeholder="The short summary for the review card on the Homepage/Reviews page." style="min-height: 80px;"></textarea>
-                <small>This is the short teaser text. Keep it to 1-2 sentences.</small>
-            </div>
-
-            <div class="form-group">
-                <label for="star-rating">Star Rating (0 to 5)</label>
-                <input type="number" id="star-rating" min="0" max="5" step="0.1" placeholder="e.g., 4.5">
-            </div>
-
-            <hr>
-
-            <div class="form-group">
-                <label for="main-image">Main Image Filename</label>
-                <input type="text" id="main-image" placeholder="e.g., madagascar-review.jpg">
-                <small><strong>Important:</strong> You must upload this image to your <code>/images/</code> folder on GitHub separately.</small>
-            </div>
-            
-            <div class="form-group">
-                <label for="alt-text">Image Alt Text</label>
-                <input type="text" id="alt-text" placeholder="Describe the image (e.g., The cast of Madagascar on stage)">
-            </div>
-
-            <hr>
-
-            <div class="form-group">
-                <label>Review Tags</label>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="tag-adhd">
-                    <label for="tag-adhd">ADHD-Friendly Guide</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="tag-sensory">
-                    <label for="tag-sensory">Sensory Notes</label>
-                </div>
-                <div class="checkbox-group">
-                    <input type="checkbox" id="tag-mature">
-                    <label for="tag-mature">Mature themes</label>
-                </div>
-                
-                <div style="height: 15px;"></div>
-                
-                <label for="tag-age">Ages Tag</label>
-                <select id="tag-age">
-                    <option value="">-- Select Age Rating --</option>
-                    <option value="Ages 0+">Ages 0+</option>
-                    <option value="Ages 1+">Ages 1+</option>
-                    <option value="Ages 2+">Ages 2+</option>
-                    <option value="Ages 3+">Ages 3+</option>
-                    <option value="Ages 4+">Ages 4+</option>
-                    <option value="Ages 5+">Ages 5+</option>
-                    <option value="Ages 6+">Ages 6+</option>
-                    <option value="Ages 7+">Ages 7+</option>
-                    <option value="Ages 8+">Ages 8+</option>
-                    <option value="Ages 9+">Ages 9+</option>
-                    <option value="Ages 10+">Ages 10+</option>
-                    <option value="Ages 11+">Ages 11+</option>
-                    <option value="Ages 12+">Ages 12+</option>
-                    <option value="Ages 13+">Ages 13+</option>
-                    <option value="Ages 14+">Ages 14+</option>
-                    <option value="Ages 15+">Ages 15+</option>
-                    <option value="Ages 16+">Ages 16+</option>
-                    <option value="Grown ups">Grown ups</option>
-                </select>
-            </div>
-
-            <hr>
-
-            <div class="form-group">
-                <label for="review-body">Main Review Body</label>
-                <textarea id="review-body" placeholder="Write your full review here. Just press 'Enter' for new paragraphs."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="parent-tips">Parent's Guide / Key Info</label>
-                <textarea id="parent-tips" placeholder="Write your tips for parents here. Press 'Enter' to create a new bullet point."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="gallery-images">Image Gallery (Optional)</label>
-                <textarea id="gallery-images" placeholder="List your extra gallery image filenames, ONE per line. e.g.,
-madagascar-2.jpg
-madagascar-3.jpg
-madagascar-4.jpg"></textarea>
-                <small>These images must also be uploaded to your <code>/images/</code> folder.</small>
-            </div>
-
-        </div> 
-        
-        <div class="output-container" id="output-container-card">
-            <h2>1. Review Card HTML</h2>
-            <p>Paste this card code into <code>index.html</code> (Featured Reviews) and <code>reviews.html</code> (main list).</p>
-            <textarea id="output-html-card" readonly></textarea>
-            <button class="btn-copy" id="copy-btn-card">Copy Card Code</button>
+    <!-- 1. PIN Security Gate -->
+    <div id="pin-gate">
+        <div class="pin-card">
+            <i class="fa-solid fa-lock" style="font-size: 2.5rem; color: var(--color-primary); margin-bottom: 15px;"></i>
+            <h2>Katy's Studio Access</h2>
+            <p style="font-size: 0.9rem; color: var(--color-text-light);">Enter your 4-digit security PIN to open the review creator.</p>
+            <input type="password" id="pin-entry" class="pin-input" maxlength="4" placeholder="••••" autofocus>
+            <button onclick="verifyPin()" class="btn btn-primary" style="width: 100%;">Unlock Studio</button>
+            <p id="pin-error" style="color: var(--color-primary); font-size: 0.85rem; margin-top: 15px; display: none; font-weight: 600;">Incorrect PIN. Please try again.</p>
         </div>
+    </div>
 
-        <div class="output-container" id="output-container-page">
-            <h2>2. Full Review Page HTML</h2>
-            <p>Create a new file (e.g., <code>madagascar-review.html</code>) and paste this code in.</p>
-            <textarea id="output-html-page" readonly></textarea>
-            <button class="btn-copy" id="copy-btn-page">Copy Page Code</button>
+    <!-- 2. Main Admin Tool Panel -->
+    <div id="admin-panel">
+        <div class="tool-container">
+            
+            <div class="tool-header-bar">
+                <div>
+                    <h1>Review Studio Generator</h1>
+                    <p style="margin: 0; font-size: 0.95rem; color: var(--color-text-light);">Fill in the details below. Code updates live in real-time ready to copy.</p>
+                </div>
+                <button onclick="lockStudio()" class="btn btn-secondary" style="padding: 8px 18px; font-size: 0.85rem;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Lock Studio
+                </button>
+            </div>
+            
+            <div id="review-form">
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label for="review-title">Show Title *</label>
+                        <input type="text" id="review-title" placeholder="e.g. Wicked" value="Wicked">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="page-filename">Page Filename *</label>
+                        <input type="text" id="page-filename" placeholder="e.g. wicked-review.html" value="wicked-review.html">
+                        <small>The name of the new <code>.html</code> file you will create on GitHub.</small>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="page-subtitle">Page Catchy Tagline / Subtitle *</label>
+                        <input type="text" id="page-subtitle" placeholder="e.g. A spellbinding West End masterpiece that defies gravity!" value="A spellbinding West End masterpiece that defies gravity!">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="star-rating">Star Rating (1 to 5) *</label>
+                        <input type="number" id="star-rating" min="1" max="5" step="0.5" value="5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tag-age">Age Rating Tag *</label>
+                        <select id="tag-age">
+                            <option value="Ages 0+">Ages 0+</option>
+                            <option value="Ages 3+">Ages 3+</option>
+                            <option value="Ages 4+">Ages 4+</option>
+                            <option value="Ages 6+">Ages 6+</option>
+                            <option value="Ages 7+" selected>Ages 7+</option>
+                            <option value="Ages 12+">Ages 12+</option>
+                            <option value="Grown ups">Grown ups</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Special Badges & Accessibility Notes</label>
+                        <div class="checkbox-container">
+                            <label class="checkbox-label"><input type="checkbox" id="tag-adhd" checked> ADHD-Friendly Guide</label>
+                            <label class="checkbox-label"><input type="checkbox" id="tag-sensory"> Sensory Notes</label>
+                            <label class="checkbox-label"><input type="checkbox" id="tag-mature"> Mature themes</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="main-image">Main Image Filename *</label>
+                        <input type="text" id="main-image" placeholder="e.g. wicked-review.jpg" value="wicked-review.jpg">
+                        <small>Must be uploaded to your <code>/images/</code> folder on GitHub.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="alt-text">Image Alt Text (Accessibility Description) *</label>
+                        <input type="text" id="alt-text" placeholder="e.g. Elphaba and Glinda performing on stage" value="Elphaba and Glinda performing on stage">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="card-summary">Card Summary (1–2 sentences for Homepage/Reviews list) *</label>
+                        <textarea id="card-summary" style="min-height: 80px;" placeholder="Short teaser text...">A spellbinding look into the Land of Oz. Full of unforgettable songs, dramatic staging, and heart for family audiences.</textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="review-body">Main Review Body *</label>
+                        <textarea id="review-body" placeholder="Write full review here. Press Enter for each new paragraph...">From the opening notes, the stage comes alive with emerald splendour and soaring vocals.
+
+The dynamic between the leads is electric, and the staging provides pure visual theatre magic that captivates children and adults alike.</textarea>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label for="parent-tips">Parent's Guide / Key Info (Bullet points, one per line)</label>
+                        <textarea id="parent-tips" placeholder="Running Time: 2hrs 45mins&#10;Loud bangs and smoke effects in Act 1&#10;Booster seats available at foyer">Running Time: 2 hours 45 minutes (including a 20-minute interval).
+Sensory Notes: Contains strobe lighting effects, loud thunderclaps, and dramatic lighting blackouts.
+Audience: Ideal for ages 7 and upwards.</textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="gallery-images">Production Image Gallery (Optional)</label>
+                        <textarea id="gallery-images" style="min-height: 90px;" placeholder="wicked-scene-1.jpg&#10;wicked-scene-2.jpg">wicked-scene-1.jpg
+wicked-scene-2.jpg</textarea>
+                        <small>List extra image filenames uploaded to <code>/images/</code>, ONE per line.</small>
+                    </div>
+
+                </div>
+            </div> 
+            
+            <!-- Output 1: Card Code -->
+            <div class="output-container" id="output-container-card">
+                <h2>1. Review Card HTML</h2>
+                <p>Paste this inside <code>&lt;div class="card-grid"&gt;</code> in <code>index.html</code> and <code>reviews.html</code>.</p>
+                <textarea id="output-html-card" readonly></textarea>
+                <button class="btn-copy" id="copy-btn-card"><i class="fa-regular fa-copy"></i> Copy Card Code</button>
+            </div>
+
+            <!-- Output 2: Page Code -->
+            <div class="output-container" id="output-container-page">
+                <h2>2. Full Review Page HTML</h2>
+                <p>Create a new file in GitHub (e.g. <code>wicked-review.html</code>) and paste this entire block.</p>
+                <textarea id="output-html-page" readonly></textarea>
+                <button class="btn-copy" id="copy-btn-page"><i class="fa-regular fa-copy"></i> Copy Page Code</button>
+            </div>
+            
         </div>
     </div>
     
     <script>
-        // --- This is the "safety net" ---
-        // It waits for the whole page to load before running any code.
+        // --- 1. PIN Security Authentication ---
+        const MASTER_PIN = "1234";
+
+        function verifyPin() {
+            const entered = document.getElementById('pin-entry').value;
+            const error = document.getElementById('pin-error');
+            
+            if (entered === MASTER_PIN) {
+                sessionStorage.setItem('btmc_admin_auth', 'true');
+                document.getElementById('pin-gate').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                error.style.display = 'none';
+                updateLiveOutput();
+            } else {
+                error.style.display = 'block';
+                document.getElementById('pin-entry').value = '';
+            }
+        }
+
+        function lockStudio() {
+            sessionStorage.removeItem('btmc_admin_auth');
+            location.reload();
+        }
+
+        if (sessionStorage.getItem('btmc_admin_auth') === 'true') {
+            document.getElementById('pin-gate').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+        }
+
+        document.getElementById('pin-entry').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') verifyPin();
+        });
+
+        // --- 2. Live Generator Logic ---
         document.addEventListener('DOMContentLoaded', function() {
             
-            // --- Helper Functions (No changes) ---
-            function formatTextToHtml(text) {
-                if (!text) return '';
-                return text.split('\n')
-                           .filter(line => line.trim() !== '')
-                           .map(line => `    <p>${line.trim()}</p>`)
-                           .join('\n');
-            }
-
-            function formatListToHtml(text) {
-                if (!text) return '';
-                const items = text.split('\n')
-                                  .filter(line => line.trim() !== '')
-                                  .map(line => `        <li>${line.trim()}</li>`)
-                                  .join('\n');
-                return `<ul>\n${items}\n    </ul>`;
-            }
-
-            function formatGallery(text) {
-                if (!text) return '';
-                const images = text.split('\n')
-                                   .filter(line => line.trim() !== '')
-                                   .map(line => `
-                    <div class="swiper-slide">
-                        <img src="images/${line.trim()}" alt="Gallery image">
-                    </div>
-                    `)
-                                   .join('');
-                
-                return `
-            <div class="review-gallery">
-                <h2>Gallery</h2>
-                <div class="swiper">
-                    <div class="swiper-wrapper">
-                        ${images}
-                    </div>
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-pagination"></div>
-                </div>
-            </div>
-            `;
-            }
-
-            function buildStarsHTML(rating) {
-                if (!rating) return '';
-                const ratingPercent = (parseFloat(rating) / 5) * 100;
-                return `
-            <div class="star-rating">
-                <div class="stars-empty">
-                    <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                <div class="stars-full" style="width: ${ratingPercent}%;">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-            </div>
-            `;
-            }
-
-            function buildTagsHTML(data) {
-                let tagsHTML = '';
-                if (data.tagAge) {
-                    tagsHTML += `    <span class="tag tag-age">${data.tagAge}</span>\n`;
-                }
-                if (data.tagAdhd) {
-                    tagsHTML += `    <span class="tag tag-adhd">ADHD-Friendly Guide</span>\n`;
-                }
-                if (data.tagSensory) {
-                    tagsHTML += `    <span class="tag tag-sensory">Sensory Notes</span>\n`;
-                }
-                if (data.tagMature) {
-                    tagsHTML += `    <span class="tag tag-mature">Mature themes</span>\n`;
-                }
-                return tagsHTML;
-            }
-
-            function generateCardHTML(data) {
-                const tagsHTML = buildTagsHTML(data);
-                const starsHTML = buildStarsHTML(data.starRating);
-
-                return `
-    <div class="card">
-        <img src="images/${data.mainImage}" alt="${data.altText}">
-        <div class="card-content">
-    ${starsHTML}
-            <h3>${data.title}</h3>
-            <div class="card-tags">
-    ${tagsHTML.trim()}
-            </div>
-            <p>${data.cardSummary}</p>
-            <a href="${data.pageFilename}" class="btn btn-secondary">Read Full Review</a>
-        </div>
-    </div>
-    `;
-            }
-
-            function generatePageHTML(data) {
-                const tagsHTML = buildTagsHTML(data);
-                const starsHTML = buildStarsHTML(data.starRating);
-
-                let tipsHTML = '';
-                if (data.parentTips) {
-                    tipsHTML = `
-                    <article>
-                        <h3>Key Info for Parents</h3>
-                        ${formatListToHtml(data.parentTips)}
-                    </article>
-                    `;
-                }
-
-                const reviewBodyHTML = formatTextToHtml(data.reviewBody);
-                const galleryHTML = formatGallery(data.galleryImages);
-
-                return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Review: ${data.title} | Behind the Magic Curtain</title>
-        
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700&display=swap" rel="stylesheet">
-        
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-        <link rel="stylesheet" href="style.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    </head>
-    <body>
-
-        <header class="site-header">
-            <div class="container">
-                <div class="logo">
-                    <a href="index.html">Behind the Magic Curtain</a>
-                </div>
-                <nav class="main-nav">
-                    <button class="nav-toggle" aria-label="toggle navigation">
-                        <span class="hamburger"></span>
-                    </button>
-                    <ul>
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="whats-on.html">What's On</a></li>
-                        <li><a href="theatre-guide.html">Theatre Guide</a></li>
-                        <li><a href="tips-for-parents.html">Tips for Parents</a></li>
-                        <li><a href="reviews.html" class="active">Reviews</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
-
-        <main>
-            
-            <section class="review-header page-header">
-                <div class="container">
-                    <h1>${data.title}</h1>
-                    <p class="review-subtitle">${data.subtitle}</p>
-    ${starsHTML}
-                    <div class="card-tags">
-    ${tagsHTML}
-                    </div>
-                </div>
-            </section>
-
-            <section class="page-content">
-                <div class="container content-article">
-                    
-                    <img src="images/${data.mainImage}" alt="${data.altText}" class="review-main-image">
-
-    ${galleryHTML}
-
-                    <h2>Our Family Verdict</h2>
-    ${reviewBodyHTML}
-                    
-    ${tipsHTML}
-
-                </div>
-            </section>
-
-        </main>
-
-        <footer class="site-footer">
-            <div class="container">
-                <p class="footer-social-tagline">Follow us on social media</p>
-                <div class="footer-social-links">
-                    <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" aria-label="Visit our Facebook page">
-                        <i class="fa-brands fa-facebook"></i>
-                    </a>
-                    <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" aria-label="Visit our Instagram page">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
-                </div>
-                <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
-            </div>
-        </footer>
-
-        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-        <script src="script.js"></script>
-    </body>
-    </html>
-                `;
-            }
-            
-            // --- THIS IS THE "LIVE UPDATE" SCRIPT ---
-
-            // 1. Get references to all INPUTS
             const inputs = {
                 title: document.getElementById('review-title'),
                 pageFilename: document.getElementById('page-filename'),
@@ -471,15 +422,201 @@ madagascar-4.jpg"></textarea>
                 galleryImages: document.getElementById('gallery-images')
             };
 
-            // 2. Get references to all OUTPUTS
             const outputs = {
                 card: document.getElementById('output-html-card'),
                 page: document.getElementById('output-html-page')
             };
 
-            // 3. Main function to get data and update textareas
-            function updateLiveOutput() {
-                // Get all values from the form
+            function formatTextToHtml(text) {
+                if (!text) return '';
+                return text.split('\n')
+                    .filter(line => line.trim() !== '')
+                    .map(line => `                <p>${line.trim()}</p>`)
+                    .join('\n');
+            }
+
+            function formatListToHtml(text) {
+                if (!text) return '';
+                const items = text.split('\n')
+                    .filter(line => line.trim() !== '')
+                    .map(line => `                        <li>${line.trim()}</li>`)
+                    .join('\n');
+                return `                <article>\n                    <h3>Key Info for Parents</h3>\n                    <ul>\n${items}\n                    </ul>\n                </article>`;
+            }
+
+            function formatGallery(text) {
+                if (!text || text.trim() === '') return '';
+                const slides = text.split('\n')
+                    .filter(line => line.trim() !== '')
+                    .map(line => `                            <div class="swiper-slide">\n                                <img src="images/${line.trim()}" alt="Production gallery image" loading="lazy">\n                            </div>`)
+                    .join('\n');
+                
+                return `\n                <!-- Production Gallery -->\n                <div class="review-gallery">\n                    <h2>Production Gallery</h2>\n                    <div class="swiper">\n                        <div class="swiper-wrapper">\n${slides}\n                        </div>\n                        <div class="swiper-button-prev" aria-label="Previous slide"></div>\n                        <div class="swiper-button-next" aria-label="Next slide"></div>\n                        <div class="swiper-pagination"></div>\n                    </div>\n                </div>\n`;
+            }
+
+            function buildStarsMarkup(rating, isHeader) {
+                const num = parseFloat(rating) || 5;
+                const ratingPercent = Math.min(100, Math.max(0, (num / 5) * 100));
+                
+                return `                <div class="star-rating" role="img" aria-label="Rated ${num} out of 5 stars">
+                    <div class="stars-empty">
+                        <i class="fa-regular fa-star" aria-hidden="true"></i>
+                        <i class="fa-regular fa-star" aria-hidden="true"></i>
+                        <i class="fa-regular fa-star" aria-hidden="true"></i>
+                        <i class="fa-regular fa-star" aria-hidden="true"></i>
+                        <i class="fa-regular fa-star" aria-hidden="true"></i>
+                    </div>
+                    <div class="stars-full" style="width: ${ratingPercent}%;">
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                        <i class="fa-solid fa-star" aria-hidden="true"></i>
+                    </div>
+                </div>`;
+            }
+
+            function buildTagsHTML(data) {
+                let tags = [];
+                if (data.tagAge) tags.push(`    <span class="tag tag-age">${data.tagAge}</span>`);
+                if (data.tagAdhd) tags.push(`    <span class="tag tag-adhd">ADHD-Friendly Guide</span>`);
+                if (data.tagSensory) tags.push(`    <span class="tag tag-sensory">Sensory Notes</span>`);
+                if (data.tagMature) tags.push(`    <span class="tag tag-mature">Mature themes</span>`);
+                return tags.join('\n');
+            }
+
+            function generateCardHTML(data) {
+                const tagsHTML = buildTagsHTML(data);
+                const starsHTML = buildStarsMarkup(data.starRating, false);
+                const title = data.title || 'Show Title';
+                const filename = data.pageFilename || 'review-page.html';
+                const image = data.mainImage || 'placeholder.jpg';
+                const alt = data.altText || title;
+                const summary = data.cardSummary || '';
+
+                return `<!-- START: Review Card (${title}) -->
+<article class="card">
+    <img src="images/${image}" alt="${alt}" loading="lazy" decoding="async">
+    <div class="card-content">
+${starsHTML}
+        <h3>${title}</h3>
+        <div class="card-tags">
+${tagsHTML}
+        </div>
+        <p>${summary}</p>
+        <a href="${filename}" class="btn btn-secondary">Read Full Review</a>
+    </div>
+</article>
+<!-- END: Review Card -->`;
+            }
+
+            function generatePageHTML(data) {
+                const tagsHTML = buildTagsHTML(data);
+                const starsHTML = buildStarsMarkup(data.starRating, true);
+                const title = data.title || 'Show Title';
+                const subtitle = data.subtitle || '';
+                const image = data.mainImage || 'placeholder.jpg';
+                const alt = data.altText || title;
+                const summary = data.cardSummary || '';
+                const reviewBodyHTML = formatTextToHtml(data.reviewBody);
+                const tipsHTML = formatListToHtml(data.parentTips);
+                const galleryHTML = formatGallery(data.galleryImages);
+
+                return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review: ${title} | Behind the Magic Curtain</title>
+    <meta name="description" content="${summary.replace(/"/g, '&quot;')}">
+
+    <!-- OpenGraph / Social Meta Tags -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Review: ${title} | Behind the Magic Curtain">
+    <meta property="og:description" content="${summary.replace(/"/g, '&quot;')}">
+    <meta property="og:image" content="images/${image}">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets, Carousel & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Behind the Magic Curtain</a>
+            </div>
+            <nav class="main-nav" aria-label="Main Navigation">
+                <button class="nav-toggle" aria-label="Toggle navigation menu">
+                    <span class="hamburger"></span>
+                </button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="whats-on.html">What's On</a></li>
+                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                    <li><a href="reviews.html" class="active">Reviews</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Review Header -->
+        <section class="review-header page-header">
+            <div class="container">
+                <h1>${title}</h1>
+                <p class="review-subtitle">${subtitle}</p>
+${starsHTML}
+                <div class="card-tags">
+${tagsHTML}
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="page-content">
+            <div class="container content-article">
+                <img src="images/${image}" alt="${alt}" class="review-main-image" loading="lazy" decoding="async">
+${galleryHTML}
+                <h2>Our Family Verdict</h2>
+${reviewBodyHTML}
+
+${tipsHTML}
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="footer-social-tagline">Follow us on social media</p>
+            <div class="footer-social-links">
+                <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook page">
+                    <i class="fa-brands fa-facebook" aria-hidden="true"></i>
+                </a>
+                <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" rel="noopener noreferrer" aria-label="Visit our Instagram page">
+                    <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+                </a>
+            </div>
+            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Carousel & Site Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>`;
+            }
+
+            window.updateLiveOutput = function() {
                 const data = {
                     title: inputs.title.value,
                     pageFilename: inputs.pageFilename.value,
@@ -497,45 +634,39 @@ madagascar-4.jpg"></textarea>
                     galleryImages: inputs.galleryImages.value
                 };
 
-                // Generate the HTML
-                const cardHtml = generateCardHTML(data);
-                const pageHtml = generatePageHTML(data);
+                outputs.card.value = generateCardHTML(data).trim();
+                outputs.page.value = generatePageHTML(data).trim();
+            };
 
-                // Update the textareas
-                outputs.card.value = cardHtml.trim();
-                outputs.page.value = pageHtml.trim();
-            }
-
-            // 4. Attach an event listener to EVERY input
             Object.values(inputs).forEach(inputElement => {
-                inputElement.addEventListener('input', updateLiveOutput);
-                inputElement.addEventListener('change', updateLiveOutput);
+                if (inputElement) {
+                    inputElement.addEventListener('input', updateLiveOutput);
+                    inputElement.addEventListener('change', updateLiveOutput);
+                }
             });
 
-            // 5. Run the function once on load to fill the textareas
             updateLiveOutput();
-            
-            // --- Clipboard Copy Buttons (No changes) ---
+
+            // Copy to Clipboard Event Handlers
             document.getElementById('copy-btn-card').addEventListener('click', function() {
-                const outputTextarea = document.getElementById('output-html-card');
-                outputTextarea.select();
-                navigator.clipboard.writeText(outputTextarea.value);
-                
-                this.textContent = 'Copied!';
-                setTimeout(() => { this.textContent = 'Copy Card Code'; }, 2000);
+                const cardArea = outputs.card;
+                cardArea.select();
+                navigator.clipboard.writeText(cardArea.value).then(() => {
+                    this.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    setTimeout(() => { this.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Card Code'; }, 2000);
+                });
             });
 
             document.getElementById('copy-btn-page').addEventListener('click', function() {
-                const outputTextarea = document.getElementById('output-html-page');
-                outputTextarea.select();
-                navigator.clipboard.writeText(outputTextarea.value);
-                
-                this.textContent = 'Copied!';
-                setTimeout(() => { this.textContent = 'Copy Page Code'; }, 2000);
+                const pageArea = outputs.page;
+                pageArea.select();
+                navigator.clipboard.writeText(pageArea.value).then(() => {
+                    this.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                    setTimeout(() => { this.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Page Code'; }, 2000);
+                });
             });
-        
-        }); // --- End of the "safety net" listener ---
-        
+
+        });
     </script>
 </body>
 </html>
