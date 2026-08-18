@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-        body { background-color: #f0f3f6; min-height: 100vh; }
+        body { background-color: #f0f3f6; min-height: 100vh; margin: 0; }
         
         /* PIN Lock Screen */
         #pin-gate {
@@ -26,7 +26,7 @@
         .pin-box {
             background: #fff;
             padding: 40px;
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             text-align: center;
             max-width: 400px;
@@ -34,12 +34,13 @@
         }
         .pin-box input {
             width: 100%;
+            box-sizing: border-box;
             padding: 14px;
             font-size: 1.6rem;
             text-align: center;
             letter-spacing: 8px;
-            border: 2px solid var(--color-border);
-            border-radius: var(--radius-md);
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
             margin: 20px 0;
             font-family: monospace;
         }
@@ -48,9 +49,9 @@
         #admin-panel { display: none; padding: 40px 0 80px 0; }
         .studio-card {
             background: #fff;
-            border-radius: var(--radius-md);
+            border-radius: 10px;
             padding: 35px;
-            box-shadow: var(--shadow-card);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             margin-bottom: 30px;
         }
         .studio-header {
@@ -58,7 +59,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
-            border-bottom: 1px solid var(--color-border);
+            border-bottom: 1px solid #e0e0e0;
             padding-bottom: 15px;
         }
         
@@ -67,23 +68,23 @@
             display: flex;
             gap: 12px;
             margin-bottom: 25px;
-            border-bottom: 2px solid var(--color-border);
+            border-bottom: 2px solid #e0e0e0;
             padding-bottom: 10px;
         }
         .tab-btn {
             background: transparent;
             border: none;
-            font-family: var(--font-heading);
+            font-family: var(--font-heading, sans-serif);
             font-weight: 700;
             font-size: 1rem;
-            color: var(--color-text-light);
+            color: #555;
             padding: 8px 16px;
             cursor: pointer;
-            border-radius: var(--radius-sm);
+            border-radius: 6px;
             transition: all 0.25s ease;
         }
         .tab-btn.active {
-            background: var(--color-primary);
+            background: #bd2419;
             color: #fff;
         }
 
@@ -96,17 +97,18 @@
         
         label {
             display: block;
-            font-family: var(--font-heading);
+            font-family: var(--font-heading, sans-serif);
             font-weight: 700;
             font-size: 0.95rem;
             margin-bottom: 8px;
         }
         input[type="text"], input[type="number"], select, textarea {
             width: 100%;
+            box-sizing: border-box;
             padding: 12px 14px;
-            border: 1.5px solid var(--color-border);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: var(--font-body, sans-serif);
             font-size: 0.95rem;
         }
 
@@ -116,14 +118,14 @@
             flex-wrap: wrap;
             gap: 6px;
             background: #f8f9fa;
-            border: 1.5px solid var(--color-border);
+            border: 1.5px solid #e0e0e0;
             border-bottom: none;
             padding: 8px;
-            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            border-radius: 6px 6px 0 0;
         }
         .wysiwyg-toolbar button {
             background: #fff;
-            border: 1px solid var(--color-border);
+            border: 1px solid #e0e0e0;
             padding: 6px 12px;
             border-radius: 4px;
             cursor: pointer;
@@ -131,22 +133,23 @@
             font-size: 0.85rem;
         }
         .wysiwyg-toolbar button:hover {
-            background: var(--color-accent);
+            background: #00838f;
             color: #fff;
         }
         .wysiwyg-editor {
             width: 100%;
+            box-sizing: border-box;
             min-height: 220px;
             padding: 16px;
-            border: 1.5px solid var(--color-border);
-            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-            font-family: var(--font-body);
+            border: 1.5px solid #e0e0e0;
+            border-radius: 0 0 6px 6px;
+            font-family: var(--font-body, sans-serif);
             font-size: 1rem;
             line-height: 1.7;
             background: #fff;
             overflow-y: auto;
         }
-        .wysiwyg-editor:focus { outline: 2px solid var(--color-accent); }
+        .wysiwyg-editor:focus { outline: 2px solid #00838f; }
 
         .checkbox-group {
             display: flex;
@@ -158,10 +161,10 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--color-bg-light);
+            background: #f8f9fa;
             padding: 8px 16px;
             border-radius: 50px;
-            border: 1px solid var(--color-border);
+            border: 1px solid #e0e0e0;
             cursor: pointer;
         }
 
@@ -171,14 +174,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: var(--color-bg-light);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--color-border);
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
             margin-bottom: 12px;
         }
         .manage-item span {
             font-weight: 600;
-            color: var(--color-text);
+            color: #222;
         }
         .btn-delete {
             background: #d32f2f;
@@ -201,7 +204,7 @@
         #status-toast {
             display: none;
             padding: 15px 20px;
-            border-radius: var(--radius-sm);
+            border-radius: 6px;
             margin-top: 20px;
             font-weight: 600;
         }
@@ -222,12 +225,12 @@
     <!-- 1. PIN Security Access Gate -->
     <div id="pin-gate">
         <div class="pin-box">
-            <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.5rem; color: var(--color-primary); margin-bottom: 12px;"></i>
+            <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.5rem; color: #bd2419; margin-bottom: 12px;"></i>
             <h2>Katy's Studio Access</h2>
-            <p style="font-size: 0.9rem; color: var(--color-text-light);">Enter your 4-digit PIN to manage reviews & pages.</p>
-            <input type="password" id="pin-input" maxlength="4" placeholder="••••" autofocus>
-            <button onclick="unlockStudio()" class="btn btn-primary" style="width: 100%;">Unlock Studio</button>
-            <p id="pin-error" style="color: var(--color-primary); font-size: 0.85rem; margin-top: 15px; display: none;">Incorrect PIN.</p>
+            <p style="font-size: 0.9rem; color: #555;">Enter your 4-digit PIN to manage reviews & pages.</p>
+            <input type="password" id="pin-input" maxlength="4" placeholder="••••" autocomplete="off" autofocus>
+            <button type="button" id="unlock-btn" class="btn btn-primary" style="width: 100%;">Unlock Studio</button>
+            <p id="pin-error" style="color: #bd2419; font-size: 0.85rem; margin-top: 15px; display: none; font-weight: 600;">Incorrect PIN. Please try again.</p>
         </div>
     </div>
 
@@ -238,14 +241,14 @@
             <div class="studio-card">
                 <div class="studio-header">
                     <div>
-                        <h1 style="color: var(--color-primary); margin: 0; font-size: 2rem;">Behind The Magic Curtain Studio</h1>
+                        <h1 style="color: #bd2419; margin: 0; font-size: 2rem;">Behind The Magic Curtain Studio</h1>
                         <p style="margin: 0; font-size: 0.9rem;">Create, edit, and manage content straight to your live website.</p>
                     </div>
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="toggleSettingsModal()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
+                        <button type="button" onclick="toggleSettingsModal()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
                             <i class="fa-solid fa-gear"></i> GitHub Settings
                         </button>
-                        <button onclick="lockStudio()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
+                        <button type="button" onclick="lockStudio()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
                             <i class="fa-solid fa-lock"></i> Lock
                         </button>
                     </div>
@@ -253,28 +256,28 @@
 
                 <!-- Studio Tab Controls -->
                 <div class="studio-tabs">
-                    <button class="tab-btn active" onclick="switchTab('create-tab', this)"><i class="fa-solid fa-pen-nib"></i> Write Review</button>
-                    <button class="tab-btn" onclick="switchTab('manage-tab', this); loadSiteContent();"><i class="fa-solid fa-trash-can"></i> Manage & Delete Content</button>
+                    <button type="button" class="tab-btn active" onclick="switchTab('create-tab', this)"><i class="fa-solid fa-pen-nib"></i> Write Review</button>
+                    <button type="button" class="tab-btn" onclick="switchTab('manage-tab', this); loadSiteContent();"><i class="fa-solid fa-trash-can"></i> Manage & Delete Content</button>
                 </div>
 
                 <!-- GitHub API Settings (Collapsed by Default) -->
-                <div id="settings-drawer" style="display: none; background: #fafafa; padding: 20px; border-radius: var(--radius-sm); margin-bottom: 25px; border: 1px solid var(--color-border);">
+                <div id="settings-drawer" style="display: none; background: #fafafa; padding: 20px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #e0e0e0;">
                     <h3 style="margin-top: 0; font-size: 1.1rem;">GitHub Connection Configuration</h3>
                     <div class="studio-grid">
                         <div class="form-group">
                             <label>GitHub Username</label>
-                            <input type="text" id="gh-owner" placeholder="e.g. your-github-username">
+                            <input type="text" id="gh-owner" placeholder="e.g. Behind-the-magic-curtain">
                         </div>
                         <div class="form-group">
                             <label>Repository Name</label>
-                            <input type="text" id="gh-repo" placeholder="e.g. Behind-the-magic-curtain">
+                            <input type="text" id="gh-repo" placeholder="e.g. Behind-the-magic-curtain.github.io">
                         </div>
                         <div class="form-group full-span">
                             <label>GitHub Personal Access Token (Token with 'repo' permission)</label>
                             <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
                         </div>
                     </div>
-                    <button onclick="saveSettings()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 18px; font-size: 0.85rem;">Save Connection Settings</button>
+                    <button type="button" onclick="saveSettings()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 18px; font-size: 0.85rem;">Save Connection Settings</button>
                 </div>
 
                 <!-- TAB 1: Create Review -->
@@ -330,6 +333,7 @@
                                 </div>
                             </div>
 
+                            <!-- Image Uploader -->
                             <div class="form-group">
                                 <label for="rev-image-file">Main Show Poster / Image</label>
                                 <input type="file" id="rev-image-file" accept="image/*" onchange="previewImageName(this)">
@@ -371,7 +375,7 @@
                             <button type="submit" class="btn btn-primary" style="padding: 14px 30px; font-size: 1.05rem;">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> Publish Directly to Website
                             </button>
-                            <span id="loading-spinner" style="display: none; color: var(--color-accent); font-weight: 600;">
+                            <span id="loading-spinner" style="display: none; color: #00838f; font-weight: 600;">
                                 <i class="fa-solid fa-spinner fa-spin"></i> Saving directly to GitHub...
                             </span>
                         </div>
@@ -381,19 +385,19 @@
                 <!-- TAB 2: Manage & Delete Existing Content -->
                 <div id="manage-tab" class="tab-content" style="display: none;">
                     <h2>Published Reviews</h2>
-                    <p style="font-size: 0.95rem; color: var(--color-text-light); margin-bottom: 20px;">Deleting a review removes its web page and removes its card from the Homepage and Reviews list.</p>
+                    <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Deleting a review removes its web page and removes its card from the Homepage and Reviews list.</p>
                     
                     <div id="reviews-list-container">
-                        <p style="color: var(--color-text-light);"><i class="fa-solid fa-spinner fa-spin"></i> Loading published reviews...</p>
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading published reviews...</p>
                     </div>
 
                     <hr style="margin: 35px 0;">
 
                     <h2>Uploaded Images (/images/)</h2>
-                    <p style="font-size: 0.95rem; color: var(--color-text-light); margin-bottom: 20px;">Remove unused images to keep your storage organized.</p>
+                    <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Remove unused images to keep your storage organized.</p>
                     
                     <div id="images-list-container">
-                        <p style="color: var(--color-text-light);"><i class="fa-solid fa-spinner fa-spin"></i> Loading image gallery...</p>
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading image gallery...</p>
                     </div>
                 </div>
 
@@ -405,11 +409,12 @@
 
     <!-- Admin & GitHub API Logic -->
     <script>
-        const MASTER_PIN = "1234";
+        const MASTER_PIN = "3011";
 
         /* --- 1. PIN Security & Tabs --- */
         function unlockStudio() {
-            if (document.getElementById('pin-input').value === MASTER_PIN) {
+            const pinVal = document.getElementById('pin-input').value.trim();
+            if (pinVal === MASTER_PIN) {
                 sessionStorage.setItem('btmc_admin_session', 'true');
                 document.getElementById('pin-gate').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
@@ -425,13 +430,25 @@
             location.reload();
         }
 
-        if (sessionStorage.getItem('btmc_admin_session') === 'true') {
-            document.getElementById('pin-gate').style.display = 'none';
-            document.getElementById('admin-panel').style.display = 'block';
-            window.addEventListener('DOMContentLoaded', loadSettings);
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const unlockBtn = document.getElementById('unlock-btn');
+            if (unlockBtn) {
+                unlockBtn.addEventListener('click', unlockStudio);
+            }
 
-        document.getElementById('pin-input').addEventListener('keypress', e => { if (e.key === 'Enter') unlockStudio(); });
+            const pinInput = document.getElementById('pin-input');
+            if (pinInput) {
+                pinInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') unlockStudio();
+                });
+            }
+
+            if (sessionStorage.getItem('btmc_admin_session') === 'true') {
+                document.getElementById('pin-gate').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                loadSettings();
+            }
+        });
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -504,47 +521,44 @@
             }
 
             try {
-                // 1. Fetch Repository Root Files
                 const rootRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const rootFiles = await rootRes.json();
                 
-                // Exclude core structural system pages
                 const systemPages = ['index.html', 'reviews.html', 'whats-on.html', 'theatre-guide.html', 'tips-for-parents.html', 'admin.html', 'create-review.html', 'review-template.html'];
-                const reviewFiles = rootFiles.filter(f => f.name.endsWith('.html') && !systemPages.includes(f.name));
+                const reviewFiles = Array.isArray(rootFiles) ? rootFiles.filter(f => f.name.endsWith('.html') && !systemPages.includes(f.name)) : [];
 
                 const revContainer = document.getElementById('reviews-list-container');
                 if (reviewFiles.length === 0) {
-                    revContainer.innerHTML = '<p style="color: var(--color-text-light);">No standalone review pages found.</p>';
+                    revContainer.innerHTML = '<p style="color: #555;">No standalone review pages found.</p>';
                 } else {
                     revContainer.innerHTML = reviewFiles.map(f => `
                         <div class="manage-item">
-                            <span><i class="fa-solid fa-file-lines" style="color: var(--color-primary); margin-right: 8px;"></i> ${f.name}</span>
-                            <button class="btn-delete" onclick="deleteReviewPage('${f.name}', '${f.sha}')">
+                            <span><i class="fa-solid fa-file-lines" style="color: #bd2419; margin-right: 8px;"></i> ${f.name}</span>
+                            <button type="button" class="btn-delete" onclick="deleteReviewPage('${f.name}', '${f.sha}')">
                                 <i class="fa-solid fa-trash"></i> Delete Review
                             </button>
                         </div>
                     `).join('');
                 }
 
-                // 2. Fetch Images Folder
                 const imgRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const imgContainer = document.getElementById('images-list-container');
                 if (imgRes.ok) {
                     const imgFiles = await imgRes.json();
-                    imgContainer.innerHTML = imgFiles.map(img => `
+                    imgContainer.innerHTML = Array.isArray(imgFiles) ? imgFiles.map(img => `
                         <div class="manage-item">
-                            <span><i class="fa-regular fa-image" style="color: var(--color-accent); margin-right: 8px;"></i> ${img.name}</span>
-                            <button class="btn-delete" onclick="deleteFile('images/${img.name}', '${img.sha}', 'image')">
+                            <span><i class="fa-regular fa-image" style="color: #00838f; margin-right: 8px;"></i> ${img.name}</span>
+                            <button type="button" class="btn-delete" onclick="deleteFile('images/${img.name}', '${img.sha}', 'image')">
                                 <i class="fa-solid fa-trash"></i> Delete Photo
                             </button>
                         </div>
-                    `).join('');
+                    `).join('') : '<p style="color: #555;">No images found.</p>';
                 } else {
-                    imgContainer.innerHTML = '<p style="color: var(--color-text-light);">No images found in /images/ folder.</p>';
+                    imgContainer.innerHTML = '<p style="color: #555;">No images found in /images/ folder.</p>';
                 }
 
             } catch (err) {
@@ -562,18 +576,16 @@
             showToast(`Deleting ${filename}...`, 'status-loading');
 
             try {
-                // 1. Delete Review HTML file
                 await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filename}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: `Delete review page: ${filename}`, sha: sha })
                 });
 
-                // 2. Strip Cards from reviews.html & index.html
                 await removeCardFromFile(owner, repo, token, 'reviews.html', filename);
                 await removeCardFromFile(owner, repo, token, 'index.html', filename);
 
-                showToast(`✅ Successfully deleted ${filename} and updated all listing pages!`, 'status-success');
+                showToast(`✅ Successfully deleted ${filename} and updated listing pages!`, 'status-success');
                 loadSiteContent();
             } catch (err) {
                 showToast(`Error deleting review: ${err.message}`, 'status-error');
@@ -608,7 +620,6 @@
             }
         }
 
-        /* --- Helper: Clean Out Card From Page --- */
         async function removeCardFromFile(owner, repo, token, filePath, filename) {
             const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
             const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -617,7 +628,6 @@
             const data = await res.json();
             const content = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
 
-            // Regex matches the complete <article class="card"> block pointing to this file
             const cardRegex = new RegExp(`<!--[\\s\\S]*?-->\\s*<article class="card">[\\s\\S]*?href="${filename}"[\\s\\S]*?<\\/article>`, 'gi');
             const updatedContent = content.replace(cardRegex, '');
 
@@ -708,13 +718,17 @@
             if (!res.ok) return;
 
             const data = await res.json();
-            const existingContent = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+            const content = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
             
             const marker = '<div class="card-grid">';
-            if (existingContent.includes(marker)) {
-                const updatedContent = existingContent.replace(marker, `${marker}\n${cardHtml}`);
+            if (existingContentContains(content, marker)) {
+                const updatedContent = content.replace(marker, `${marker}\n${cardHtml}`);
                 await commitGitHubFile(owner, repo, token, filePath, btoa(unescape(encodeURIComponent(updatedContent))), `Update review cards in ${filePath}`);
             }
+        }
+
+        function existingContentContains(content, str) {
+            return content.indexOf(str) !== -1;
         }
 
         function toBase64(file) {
