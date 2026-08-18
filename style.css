@@ -1,50 +1,53 @@
 /*
- * BEHIND THE MAGIC CURTAIN - STYLESHEET
- *
- * This file controls all the colours, fonts, and layout.
- * You don't need to edit this unless you want to change the brand.
- *
+ * BEHIND THE MAGIC CURTAIN - MODERN STYLESHEET
+ * Brand: Behind The Magic Curtain
  */
 
 /* ---------------------------------- */
-/* Brand Variables               */
+/* 1. Design System & Variables       */
 /* ---------------------------------- */
 
 :root {
-    /* Primary Colours */
-    --color-primary: #bd2419;    /* Theatre Red */
-    --color-secondary: #ffd700;  /* Gold */
-    --color-accent: #00b2bf;     /* Teal */
+    /* Brand Palette */
+    --color-primary: #bd2419;        /* Theatre Red */
+    --color-secondary: #ffd700;      /* Star Gold */
+    --color-accent: #00838f;         /* Accessible Deep Teal */
+    --color-accent-hover: #005662;
 
-    /* Secondary Colours */
-    --color-text: #333333;      /* Dark grey (softer than black) */
-    --color-text-light: #555555;
-    --color-border: #bdbdbd;
-    --color-bg-light: #f4f4f4;
+    /* Neutrals & Surfaces */
+    --color-text: #222222;          /* High contrast primary text */
+    --color-text-light: #555555;    /* Subtitles and body secondary */
+    --color-border: #e0e0e0;
+    --color-bg-light: #f8f9fa;
     --color-bg-white: #ffffff;
 
-    /* Tertiary (Tag) Colours */
-    --color-tag-1: #00eff2; /* adhd */
-    --color-tag-2: #bf00b2; /* age */
-    --color-tag-3: #00bf0d; /* sensory */
+    /* Tag & Badge Accent Colors */
+    --color-tag-adhd: #007788;       /* Deep Cyan / Dark Text */
+    --color-tag-age: #8e1088;        /* Plum Purple */
+    --color-tag-sensory: #1b7a2b;    /* Forest Green */
+    --color-tag-mature: #a1005a;     /* Berry Pink */
+    --color-tag-touring: #2e7d32;    /* Touring Green */
 
-    /* Fonts */
-    /* --- UPDATED as per your request --- */
-    --font-heading: 'Raleway', sans-serif;         /* Was Playfair Display */
-    --font-subheading: 'Playfair Display', serif;  /* Was Raleway */
-    /* --- End Update --- */
-    --font-body: 'Poppins', sans-serif;
+    /* Typography */
+    --font-heading: 'Raleway', sans-serif;
+    --font-subheading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-    /* Layout */
-    --container-width: 960px;
+    /* Layout Geometry */
+    --container-width: 1040px;
     --header-height: 80px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-card: 0 4px 15px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
 /* ---------------------------------- */
-/* Global Reset & Body           */
+/* 2. Global Reset & Base Elements    */
 /* ---------------------------------- */
 
-* {
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -52,6 +55,7 @@
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -60,6 +64,7 @@ body {
     line-height: 1.7;
     color: var(--color-text);
     background-color: var(--color-bg-white);
+    text-rendering: optimizeLegibility;
 }
 
 .container {
@@ -71,12 +76,13 @@ body {
 img {
     max-width: 100%;
     height: auto;
+    display: block;
 }
 
 a {
     color: var(--color-accent);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
 }
 
 a:hover {
@@ -84,26 +90,27 @@ a:hover {
 }
 
 /* ---------------------------------- */
-/* Typography                    */
+/* 3. Typography                      */
 /* ---------------------------------- */
 
 h1, h2, h3, h4 {
-    margin-bottom: 0.75em;
-    line-height: 1.2;
+    line-height: 1.25;
+    margin-bottom: 0.6em;
 }
 
 h1 {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
     color: var(--color-primary);
 }
 
 h2 {
     font-family: var(--font-subheading);
     font-weight: 700;
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
     color: var(--color-text);
-    margin-top: 1.5em;
+    margin-top: 1.2em;
 }
 
 h3 {
@@ -114,28 +121,29 @@ h3 {
 }
 
 p {
-    margin-bottom: 1.5em;
+    margin-bottom: 1.4em;
     color: var(--color-text-light);
 }
 
 ul, ol {
     margin-bottom: 1.5em;
-    padding-left: 20px;
+    padding-left: 24px;
 }
 
 li {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.6em;
+    color: var(--color-text-light);
 }
 
 hr {
     border: 0;
     height: 1px;
     background: var(--color-border);
-    margin: 2em 0;
+    margin: 2.5em 0;
 }
 
 /* ---------------------------------- */
-/* Header & Navigation           */
+/* 4. Header & Navigation             */
 /* ---------------------------------- */
 
 .site-header {
@@ -144,10 +152,10 @@ hr {
     height: var(--header-height);
     display: flex;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .site-header .container {
@@ -159,15 +167,16 @@ hr {
 
 .logo a {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     color: var(--color-bg-white);
-    font-weight: 700;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .main-nav ul {
     list-style: none;
     display: flex;
-    gap: 25px;
+    gap: 20px;
     margin: 0;
     padding: 0;
 }
@@ -175,28 +184,31 @@ hr {
 .main-nav a {
     font-family: var(--font-subheading);
     font-weight: 600;
+    font-size: 1.05rem;
     color: var(--color-bg-white);
-    padding: 10px 5px;
+    padding: 8px 4px;
     border-bottom: 3px solid transparent;
-    transition: border-bottom 0.3s ease;
 }
 
 .main-nav a:hover,
 .main-nav a.active {
+    color: var(--color-secondary);
     border-bottom-color: var(--color-secondary);
 }
 
 .nav-toggle {
-    display: none; /* Hidden on desktop */
+    display: none;
     background: transparent;
     border: none;
     cursor: pointer;
+    padding: 10px;
+    border-radius: var(--radius-sm);
 }
 
 .hamburger {
     display: block;
     position: relative;
-    width: 25px;
+    width: 26px;
     height: 3px;
     background: var(--color-bg-white);
     border-radius: 3px;
@@ -215,38 +227,40 @@ hr {
     transition: all 0.3s ease-in-out;
 }
 
-.hamburger::before {
-    top: -8px;
-}
-
-.hamburger::after {
-    bottom: -8px;
-}
+.hamburger::before { top: -8px; }
+.hamburger::after { bottom: -8px; }
 
 /* ---------------------------------- */
-/* Buttons                       */
+/* 5. Buttons & Badges                */
 /* ---------------------------------- */
 
 .btn {
-    display: inline-block;
-    font-family: var(--font-subheading);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
     font-weight: 700;
-    padding: 12px 25px;
+    font-size: 0.95rem;
+    padding: 12px 24px;
     border-radius: 50px;
     text-decoration: none;
     border: 2px solid transparent;
-    transition: all 0.3s ease;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    gap: 8px;
 }
 
 .btn-primary {
     background-color: var(--color-secondary);
-    color: var(--color-text);
+    color: #222;
     border-color: var(--color-secondary);
 }
 
 .btn-primary:hover {
-    background-color: var(--color-bg-white);
-    color: var(--color-text);
+    background-color: #fff;
+    color: #222;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary {
@@ -258,139 +272,180 @@ hr {
 .btn-secondary:hover {
     background-color: var(--color-accent);
     color: var(--color-bg-white);
+    transform: translateY(-2px);
 }
 
+/* Category Tags */
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 16px 0;
+}
+
+.tag {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+}
+
+.tag-adhd { background-color: var(--color-tag-adhd); }
+.tag-age { background-color: var(--color-tag-age); }
+.tag-sensory { background-color: var(--color-tag-sensory); }
+.tag-mature { background-color: var(--color-tag-mature); }
+.tag-touring { background-color: var(--color-tag-touring); }
 
 /* ---------------------------------- */
-/* Page Sections                 */
+/* 6. Rating Stars                    */
+/* ---------------------------------- */
+
+.star-rating {
+    position: relative;
+    display: inline-block;
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.stars-empty,
+.stars-full {
+    display: flex;
+    gap: 3px;
+}
+
+.stars-empty {
+    color: #d1d5db;
+}
+
+.stars-full {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--color-secondary);
+}
+
+.card-star-rating,
+.header-star-rating {
+    display: inline-flex;
+    gap: 4px;
+    color: var(--color-secondary);
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+
+.card-star-rating .fa-regular,
+.header-star-rating .fa-regular {
+    color: #d1d5db;
+}
+
+.review-header .star-rating {
+    font-size: 1.6rem;
+    margin-top: 10px;
+}
+
+/* ---------------------------------- */
+/* 7. Homepage & Section Blocks       */
 /* ---------------------------------- */
 
 section {
     padding: 60px 0;
 }
 
-/* Hero Section (Homepage) */
 .hero {
-    background-color: var(--color-bg-light);
+    background: linear-gradient(180deg, var(--color-bg-light) 0%, #ffffff 100%);
     text-align: center;
-    padding: 80px 0;
+    padding: 90px 0 70px 0;
 }
 
 .hero h1 {
-    font-size: 4.5rem;
+    font-size: clamp(2.8rem, 6vw, 4.2rem);
+    margin-bottom: 0.3em;
 }
 
 .hero .subtitle {
     font-family: var(--font-subheading);
     font-size: 1.25rem;
     color: var(--color-text-light);
-    max-width: 600px;
+    max-width: 650px;
     margin: 0 auto 30px auto;
 }
 
-/* Call to Action Section */
 .cta {
-    background-color: var(--color-accent);
+    background: linear-gradient(135deg, var(--color-accent) 0%, #005662 100%);
     color: var(--color-bg-white);
     text-align: center;
+    border-radius: var(--radius-lg);
+    margin: 40px auto;
+    max-width: var(--container-width);
 }
+
 .cta h2 {
     color: var(--color-bg-white);
     font-family: var(--font-heading);
+    margin-top: 0;
 }
+
 .cta p {
-    color: var(--color-bg-white);
+    color: rgba(255, 255, 255, 0.9);
     max-width: 600px;
     margin: 0 auto 30px auto;
 }
-.cta .btn-primary {
-    background: var(--color-secondary);
-    color: var(--color-text);
-}
-.cta .btn-primary:hover {
-    background: var(--color-bg-white);
-    color: var(--color-text);
-}
 
-/* Page Header (for subpages) */
 .page-header {
     background-color: var(--color-bg-light);
-    padding: 40px 0;
+    border-bottom: 1px solid var(--color-border);
+    padding: 50px 0;
+    text-align: center;
 }
+
 .page-header h1 {
-    font-size: 3rem;
     margin-bottom: 0.2em;
 }
+
 .page-header p {
     font-family: var(--font-subheading);
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--color-text-light);
     margin: 0;
 }
 
-/* Standard Page Content */
-.page-content {
-    padding: 40px 0;
-}
-.content-article {
-    max-width: 750px; /* Good width for reading */
-}
-
-/* ---------------------------------- */
-/* NEW: Welcome Section (Homepage) */
-/* ---------------------------------- */
-
+/* Welcome Block */
 .btmc-welcome-section {
-    background-color: #fefefe;
-    padding: 60px 0;
+    background-color: #ffffff;
+    padding: 70px 0;
 }
 
-/* --- Centered Intro/Outro Text --- */
 .btmc-welcome-intro,
 .btmc-welcome-outro {
-    max-width: 750px; /* Great width for reading */
-    margin: 0 auto 40px auto; /* Center the block */
-    text-align: center; /* Center the text */
+    max-width: 780px;
+    margin: 0 auto 40px auto;
+    text-align: center;
 }
 
 .btmc-welcome-intro h2 {
-    font-family: var(--font-subheading); /* Playfair Display */
-    font-weight: 900;
-    font-size: 40px;
-    color: var(--color-primary); /* Brand Red */
+    font-family: var(--font-subheading);
+    font-size: 2.4rem;
+    color: var(--color-primary);
     margin-top: 0;
 }
 
-.btmc-welcome-intro p {
-    font-size: 1.1rem;
-    color: var(--color-text-light);
-}
-
-.btmc-welcome-outro {
-    margin-top: 40px;
-    margin-bottom: 0;
-}
-
-/* --- Feature Blocks (Image + Text) --- */
 .btmc-feature-block {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 50px;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 
-/* This reverses the order for the second block */
-.btmc-feature-block.reversed {
-    grid-template-columns: 1fr 1fr;
-}
-
-.btmc-feature-block.reversed .btmc-feature-image {
-    order: 2; /* Tells the image column to go second */
-}
-.btmc-feature-block.reversed .btmc-feature-text {
-    order: 1; /* Tells the text column to go first */
-}
+.btmc-feature-block.reversed .btmc-feature-image { order: 2; }
+.btmc-feature-block.reversed .btmc-feature-text { order: 1; }
 
 .btmc-feature-text h3 {
     font-family: var(--font-subheading);
@@ -399,23 +454,13 @@ section {
     margin-top: 0;
 }
 
-.btmc-feature-text p {
-    font-size: 16px;
-    color: var(--color-text-light);
-    line-height: 1.7; 
-    margin-bottom: 20px; 
-}
-
-/* --- Image Styles --- */
 .btmc-feature-image img,
 .btmc-image-stack img {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
 }
 
-/* This creates the 2-image side-by-side stack */
 .btmc-image-stack {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -423,103 +468,137 @@ section {
     align-items: center;
 }
 
+/* ---------------------------------- */
+/* 8. Filter Bar (Reviews Page)       */
+/* ---------------------------------- */
+
+.filter-section {
+    padding: 35px 0 10px 0;
+    background: #ffffff;
+}
+
+.filter-section h3 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+}
+
+.filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.filter-btn {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 50px;
+    background: var(--color-bg-white);
+    color: var(--color-text);
+    border: 1.5px solid var(--color-border);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.filter-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-bg-white);
+}
 
 /* ---------------------------------- */
-/* Card Layout (for Reviews)     */
+/* 9. Card Grids & Layouts            */
 /* ---------------------------------- */
 
+/* Review Cards Grid */
 .card-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 30px;
 }
 
 .card {
     background: var(--color-bg-white);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
 }
 
 .card img {
     width: 100%;
-    height: 200px;
+    height: 210px;
     object-fit: cover;
-    border-bottom: 1px solid var(--color-border);
 }
 
 .card-content {
-    padding: 25px;
+    padding: 22px;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Makes footer button stick to bottom */
+    flex-grow: 1;
 }
 
 .card-content h3 {
     font-family: var(--font-heading);
-    font-size: 1.75rem;
+    font-size: 1.45rem;
+    font-weight: 700;
     color: var(--color-primary);
+    margin-bottom: 6px;
 }
 
 .card-content p {
     font-size: 0.95rem;
-    flex-grow: 1; /* Pushes button down */
+    line-height: 1.6;
+    flex-grow: 1;
+    margin-bottom: 18px;
 }
 
 .card-content .btn {
-    margin-top: auto; /* Sticks button to bottom */
     align-self: flex-start;
+    margin-top: auto;
 }
 
-.card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 10px 0 15px 0;
-}
-
-.tag {
-    font-family: var(--font-subheading);
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 20px;
-    color: var(--color-text);
-}
-/* Using our bright tertiary colours for tags */
-.tag-adhd { background-color: var(--color-tag-1); }
-.tag-age { background-color: var(--color-tag-2); color: white; }
-.tag-sensory { background-color: var(--color-tag-3); }
-.tag-mature { background-color: #d700ff; color: white; }
-
-/* ---------------------------------- */
-/* Listing Card (What's On)       */
-/* ---------------------------------- */
-
+/* What's On Listing Card */
 .listing-card {
     display: grid;
-    /* This creates the two columns: 250px for image, rest for text */
-    grid-template-columns: 250px 1fr; 
+    grid-template-columns: 280px 1fr;
     gap: 30px;
     background: var(--color-bg-white);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    margin-bottom: 30px; /* Space between cards */
+    box-shadow: var(--shadow-card);
+    margin-bottom: 30px;
 }
 
 .listing-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures image fills the space */
+    object-fit: cover;
 }
 
 .listing-content {
-    padding: 25px;
+    padding: 25px 25px 25px 0;
     display: flex;
     flex-direction: column;
 }
@@ -527,21 +606,8 @@ section {
 .listing-content h3 {
     font-family: var(--font-heading);
     color: var(--color-primary);
-    margin-top: 0;
-    margin-bottom: 10px;
-}
-
-.listing-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 15px; 
-}
-
-/* We need to define the 'Touring' tag style */
-.tag-touring {
-    background-color: #00bf0d; /* Picked one of your tertiary colors */
-    color: var(--color-text);
+    font-size: 1.6rem;
+    margin-bottom: 8px;
 }
 
 .listing-info {
@@ -551,109 +617,95 @@ section {
 }
 
 .listing-info li {
-    font-family: var(--font-subheading);
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .listing-info li i {
-    color: var(--color-primary); /* Make icons red */
-    font-size: 1.1rem;
-    width: 20px; /* Aligns the text */
+    color: var(--color-primary);
+    width: 18px;
     text-align: center;
 }
 
-.listing-content p {
-    font-size: 0.95rem;
-    flex-grow: 1; /* Pushes links to the bottom */
-    margin-bottom: 15px;
-}
-
-.listing-links {
+/* Theatre Guide Cards */
+.theatre-card {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: auto; /* Pushes this to the bottom */
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* --- Add this to your Mobile Responsive section --- */
-@media (max-width: 768px) {
-    .listing-card {
-        /* Stacks the card on mobile */
-        grid-template-columns: 1fr;
-    }
-
-    .listing-image img {
-        width: 100%;
-        height: 250px; /* Give mobile image a fixed height */
-        object-fit: cover;
-    }
+.theatre-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
 }
 
-
-/* ---------------------------------- */
-/* Article Item (Tips)           */
-/* ---------------------------------- */
-.content-article article {
-    margin-bottom: 2em;
+.theatre-img-container {
+    flex: 0 0 320px;
 }
-.content-article article h3 {
-    font-family: var(--font-subheading);
+
+.theatre-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.theatre-info {
+    padding: 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.theatre-info h2 {
+    color: var(--color-primary);
+    margin-top: 0;
+    margin-bottom: 6px;
+    font-family: var(--font-heading);
+    font-size: 1.7rem;
+}
+
+.theatre-location {
     font-weight: 700;
-    font-size: 1.5rem;
+    color: var(--color-text-light);
+    margin-bottom: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.theatre-location i {
     color: var(--color-primary);
 }
 
-/* ---------------------------------- */
-/* Footer                        */
-/* ---------------------------------- */
-
-.site-footer {
-    background: var(--color-text);
-    color: var(--color-border);
-    padding: 40px 0;
-    text-align: center;
-    margin-top: 40px;
+.theatre-meta {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 20px;
+    flex-grow: 1;
 }
 
-.footer-social-tagline {
-    font-family: var(--font-subheading);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-bg-white);
-    margin: 0 0 15px 0;
+.theatre-meta p {
+    margin-bottom: 0.8em;
 }
 
-.footer-social-links {
-    display: flex;
-    justify-content: center;
-    gap: 25px; /* Space between icons */
-    margin-bottom: 25px;
+.theatre-meta strong {
+    color: var(--color-text);
 }
 
-.footer-social-links a {
-    color: var(--color-bg-white);
-    font-size: 1.8rem; /* How big the icons are */
-    transition: all 0.3s ease;
-    display: inline-block; /* Allows for transform */
-}
-
-.footer-social-links a:hover {
-    color: var(--color-secondary); /* Hover turns them gold! */
-    transform: scale(1.1) translateY(-3px); /* Makes them "pop" */
-}
-
-.footer-copyright {
-    font-size: 0.9rem;
-    color: var(--color-border);
-    margin: 0;
+.theatre-info .btn {
+    align-self: flex-start;
 }
 
 /* ---------------------------------- */
-/* Review Page Specifics         */
+/* 10. Single Review Page Details     */
 /* ---------------------------------- */
 
 .review-header .card-tags {
@@ -664,141 +716,153 @@ section {
     font-family: var(--font-subheading);
     font-size: 1.25rem;
     color: var(--color-text-light);
-    margin-bottom: 0;
+    margin-bottom: 0.5rem;
 }
 
 .review-main-image {
     width: 100%;
-    border-radius: 8px;
-    margin-bottom: 2.5em;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    max-height: 480px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    margin: 20px 0 35px 0;
+    box-shadow: var(--shadow-card);
+}
+
+.content-article {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.content-article h2 {
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    margin-top: 1.6em;
 }
 
 .content-article article {
-    margin-bottom: 2em;
+    background: var(--color-bg-light);
+    padding: 25px;
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-primary);
+    margin: 2.5em 0;
 }
 
 .content-article article h3 {
-    font-family: var(--font-subheading);
-    font-weight: 700;
-    font-size: 1.5rem;
+    margin-top: 0;
     color: var(--color-primary);
 }
 
-
-/* ---------------------------------- */
-/* Swiper.js Carousel Styles     */
-/* ---------------------------------- */
-
+/* Swiper Carousel */
 .review-gallery {
-    margin: 3em 0;
+    margin: 40px 0;
 }
 
 .review-gallery h2 {
-    font-family: var(--font-subheading);
-    font-size: 2rem;
-    color: var(--color-primary);
     text-align: center;
+    margin-bottom: 20px;
 }
 
 .swiper {
     width: 100%;
-    height: 500px; /* You can change this height */
-    border-radius: 8px;
+    height: 480px;
+    border-radius: var(--radius-md);
     background: var(--color-bg-light);
 }
 
 .swiper-slide {
-    text-align: center;
-    font-size: 18px;
-    background: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: #fff;
 }
 
 .swiper-slide img {
-    display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* This makes all images fit nicely */
+    object-fit: cover;
 }
 
-/* This styles the arrows and dots to match your brand! */
 .swiper-button-next,
 .swiper-button-prev {
-    color: var(--color-primary) !important; /* Your brand red */
+    color: var(--color-primary) !important;
 }
 
 .swiper-pagination-bullet-active {
-    background: var(--color-primary) !important; /* Your brand red */
+    background: var(--color-primary) !important;
 }
 
 /* ---------------------------------- */
-/* 1. Card Star Rating (NEW METHOD) */
+/* 11. Footer                         */
 /* ---------------------------------- */
 
-.card-star-rating {
-    font-size: 1.2rem; 
-    margin-bottom: 15px;
-    letter-spacing: 3px; /* This spaces out the stars */
-    color: var(--color-secondary); /* Gold color for solid/half stars */
+.site-footer {
+    background: #1a1a1a;
+    color: #aaaaaa;
+    padding: 50px 0 35px 0;
+    text-align: center;
+    margin-top: 60px;
 }
 
-.card-star-rating .fa-regular {
-    color: #bdbdbd; /* Grey color for empty stars */
+.footer-social-tagline {
+    font-family: var(--font-subheading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 18px;
+}
+
+.footer-social-links {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 25px;
+}
+
+.footer-social-links a {
+    color: #ffffff;
+    font-size: 1.7rem;
+    transition: transform 0.25s ease, color 0.25s ease;
+    display: inline-flex;
+}
+
+.footer-social-links a:hover {
+    color: var(--color-secondary);
+    transform: translateY(-3px) scale(1.1);
+}
+
+.footer-copyright {
+    font-size: 0.85rem;
+    color: #777777;
+    margin: 0;
 }
 
 /* ---------------------------------- */
-/* 2. Review Page Header Stars (NEW METHOD) */
+/* 12. Mobile Responsive Rules        */
 /* ---------------------------------- */
 
-.header-star-rating {
-    font-size: 1.5rem;
-    margin: 15px auto;
-    width: max-content; 
-    letter-spacing: 3px; /* This spaces out the stars */
-    color: var(--color-secondary); /* Gold color for solid/half stars */
-}
+@media (max-width: 850px) {
+    .site-header .container {
+        position: relative;
+    }
 
-.header-star-rating .fa-regular {
-    color: #bdbdbd; /* Grey color for empty stars */
-}
-
-/* ---------------------------------- */
-/* Mobile Responsive Design      */
-/* ---------------------------------- */
-
-@media (max-width: 768px) {
-    h1 { font-size: 2.5rem; }
-    .hero h1 { font-size: 3rem; }
-    h2 { font-size: 2rem; }
-
-    /* Show mobile menu toggle */
     .nav-toggle {
         display: block;
     }
 
-    /* Mobile Nav styles */
-    .main-nav {
-        position: relative;
-    }
-
     .main-nav ul {
-        display: none; /* Hide nav by default */
+        display: none;
         position: absolute;
-        top: calc(var(--header-height) - 30px); /* Position below header */
-        right: -20px;
-        width: 250px;
+        top: var(--header-height);
+        right: 0;
+        left: 0;
+        width: 100%;
         flex-direction: column;
         background: var(--color-primary);
-        box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-        border-radius: 5px;
-        padding: 10px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        padding: 10px 20px 20px 20px;
         gap: 0;
     }
 
-    /* This class is toggled by JavaScript */
     .main-nav.nav-open ul {
         display: flex;
     }
@@ -809,17 +873,18 @@ section {
 
     .main-nav a {
         display: block;
-        padding: 15px;
+        padding: 14px 0;
         width: 100%;
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-    }
-    .main-nav a:hover,
-    .main-nav a.active {
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-        background: rgba(0,0,0,0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
-    /* Mobile "X" icon */
+    .main-nav a:hover,
+    .main-nav a.active {
+        border-bottom-color: var(--color-secondary);
+        background: transparent;
+    }
+
+    /* Animated Mobile Menu Icon */
     .nav-open .hamburger {
         background: transparent;
     }
@@ -830,112 +895,47 @@ section {
         transform: rotate(-45deg) translate(5px, -6px);
     }
 
-
-    /* Stack review cards */
+    /* Stack Complex Layouts */
     .card-grid {
         grid-template-columns: 1fr;
     }
-    
-   /* --- NEW: Welcome Section Mobile Styles --- */
+
+    .listing-card {
+        grid-template-columns: 1fr;
+    }
+
+    .listing-content {
+        padding: 20px;
+    }
+
+    .listing-image img {
+        height: 220px;
+    }
+
+    .theatre-card {
+        flex-direction: column;
+    }
+
+    .theatre-img-container {
+        flex: 0 0 220px;
+    }
+
+    .theatre-info {
+        padding: 22px;
+    }
+
     .btmc-feature-block,
     .btmc-feature-block.reversed {
-        /* Stacks the columns on top of each other */
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
 
     .btmc-feature-block.reversed .btmc-feature-image,
     .btmc-feature-block.reversed .btmc-feature-text {
-        order: 0; /* Resets the order for mobile */
+        order: initial;
     }
 
-    .btmc-feature-image {
-        margin-bottom: 20px;
-    }
-
-    .btmc-welcome-intro h2 {
-        font-size: 32px; 
-    }
-
-    .btmc-feature-text h3 {
-        font-size: 1.75rem;
-    }
-    /* --- END: Welcome Section Mobile Styles --- */
-
-    /* --- What's On Card Mobile --- */
-    .listing-card {
-        /* Stacks the card on mobile */
-        grid-template-columns: 1fr;
-    }
-
-    .listing-image img {
-        width: 100%;
-        height: 250px; /* Give mobile image a fixed height */
-        object-fit: cover;
-    }
-    /* --- END: What's On Card Mobile --- */
-
-/* --- Theatre Guide Cards --- */
-.theatre-card {
-    display: flex;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-}
-
-.theatre-card:hover {
-    transform: translateY(-5px);
-}
-
-.theatre-img-container {
-    flex: 0 0 300px; /* This sets the image width to 300px */
-}
-
-.theatre-img-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* This ensures the photo isn't squished */
-}
-
-.theatre-info {
-    padding: 25px;
-    flex: 1;
-}
-
-.theatre-info h2 {
-    color: #bd2419; /* Your brand red */
-    margin-top: 0;
-    font-family: 'Playfair Display', serif;
-}
-
-.theatre-location {
-    font-weight: 700;
-    color: #555;
-    margin-bottom: 15px;
-    display: block;
-}
-
-.theatre-meta {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.theatre-meta strong {
-    color: #333;
-}
-
-/* Mobile Adjustments: Stack image on top of text */
-@media (max-width: 768px) {
-    .theatre-card {
-        flex-direction: column;
-    }
-    .theatre-img-container {
-        flex: 0 0 200px;
+    .swiper {
+        height: 320px;
     }
 }
-    
-
-} /* <-- This is the FINAL closing brace */
