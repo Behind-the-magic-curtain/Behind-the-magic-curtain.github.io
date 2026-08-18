@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katy's Admin Studio | Behind the Magic Curtain</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        body { background-color: #f0f3f6; min-height: 100vh; }
+        
+        /* PIN Lock Screen */
+        #pin-gate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 85vh;
+            padding: 20px;
+        }
+        .pin-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .pin-box input {
+            width: 100%;
+            padding: 14px;
+            font-size: 1.6rem;
+            text-align: center;
+            letter-spacing: 8px;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        /* Admin Studio Panel */
+        #admin-panel { display: none; padding: 40px 0 80px 0; }
+        .studio-card {
+            background: #fff;
+            border-radius: var(--radius-md);
+            padding: 35px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 30px;
+        }
+        .studio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 15px;
+        }
+        
+        /* Tab Navigation */
+        .studio-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--color-text-light);
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            transition: all 0.25s ease;
+        }
+        .tab-btn.active {
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        .full-span { grid-column: span 2; }
+        
+        label {
+            display: block;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+        }
+
+        /* WYSIWYG Controls */
+        .wysiwyg-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: #f8f9fa;
+            border: 1.5px solid var(--color-border);
+            border-bottom: none;
+            padding: 8px;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        }
+        .wysiwyg-toolbar button {
+            background: #fff;
+            border: 1px solid var(--color-border);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .wysiwyg-toolbar button:hover {
+            background: var(--color-accent);
+            color: #fff;
+        }
+        .wysiwyg-editor {
+            width: 100%;
+            min-height: 220px;
+            padding: 16px;
+            border: 1.5px solid var(--color-border);
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.7;
+            background: #fff;
+            overflow-y: auto;
+        }
+        .wysiwyg-editor:focus { outline: 2px solid var(--color-accent); }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 5px;
+        }
+        .checkbox-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--color-bg-light);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid var(--color-border);
+            cursor: pointer;
+        }
+
+        /* Delete / Management List */
+        .manage-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--color-bg-light);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--color-border);
+            margin-bottom: 12px;
+        }
+        .manage-item span {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+        .btn-delete {
+            background: #d32f2f;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s ease;
+        }
+        .btn-delete:hover {
+            background: #b71c1c;
+        }
+
+        /* Status Toast Alert */
+        #status-toast {
+            display: none;
+            padding: 15px 20px;
+            border-radius: var(--radius-sm);
+            margin-top: 20px;
+            font-weight: 600;
+        }
+        .status-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .status-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .status-loading { background: #e0f7fa; color: #00838f; border: 1px solid #80deea; }
+
+        @media (max-width: 768px) {
+            .studio-grid { grid-template-columns: 1fr; }
+            .full-span { grid-column: span 1; }
+            .studio-header { flex-direction: column; gap: 15px; text-align: center; }
+            .manage-item { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. PIN Security Access Gate -->
+    <div id="pin-gate">
+        <div class="pin-box">
+            <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.5rem; color: var(--color-primary); margin-bottom: 12px;"></i>
+            <h2>Katy's Studio Access</h2>
+            <p style="font-size: 0.9rem; color: var(--color-text-light);">Enter your 4-digit PIN to manage reviews & pages.</p>
+            <input type="password" id="pin-input" maxlength="4" placeholder="••••" autofocus>
+            <button onclick="unlockStudio()" class="btn btn-primary" style="width: 100%;">Unlock Studio</button>
+            <p id="pin-error" style="color: var(--color-primary); font-size: 0.85rem; margin-top: 15px; display: none;">Incorrect PIN.</p>
+        </div>
+    </div>
+
+    <!-- 2. Admin Dashboard -->
+    <div id="admin-panel">
+        <div class="container">
+            
+            <div class="studio-card">
+                <div class="studio-header">
+                    <div>
+                        <h1 style="color: var(--color-primary); margin: 0; font-size: 2rem;">Behind The Magic Curtain Studio</h1>
+                        <p style="margin: 0; font-size: 0.9rem;">Create, edit, and manage content straight to your live website.</p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="toggleSettingsModal()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
+                            <i class="fa-solid fa-gear"></i> GitHub Settings
+                        </button>
+                        <button onclick="lockStudio()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
+                            <i class="fa-solid fa-lock"></i> Lock
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Studio Tab Controls -->
+                <div class="studio-tabs">
+                    <button class="tab-btn active" onclick="switchTab('create-tab', this)"><i class="fa-solid fa-pen-nib"></i> Write Review</button>
+                    <button class="tab-btn" onclick="switchTab('manage-tab', this); loadSiteContent();"><i class="fa-solid fa-trash-can"></i> Manage & Delete Content</button>
+                </div>
+
+                <!-- GitHub API Settings (Collapsed by Default) -->
+                <div id="settings-drawer" style="display: none; background: #fafafa; padding: 20px; border-radius: var(--radius-sm); margin-bottom: 25px; border: 1px solid var(--color-border);">
+                    <h3 style="margin-top: 0; font-size: 1.1rem;">GitHub Connection Configuration</h3>
+                    <div class="studio-grid">
+                        <div class="form-group">
+                            <label>GitHub Username</label>
+                            <input type="text" id="gh-owner" placeholder="e.g. your-github-username">
+                        </div>
+                        <div class="form-group">
+                            <label>Repository Name</label>
+                            <input type="text" id="gh-repo" placeholder="e.g. Behind-the-magic-curtain">
+                        </div>
+                        <div class="form-group full-span">
+                            <label>GitHub Personal Access Token (Token with 'repo' permission)</label>
+                            <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                        </div>
+                    </div>
+                    <button onclick="saveSettings()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 18px; font-size: 0.85rem;">Save Connection Settings</button>
+                </div>
+
+                <!-- TAB 1: Create Review -->
+                <div id="create-tab" class="tab-content">
+                    <form id="review-form" onsubmit="event.preventDefault(); publishReview();">
+                        <div class="studio-grid">
+                            
+                            <div class="form-group">
+                                <label for="rev-title">Show Title *</label>
+                                <input type="text" id="rev-title" placeholder="e.g. Wicked" required onkeyup="autoGenerateSlug()">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rev-slug">Web Page URL Name *</label>
+                                <input type="text" id="rev-slug" placeholder="e.g. wicked-the-musical.html" required>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label for="rev-subtitle">Catchy Tagline / Subtitle *</label>
+                                <input type="text" id="rev-subtitle" placeholder="e.g. A spellbinding West End masterpiece that defies gravity!" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rev-rating">Star Rating *</label>
+                                <select id="rev-rating">
+                                    <option value="5">5.0 Stars (★★★★★)</option>
+                                    <option value="4.5" selected>4.5 Stars (★★★★½)</option>
+                                    <option value="4">4.0 Stars (★★★★☆)</option>
+                                    <option value="3.5">3.5 Stars (★★★½☆)</option>
+                                    <option value="3">3.0 Stars (★★★☆☆)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rev-age">Recommended Age Category *</label>
+                                <select id="rev-age">
+                                    <option value="Ages 0+">Ages 0+</option>
+                                    <option value="Ages 3+">Ages 3+</option>
+                                    <option value="Ages 4+">Ages 4+</option>
+                                    <option value="Ages 6+">Ages 6+</option>
+                                    <option value="Ages 7+" selected>Ages 7+</option>
+                                    <option value="Ages 12+">Ages 12+</option>
+                                    <option value="Grown ups">Grown ups</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label>Audience & Accessibility Tags</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-pill"><input type="checkbox" id="tag-adhd" checked> ADHD-Friendly Guide</label>
+                                    <label class="checkbox-pill"><input type="checkbox" id="tag-sensory"> Sensory Notes</label>
+                                    <label class="checkbox-pill"><input type="checkbox" id="tag-mature"> Mature Themes</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rev-image-file">Main Show Poster / Image</label>
+                                <input type="file" id="rev-image-file" accept="image/*" onchange="previewImageName(this)">
+                                <input type="hidden" id="rev-image-filename" value="placeholder.jpg">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rev-image-alt">Image Description (For Accessibility) *</label>
+                                <input type="text" id="rev-image-alt" placeholder="e.g. Cast of Wicked singing Defying Gravity" required>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label for="rev-summary">Short Card Summary (1–2 sentences for Homepage & Lists) *</label>
+                                <textarea id="rev-summary" rows="2" placeholder="Brief summary of the show..." required></textarea>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label>Our Family Verdict (Full Review Article) *</label>
+                                <div class="wysiwyg-toolbar">
+                                    <button type="button" onclick="formatDoc('bold')"><i class="fa-solid fa-bold"></i> Bold</button>
+                                    <button type="button" onclick="formatDoc('italic')"><i class="fa-solid fa-italic"></i> Italic</button>
+                                    <button type="button" onclick="formatDoc('formatBlock', '<h2>')">Subheading</button>
+                                    <button type="button" onclick="formatDoc('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                    <button type="button" onclick="formatDoc('createLink')"><i class="fa-solid fa-link"></i> Link</button>
+                                </div>
+                                <div id="wysiwyg-content" class="wysiwyg-editor" contenteditable="true">
+                                    <p>Write your detailed family review here...</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label for="rev-tips">Key Info for Parents (One tip per line)</label>
+                                <textarea id="rev-tips" rows="3" placeholder="Running Time: 2 hours 10 minutes&#10;Loud bangs during opening scene&#10;Booster seats available at kiosk"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div style="margin-top: 25px; display: flex; gap: 15px; align-items: center;">
+                            <button type="submit" class="btn btn-primary" style="padding: 14px 30px; font-size: 1.05rem;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Publish Directly to Website
+                            </button>
+                            <span id="loading-spinner" style="display: none; color: var(--color-accent); font-weight: 600;">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Saving directly to GitHub...
+                            </span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TAB 2: Manage & Delete Existing Content -->
+                <div id="manage-tab" class="tab-content" style="display: none;">
+                    <h2>Published Reviews</h2>
+                    <p style="font-size: 0.95rem; color: var(--color-text-light); margin-bottom: 20px;">Deleting a review removes its web page and removes its card from the Homepage and Reviews list.</p>
+                    
+                    <div id="reviews-list-container">
+                        <p style="color: var(--color-text-light);"><i class="fa-solid fa-spinner fa-spin"></i> Loading published reviews...</p>
+                    </div>
+
+                    <hr style="margin: 35px 0;">
+
+                    <h2>Uploaded Images (/images/)</h2>
+                    <p style="font-size: 0.95rem; color: var(--color-text-light); margin-bottom: 20px;">Remove unused images to keep your storage organized.</p>
+                    
+                    <div id="images-list-container">
+                        <p style="color: var(--color-text-light);"><i class="fa-solid fa-spinner fa-spin"></i> Loading image gallery...</p>
+                    </div>
+                </div>
+
+                <div id="status-toast"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Admin & GitHub API Logic -->
+    <script>
+        const MASTER_PIN = "1234";
+
+        /* --- 1. PIN Security & Tabs --- */
+        function unlockStudio() {
+            if (document.getElementById('pin-input').value === MASTER_PIN) {
+                sessionStorage.setItem('btmc_admin_session', 'true');
+                document.getElementById('pin-gate').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                loadSettings();
+            } else {
+                document.getElementById('pin-error').style.display = 'block';
+                document.getElementById('pin-input').value = '';
+            }
+        }
+
+        function lockStudio() {
+            sessionStorage.removeItem('btmc_admin_session');
+            location.reload();
+        }
+
+        if (sessionStorage.getItem('btmc_admin_session') === 'true') {
+            document.getElementById('pin-gate').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            window.addEventListener('DOMContentLoaded', loadSettings);
+        }
+
+        document.getElementById('pin-input').addEventListener('keypress', e => { if (e.key === 'Enter') unlockStudio(); });
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).style.display = 'block';
+            btn.classList.add('active');
+        }
+
+        /* --- 2. WYSIWYG & Auto Slug --- */
+        function formatDoc(cmd, val = null) {
+            if (cmd === 'createLink') {
+                const url = prompt('Enter the link URL:');
+                if (url) document.execCommand(cmd, false, url);
+            } else {
+                document.execCommand(cmd, false, val);
+            }
+            document.getElementById('wysiwyg-content').focus();
+        }
+
+        function autoGenerateSlug() {
+            const title = document.getElementById('rev-title').value;
+            const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            document.getElementById('rev-slug').value = slug ? `${slug}.html` : '';
+        }
+
+        function previewImageName(input) {
+            if (input.files && input.files[0]) {
+                const cleanName = input.files[0].name.toLowerCase().replace(/\s+/g, '-');
+                document.getElementById('rev-image-filename').value = cleanName;
+            }
+        }
+
+        /* --- 3. Settings Storage --- */
+        function toggleSettingsModal() {
+            const el = document.getElementById('settings-drawer');
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveSettings() {
+            localStorage.setItem('btmc_gh_owner', document.getElementById('gh-owner').value.trim());
+            localStorage.setItem('btmc_gh_repo', document.getElementById('gh-repo').value.trim());
+            localStorage.setItem('btmc_gh_token', document.getElementById('gh-token').value.trim());
+            showToast('GitHub configuration saved locally in your browser!', 'status-success');
+            toggleSettingsModal();
+        }
+
+        function loadSettings() {
+            document.getElementById('gh-owner').value = localStorage.getItem('btmc_gh_owner') || '';
+            document.getElementById('gh-repo').value = localStorage.getItem('btmc_gh_repo') || '';
+            document.getElementById('gh-token').value = localStorage.getItem('btmc_gh_token') || '';
+        }
+
+        function showToast(msg, type) {
+            const toast = document.getElementById('status-toast');
+            toast.className = type;
+            toast.innerHTML = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.scrollIntoView({ behavior: 'smooth' }); }, 100);
+        }
+
+        /* --- 4. Content Discovery & Deletion Engine --- */
+        async function loadSiteContent() {
+            const owner = localStorage.getItem('btmc_gh_owner');
+            const repo = localStorage.getItem('btmc_gh_repo');
+            const token = localStorage.getItem('btmc_gh_token');
+
+            if (!owner || !repo || !token) {
+                showToast('Please configure GitHub Settings first.', 'status-error');
+                return;
+            }
+
+            try {
+                // 1. Fetch Repository Root Files
+                const rootRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const rootFiles = await rootRes.json();
+                
+                // Exclude core structural system pages
+                const systemPages = ['index.html', 'reviews.html', 'whats-on.html', 'theatre-guide.html', 'tips-for-parents.html', 'admin.html', 'create-review.html', 'review-template.html'];
+                const reviewFiles = rootFiles.filter(f => f.name.endsWith('.html') && !systemPages.includes(f.name));
+
+                const revContainer = document.getElementById('reviews-list-container');
+                if (reviewFiles.length === 0) {
+                    revContainer.innerHTML = '<p style="color: var(--color-text-light);">No standalone review pages found.</p>';
+                } else {
+                    revContainer.innerHTML = reviewFiles.map(f => `
+                        <div class="manage-item">
+                            <span><i class="fa-solid fa-file-lines" style="color: var(--color-primary); margin-right: 8px;"></i> ${f.name}</span>
+                            <button class="btn-delete" onclick="deleteReviewPage('${f.name}', '${f.sha}')">
+                                <i class="fa-solid fa-trash"></i> Delete Review
+                            </button>
+                        </div>
+                    `).join('');
+                }
+
+                // 2. Fetch Images Folder
+                const imgRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/images`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const imgContainer = document.getElementById('images-list-container');
+                if (imgRes.ok) {
+                    const imgFiles = await imgRes.json();
+                    imgContainer.innerHTML = imgFiles.map(img => `
+                        <div class="manage-item">
+                            <span><i class="fa-regular fa-image" style="color: var(--color-accent); margin-right: 8px;"></i> ${img.name}</span>
+                            <button class="btn-delete" onclick="deleteFile('images/${img.name}', '${img.sha}', 'image')">
+                                <i class="fa-solid fa-trash"></i> Delete Photo
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    imgContainer.innerHTML = '<p style="color: var(--color-text-light);">No images found in /images/ folder.</p>';
+                }
+
+            } catch (err) {
+                showToast(`Failed to load content: ${err.message}`, 'status-error');
+            }
+        }
+
+        async function deleteReviewPage(filename, sha) {
+            if (!confirm(`Are you sure you want to permanently delete "${filename}" and remove its cards from the website?`)) return;
+
+            const owner = localStorage.getItem('btmc_gh_owner');
+            const repo = localStorage.getItem('btmc_gh_repo');
+            const token = localStorage.getItem('btmc_gh_token');
+
+            showToast(`Deleting ${filename}...`, 'status-loading');
+
+            try {
+                // 1. Delete Review HTML file
+                await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filename}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `Delete review page: ${filename}`, sha: sha })
+                });
+
+                // 2. Strip Cards from reviews.html & index.html
+                await removeCardFromFile(owner, repo, token, 'reviews.html', filename);
+                await removeCardFromFile(owner, repo, token, 'index.html', filename);
+
+                showToast(`✅ Successfully deleted ${filename} and updated all listing pages!`, 'status-success');
+                loadSiteContent();
+            } catch (err) {
+                showToast(`Error deleting review: ${err.message}`, 'status-error');
+            }
+        }
+
+        async function deleteFile(path, sha, typeLabel) {
+            if (!confirm(`Are you sure you want to delete "${path}"?`)) return;
+
+            const owner = localStorage.getItem('btmc_gh_owner');
+            const repo = localStorage.getItem('btmc_gh_repo');
+            const token = localStorage.getItem('btmc_gh_token');
+
+            showToast(`Deleting ${path}...`, 'status-loading');
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: `Delete ${typeLabel}: ${path}`, sha: sha })
+                });
+
+                if (res.ok) {
+                    showToast(`✅ Successfully deleted ${path}!`, 'status-success');
+                    loadSiteContent();
+                } else {
+                    const err = await res.json();
+                    throw new Error(err.message);
+                }
+            } catch (err) {
+                showToast(`Error deleting file: ${err.message}`, 'status-error');
+            }
+        }
+
+        /* --- Helper: Clean Out Card From Page --- */
+        async function removeCardFromFile(owner, repo, token, filePath, filename) {
+            const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            const content = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+
+            // Regex matches the complete <article class="card"> block pointing to this file
+            const cardRegex = new RegExp(`<!--[\\s\\S]*?-->\\s*<article class="card">[\\s\\S]*?href="${filename}"[\\s\\S]*?<\\/article>`, 'gi');
+            const updatedContent = content.replace(cardRegex, '');
+
+            if (content !== updatedContent) {
+                await commitGitHubFile(owner, repo, token, filePath, btoa(unescape(encodeURIComponent(updatedContent))), `Remove deleted card (${filename}) from ${filePath}`);
+            }
+        }
+
+        /* --- 5. Review Creation Engine --- */
+        async function publishReview() {
+            const owner = localStorage.getItem('btmc_gh_owner');
+            const repo = localStorage.getItem('btmc_gh_repo');
+            const token = localStorage.getItem('btmc_gh_token');
+
+            if (!owner || !repo || !token) {
+                toggleSettingsModal();
+                showToast('Please configure and save your GitHub settings first.', 'status-error');
+                return;
+            }
+
+            const title = document.getElementById('rev-title').value.trim();
+            const slug = document.getElementById('rev-slug').value.trim();
+            const subtitle = document.getElementById('rev-subtitle').value.trim();
+            const rating = document.getElementById('rev-rating').value;
+            const age = document.getElementById('rev-age').value;
+            const adhd = document.getElementById('tag-adhd').checked;
+            const sensory = document.getElementById('tag-sensory').checked;
+            const mature = document.getElementById('tag-mature').checked;
+            const alt = document.getElementById('rev-image-alt').value.trim();
+            const summary = document.getElementById('rev-summary').value.trim();
+            const bodyHtml = document.getElementById('wysiwyg-content').innerHTML;
+            const tips = document.getElementById('rev-tips').value.trim();
+            const fileInput = document.getElementById('rev-image-file');
+            let imageFilename = document.getElementById('rev-image-filename').value;
+
+            document.getElementById('loading-spinner').style.display = 'inline-block';
+            showToast('Publishing review to GitHub...', 'status-loading');
+
+            try {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const base64 = await toBase64(file);
+                    await commitGitHubFile(owner, repo, token, `images/${imageFilename}`, base64.split(',')[1], `Upload review image: ${imageFilename}`);
+                }
+
+                const fullPageHtml = buildFullPageCode({ title, subtitle, slug, rating, age, adhd, sensory, mature, imageFilename, alt, summary, bodyHtml, tips });
+                await commitGitHubFile(owner, repo, token, slug, btoa(unescape(encodeURIComponent(fullPageHtml))), `Publish review page: ${title}`);
+
+                const cardHtml = buildCardCode({ title, slug, rating, age, adhd, sensory, mature, imageFilename, alt, summary });
+                await injectCardToFile(owner, repo, token, 'reviews.html', cardHtml);
+                await injectCardToFile(owner, repo, token, 'index.html', cardHtml);
+
+                document.getElementById('loading-spinner').style.display = 'none';
+                showToast(`🎉 Success! "${title}" has been published directly to the website!`, 'status-success');
+                document.getElementById('review-form').reset();
+                document.getElementById('wysiwyg-content').innerHTML = '<p>Write your detailed family review here...</p>';
+            } catch (err) {
+                document.getElementById('loading-spinner').style.display = 'none';
+                showToast(`Error publishing to GitHub: ${err.message}`, 'status-error');
+            }
+        }
+
+        async function commitGitHubFile(owner, repo, token, path, contentBase64, message) {
+            const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            let sha = null;
+            const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (getRes.ok) {
+                const data = await getRes.json();
+                sha = data.sha;
+            }
+
+            const body = { message: message, content: contentBase64, ...(sha && { sha: sha }) };
+            const putRes = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (!putRes.ok) {
+                const errData = await putRes.json();
+                throw new Error(errData.message || 'Failed to write file to GitHub');
+            }
+        }
+
+        async function injectCardToFile(owner, repo, token, filePath, cardHtml) {
+            const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+            const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            const existingContent = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+            
+            const marker = '<div class="card-grid">';
+            if (existingContent.includes(marker)) {
+                const updatedContent = existingContent.replace(marker, `${marker}\n${cardHtml}`);
+                await commitGitHubFile(owner, repo, token, filePath, btoa(unescape(encodeURIComponent(updatedContent))), `Update review cards in ${filePath}`);
+            }
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        function buildCardCode(d) {
+            const ratingPercent = (parseFloat(d.rating) / 5) * 100;
+            let tags = `<span class="tag tag-age">${d.age}</span>`;
+            if (d.adhd) tags += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+            if (d.sensory) tags += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
+            if (d.mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
+
+            return `\n<!-- Review Card: ${d.title} -->\n<article class="card">\n    <img src="images/${d.imageFilename}" alt="${d.alt}" loading="lazy" decoding="async">\n    <div class="card-content">\n        <div class="card-star-rating" role="img" aria-label="Rated ${d.rating} out of 5 stars">\n            <div class="star-rating" style="display: inline-block;">\n                <div class="stars-empty"><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>\n                <div class="stars-full" style="width: ${ratingPercent}%;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>\n            </div>\n        </div>\n        <h3>${d.title}</h3>\n        <div class="card-tags">\n${tags}\n        </div>\n        <p>${d.summary}</p>\n        <a href="${d.slug}" class="btn btn-secondary">Read Full Review</a>\n    </div>\n</article>`;
+        }
+
+        function buildFullPageCode(d) {
+            const ratingPercent = (parseFloat(d.rating) / 5) * 100;
+            let tags = `<span class="tag tag-age">${d.age}</span>`;
+            if (d.adhd) tags += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+            if (d.sensory) tags += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
+            if (d.mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
+
+            let tipsSection = '';
+            if (d.tips) {
+                const listItems = d.tips.split('\n').filter(t => t.trim()).map(t => `<li>${t.trim()}</li>`).join('\n');
+                tipsSection = `<article>\n<h3>Key Info for Parents</h3>\n<ul>\n${listItems}\n</ul>\n</article>`;
+            }
+
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review: ${d.title} | Behind the Magic Curtain</title>
+    <meta name="description" content="${d.summary}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Review: ${d.title} | Behind the Magic Curtain">
+    <meta property="og:description" content="${d.summary}">
+    <meta property="og:image" content="images/${d.imageFilename}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
+            <nav class="main-nav"><button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="whats-on.html">What's On</a></li>
+                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                    <li><a href="reviews.html" class="active">Reviews</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="review-header page-header">
+            <div class="container">
+                <h1>${d.title}</h1>
+                <p class="review-subtitle">${d.subtitle}</p>
+                <div class="star-rating" role="img" aria-label="Rated ${d.rating} out of 5 stars">
+                    <div class="stars-empty"><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>
+                    <div class="stars-full" style="width: ${ratingPercent}%;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+                <div class="card-tags">
+                    ${tags}
+                </div>
+            </div>
+        </section>
+        <section class="page-content">
+            <div class="container content-article">
+                <img src="images/${d.imageFilename}" alt="${d.alt}" class="review-main-image" loading="lazy" decoding="async">
+                <h2>Our Family Verdict</h2>
+                ${d.bodyHtml}
+                ${tipsSection}
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <div class="container">
+            <p class="footer-social-tagline">Follow us on social media</p>
+            <div class="footer-social-links">
+                <a href="https://www.facebook.com/share/1GMtoVD5PB/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.instagram.com/behind.the.magic.curtain" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>`;
+        }
+    </script>
+</body>
+</html>
