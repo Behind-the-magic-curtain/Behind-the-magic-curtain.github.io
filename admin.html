@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katy's Studio | Behind the Magic Curtain</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body { background: #f0f3f6; min-height: 100vh; }
+        #pin-gate { display: flex; align-items: center; justify-content: center; min-height: 80vh; padding: 20px; }
+        .pin-box { background: #fff; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 380px; width: 100%; }
+        .pin-box input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 1.6rem; text-align: center; letter-spacing: 8px; border: 2px solid #e0e0e0; border-radius: 8px; margin: 20px 0; }
+        #admin-panel { display: none; padding: 40px 0; }
+        .studio-card { background: #fff; border-radius: 12px; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); max-width: 900px; margin: 0 auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full { grid-column: span 2; }
+        label { display: block; font-weight: 700; font-family: var(--font-heading, sans-serif); margin-bottom: 6px; }
+        input[type="text"], input[type="number"], select, textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-family: var(--font-body, sans-serif); font-size: 0.95rem; }
+        .checkbox-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px; }
+        .checkbox-pill { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 14px; border-radius: 50px; border: 1px solid #e0e0e0; cursor: pointer; font-size: 0.9rem; }
+        .output-box { background: #1e1e1e; color: #4ec9b0; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 0.85rem; height: 180px; overflow-y: auto; white-space: pre-wrap; margin: 10px 0; }
+        .btn-copy { background: var(--color-accent, #00838f); color: #fff; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 700; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } .full { grid-column: span 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- Security Gate -->
+    <div id="pin-gate">
+        <div class="pin-box">
+            <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.5rem; color: var(--color-primary, #bd2419); margin-bottom: 12px;"></i>
+            <h2>Katy's Studio Access</h2>
+            <p style="font-size: 0.9rem; color: #666;">Enter your 4-digit PIN to begin.</p>
+            <input type="password" id="pin" maxlength="4" placeholder="••••" autofocus>
+            <button type="button" id="unlock-btn" class="btn btn-primary" style="width: 100%;">Unlock Studio</button>
+            <p id="pin-err" style="color: #bd2419; font-size: 0.85rem; display: none; margin-top: 10px; font-weight: 600;">Incorrect PIN.</p>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel">
+        <div class="container">
+            <div class="studio-card">
+                <h1 style="color: var(--color-primary, #bd2419); margin-top: 0;">Create a Review</h1>
+                <p style="color: #666; margin-bottom: 25px;">Fill out the fields below. Code generates live at the bottom for instant copy-pasting.</p>
+
+                <div class="grid">
+                    <div>
+                        <label for="title">Show Title *</label>
+                        <input type="text" id="title" placeholder="e.g. Wicked" value="Wicked">
+                    </div>
+                    <div>
+                        <label for="slug">Page Filename *</label>
+                        <input type="text" id="slug" placeholder="e.g. wicked-review.html" value="wicked-review.html">
+                    </div>
+                    <div class="full">
+                        <label for="tagline">Catchy Subtitle / Tagline *</label>
+                        <input type="text" id="tagline" placeholder="e.g. A spellbinding West End masterpiece!" value="A spellbinding West End masterpiece!">
+                    </div>
+                    <div>
+                        <label for="rating">Star Rating (1 to 5) *</label>
+                        <input type="number" id="rating" min="1" max="5" step="0.5" value="5">
+                    </div>
+                    <div>
+                        <label for="age">Age Rating Tag *</label>
+                        <select id="age">
+                            <option value="Ages 0+">Ages 0+</option>
+                            <option value="Ages 3+">Ages 3+</option>
+                            <option value="Ages 4+">Ages 4+</option>
+                            <option value="Ages 6+">Ages 6+</option>
+                            <option value="Ages 7+" selected>Ages 7+</option>
+                            <option value="Ages 12+">Ages 12+</option>
+                            <option value="Grown ups">Grown ups</option>
+                        </select>
+                    </div>
+                    <div class="full">
+                        <label>Special Badges</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-pill"><input type="checkbox" id="adhd" checked> ADHD-Friendly</label>
+                            <label class="checkbox-pill"><input type="checkbox" id="sensory"> Sensory Notes</label>
+                            <label class="checkbox-pill"><input type="checkbox" id="mature"> Mature Themes</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="img">Main Image Filename *</label>
+                        <input type="text" id="img" placeholder="e.g. wicked-stage.jpg" value="wicked-stage.jpg">
+                    </div>
+                    <div>
+                        <label for="alt">Image Description *</label>
+                        <input type="text" id="alt" placeholder="e.g. Cast of Wicked on stage" value="Cast of Wicked on stage">
+                    </div>
+                    <div class="full">
+                        <label for="summary">Card Summary (1–2 sentences for Homepage) *</label>
+                        <textarea id="summary" style="height: 70px;">A spellbinding journey into the Land of Oz. Full of unforgettable songs and pure theatrical magic.</textarea>
+                    </div>
+                    <div class="full">
+                        <label for="body">Review Body (Press enter for new paragraphs) *</label>
+                        <textarea id="body" style="height: 140px;">From the opening notes, the stage comes alive with emerald splendour and soaring vocals.
+
+The dynamic between the leads is electric, delivering theatre magic that captivates all ages.</textarea>
+                    </div>
+                    <div class="full">
+                        <label for="tips">Key Info for Parents (One tip per line)</label>
+                        <textarea id="tips" style="height: 90px;">Running Time: 2 hours 45 minutes (incl. interval)
+Contains strobe lighting and loud bangs in Act 1
+Booster seats available at the cloakroom</textarea>
+                    </div>
+                </div>
+
+                <hr style="margin: 30px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+                <!-- Output 1: Card Code -->
+                <h3>1. Review Card Code</h3>
+                <p style="font-size: 0.9rem; color: #666;">Paste into <code>index.html</code> and <code>reviews.html</code> inside <code>&lt;div class="card-grid"&gt;</code>.</p>
+                <div class="output-box" id="card-code"></div>
+                <button type="button" class="btn-copy" onclick="copyCode('card-code', this)">Copy Card Code</button>
+
+                <!-- Output 2: Page Code -->
+                <h3 style="margin-top: 25px;">2. Full Review Page Code</h3>
+                <p style="font-size: 0.9rem; color: #666;">Create a new file with your filename (e.g., <code>wicked-review.html</code>) and paste this in.</p>
+                <div class="output-box" id="page-code"></div>
+                <button type="button" class="btn-copy" onclick="copyCode('page-code', this)">Copy Page Code</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const PIN = "3011";
+
+        function checkPin() {
+            if (document.getElementById('pin').value.trim() === PIN) {
+                document.getElementById('pin-gate').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                updateCode();
+            } else {
+                document.getElementById('pin-err').style.display = 'block';
+                document.getElementById('pin').value = '';
+            }
+        }
+
+        document.getElementById('unlock-btn').addEventListener('click', checkPin);
+        document.getElementById('pin').addEventListener('keypress', e => { if (e.key === 'Enter') checkPin(); });
+
+        function updateCode() {
+            const title = document.getElementById('title').value.trim();
+            const slug = document.getElementById('slug').value.trim();
+            const tagline = document.getElementById('tagline').value.trim();
+            const rating = parseFloat(document.getElementById('rating').value) || 5;
+            const age = document.getElementById('age').value;
+            const adhd = document.getElementById('adhd').checked;
+            const sensory = document.getElementById('sensory').checked;
+            const mature = document.getElementById('mature').checked;
+            const img = document.getElementById('img').value.trim();
+            const alt = document.getElementById('alt').value.trim();
+            const summary = document.getElementById('summary').value.trim();
+            const body = document.getElementById('body').value.trim();
+            const tips = document.getElementById('tips').value.trim();
+
+            const ratingPercent = Math.min(100, Math.max(0, (rating / 5) * 100));
+
+            let tags = `<span class="tag tag-age">${age}</span>`;
+            if (adhd) tags += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+            if (sensory) tags += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
+            if (mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
+
+            // Card Output
+            document.getElementById('card-code').textContent = `<article class="card">
+    <img src="images/${img}" alt="${alt}" loading="lazy" decoding="async">
+    <div class="card-content">
+        <div class="card-star-rating" role="img" aria-label="Rated ${rating} out of 5 stars">
+            <div class="star-rating" style="display: inline-block;">
+                <div class="stars-empty"><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>
+                <div class="stars-full" style="width: ${ratingPercent}%;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            </div>
+        </div>
+        <h3>${title}</h3>
+        <div class="card-tags">
+${tags}
+        </div>
+        <p>${summary}</p>
+        <a href="${slug}" class="btn btn-secondary">Read Full Review</a>
+    </div>
+</article>`;
+
+            // Page Output
+            const bodyHtml = body.split('\n').filter(p => p.trim()).map(p => `    <p>${p.trim()}</p>`).join('\n');
+            let tipsHtml = '';
+            if (tips) {
+                const list = tips.split('\n').filter(t => t.trim()).map(t => `        <li>${t.trim()}</li>`).join('\n');
+                tipsHtml = `\n    <article>\n        <h3>Key Info for Parents</h3>\n        <ul>\n${list}\n        </ul>\n    </article>`;
+            }
+
+            document.getElementById('page-code').textContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review: ${title} | Behind the Magic Curtain</title>
+    <meta name="description" content="${summary}">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="whats-on.html">What's On</a></li>
+                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                    <li><a href="reviews.html" class="active">Reviews</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="review-header page-header">
+            <div class="container">
+                <h1>${title}</h1>
+                <p class="review-subtitle">${tagline}</p>
+                <div class="star-rating" role="img" aria-label="Rated ${rating} out of 5 stars">
+                    <div class="stars-empty"><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>
+                    <div class="stars-full" style="width: ${ratingPercent}%;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+                <div class="card-tags">
+${tags}
+                </div>
+            </div>
+        </section>
+        <section class="page-content">
+            <div class="container content-article">
+                <img src="images/${img}" alt="${alt}" class="review-main-image" loading="lazy">
+                <h2>Our Family Verdict</h2>
+${bodyHtml}
+${tipsHtml}
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <div class="container"><p>&copy; 2025 Behind the Magic Curtain. All rights reserved.</p></div>
+    </footer>
+</body>
+</html>`;
+        }
+
+        document.querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', updateCode);
+        });
+
+        function copyCode(id, btn) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btn.innerText;
+                btn.innerText = 'Copied!';
+                setTimeout(() => { btn.innerText = orig; }, 1800);
+            });
+        }
+    </script>
+</body>
+</html>
