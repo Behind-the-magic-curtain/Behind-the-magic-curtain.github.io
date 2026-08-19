@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>What's On | Behind the Magic Curtain</title>
-    <meta name="description" content="Discover the best upcoming family-friendly shows, UK tours, and West End productions with age recommendations and relaxed performance details.">
+    <meta name="description" content="Discover the best family and children's theatre shows, West End tours, and stage productions across the Midlands and UK.">
 
-    <!-- OpenGraph / Social Media Meta Tags -->
+    <!-- OpenGraph / Social Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="What's On | Behind the Magic Curtain">
-    <meta property="og:description" content="Our curated guide to the best upcoming family-friendly theatre shows and UK tours.">
+    <meta property="og:description" content="Discover the best family and children's theatre shows, West End tours, and stage productions across the Midlands and UK.">
     <meta property="og:image" content="images/paddington-the-musical.jpg">
 
     <!-- Google Fonts -->
@@ -23,6 +23,7 @@
 </head>
 <body>
 
+    <!-- Site Header & Navigation -->
     <header class="site-header">
         <div class="container">
             <div class="logo">
@@ -47,157 +48,54 @@
         <!-- Page Header -->
         <section class="page-header">
             <div class="container">
-                <h1>What's On</h1>
-                <p>Our top picks for the best family-friendly shows, West End runs, and touring productions.</p>
+                <h1>What's On Guide</h1>
+                <p>Upcoming family stage productions, West End transfers, and touring shows across the UK.</p>
             </div>
         </section>
 
-        <!-- Listing Content -->
+        <!-- What's On Content List -->
         <section class="page-content">
-            <div class="container">
-                
-                <h2>Upcoming Shows We're Excited About</h2>
+            <div class="container" id="whatson-list">
+                <!-- Dynamic show listings are loaded here automatically from data/whatson.json -->
 
-                <!-- Show 1: Paddington The Musical -->
+                <!-- Static Fallback: Paddington The Musical -->
                 <article class="listing-card">
                     <div class="listing-image">
-                        <img src="images/paddington-the-musical.jpg" alt="Paddington Bear on stage poster" loading="lazy" decoding="async">
+                        <img src="images/paddington-the-musical.jpg" alt="Paddington The Musical" loading="lazy" decoding="async">
                     </div>
                     <div class="listing-content">
                         <h3>Paddington The Musical</h3>
-                        
-                        <div class="listing-tags">
-                            <span class="tag tag-age">Ages 4+</span>
-                        </div>
-                        
+                        <div class="card-tags"><span class="tag tag-age">Ages 4+</span></div>
                         <ul class="listing-info">
-                            <li>
-                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                <span>The Savoy Theatre, London</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-                                <span>Booking until Oct 2026</span>
-                            </li>
+                            <li><i class="fa-solid fa-location-dot"></i> <span>The Savoy Theatre, London</span></li>
+                            <li><i class="fa-solid fa-calendar-days"></i> <span>Booking until October 2026</span></li>
+                            <li><i class="fa-solid fa-clock"></i> <span>2hrs 15mins (incl. interval)</span></li>
                         </ul>
-                        
-                        <p>A small bear in a big city! A family-friendly stage show at London's Savoy Theatre that tells the story of a little lost bear who finds a new home with the Brown family.</p>
-                        
-                        <div class="listing-links">
+                        <p>A small bear in a big city! A family-friendly stage show at London's Savoy Theatre telling the story of a little lost bear who finds a new home with the Brown family.</p>
+                        <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap;">
                             <a href="https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>
                             <a href="https://paddingtonthemusical.com/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>
                         </div>
                     </div>
                 </article>
 
-                <!-- Show 2: Elf The Musical -->
+                <!-- Static Fallback: Elf The Musical -->
                 <article class="listing-card">
                     <div class="listing-image">
-                        <img src="images/elf-the-musical.jpg" alt="Elf The Musical Logo" loading="lazy" decoding="async">
+                        <img src="images/elf-the-musical.jpg" alt="Elf The Musical" loading="lazy" decoding="async">
                     </div>
                     <div class="listing-content">
                         <h3>Elf The Musical</h3>
-                        
-                        <div class="listing-tags">
-                            <span class="tag tag-touring">UK Tour</span>
-                            <span class="tag tag-age">Ages 0+</span>
-                            <span class="tag tag-sensory">Relaxed Performance</span>
-                        </div>
-                        
+                        <div class="card-tags"><span class="tag tag-age">Ages 0+</span></div>
                         <ul class="listing-info">
-                            <li>
-                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                <span>Wolverhampton Grand Theatre</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-                                <span>Booking 11th–16th November 2025</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-clock" aria-hidden="true"></i>
-                                <span>2hrs 25mins (Incl. Interval)</span>
-                            </li>
+                            <li><i class="fa-solid fa-location-dot"></i> <span>Wolverhampton Grand Theatre</span></li>
+                            <li><i class="fa-solid fa-calendar-days"></i> <span>Booking 11th–16th November 2025</span></li>
+                            <li><i class="fa-solid fa-clock"></i> <span>2hrs 25mins (incl. interval)</span></li>
                         </ul>
-                        
-                        <p>“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season. A feel-good Christmas classic with plenty of laughs for both kids and grown-ups.</p>
-                        
-                        <div class="listing-links">
+                        <p>“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season in this heartwarming musical comedy for all ages.</p>
+                        <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap;">
                             <a href="https://www.grandtheatre.co.uk/whats-on/elf-the-musical/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>
                             <a href="https://elfthemusicaluk.com/" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Show 3: Disney's Frozen -->
-                <article class="listing-card">
-                    <div class="listing-image">
-                        <img src="images/frozen-show.jpg" alt="Elsa and Anna on stage in Frozen The Musical" loading="lazy" decoding="async">
-                    </div>
-                    <div class="listing-content">
-                        <h3>Disney's Frozen</h3>
-                        
-                        <div class="listing-tags">
-                            <span class="tag tag-age">Ages 6+</span>
-                            <span class="tag tag-sensory">Relaxed Performance</span>
-                        </div>
-                        
-                        <ul class="listing-info">
-                            <li>
-                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                <span>Theatre Royal Drury Lane, London</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-                                <span>Booking until October 2026</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-clock" aria-hidden="true"></i>
-                                <span>2hrs 15mins (Incl. Interval)</span>
-                            </li>
-                        </ul>
-                        
-                        <p>A true spectacle! We've seen this one and our review is coming soon. It's magical, but be prepared for some powerful singing and dramatic icy blasts!</p>
-                        
-                        <div class="listing-links">
-                            <a href="#" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>
-                            <a href="#" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Show 4: Bluey's Big Play -->
-                <article class="listing-card">
-                    <div class="listing-image">
-                        <img src="images/bluey-show.jpg" alt="Bluey puppet on stage" loading="lazy" decoding="async">
-                    </div>
-                    <div class="listing-content">
-                        <h3>Bluey's Big Play</h3>
-                        
-                        <div class="listing-tags">
-                            <span class="tag tag-touring">UK Tour</span>
-                            <span class="tag tag-age">Ages 3+</span>
-                        </div>
-                        
-                        <ul class="listing-info">
-                            <li>
-                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-                                <span>UK Tour (Check local venue)</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-                                <span>Currently Touring</span>
-                            </li>
-                            <li>
-                                <i class="fa-solid fa-clock" aria-hidden="true"></i>
-                                <span>50 mins (No Interval)</span>
-                            </li>
-                        </ul>
-                        
-                        <p>For real life?! Bluey is coming to the stage. This is top of our list for younger children and toddlers with lively puppetry and a gentle runtime.</p>
-                        
-                        <div class="listing-links">
-                            <a href="#" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>
-                            <a href="#" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>
                         </div>
                     </div>
                 </article>
@@ -206,6 +104,7 @@
         </section>
     </main>
 
+    <!-- Global Footer -->
     <footer class="site-footer">
         <div class="container">
             <p class="footer-social-tagline">Follow us on social media</p>
@@ -217,10 +116,11 @@
                     <i class="fa-brands fa-instagram" aria-hidden="true"></i>
                 </a>
             </div>
-            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+            <p class="footer-copyright">&copy; 2026 Behind the Magic Curtain. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Core Dynamic Script -->
     <script src="script.js"></script>
 </body>
 </html>
