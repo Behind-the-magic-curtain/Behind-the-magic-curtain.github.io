@@ -8,15 +8,5 @@
     "accessibility": "Level access to stalls and circle via lifts, accessible toilets on all levels, booster seats available at kiosk, and Sennheiser infrared hearing system installed.",
     "relaxed": "Regular relaxed and sensory-friendly performances scheduled for major pantomimes and touring family shows with chill-out zones in the foyer.",
     "rank": 1
-  },
-  {
-    "id": "th_1787130332555",
-    "name": "Test Theatre1",
-    "location": "Testing",
-    "image": "sc-lookbook-hero.png",
-    "website": "Testlink.link",
-    "accessibility": "Testing facilities area",
-    "relaxed": "Testing relaxed performances and sensory Support\n\nThis has a line break above",
-    "rank": 2
   }
 ]
