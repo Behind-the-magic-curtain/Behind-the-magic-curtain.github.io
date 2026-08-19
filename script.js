@@ -53,7 +53,7 @@ function initDynamicPages() {
     if (isTheatrePage) loadTheatreGuideDirectory();
 }
 
-/* --- Dynamic Loader: Homepage (Featured Reviews Rule of 3) --- */
+/* --- Dynamic Loader: Homepage (Takes Exact Top 3 Published Reviews) --- */
 async function loadFeaturedReviews() {
     const container = document.querySelector('.home-featured .card-grid');
     if (!container) return;
@@ -63,9 +63,9 @@ async function loadFeaturedReviews() {
         if (!res.ok) throw new Error('Could not load reviews data');
         const reviews = await res.json();
 
-        // Filter published & featured, sort by numerical rank, take top 3
+        // Sort by numerical rank and take the top 3 published items
         const featured = reviews
-            .filter(r => r.status === 'published' && r.featured)
+            .filter(r => r.status === 'published')
             .sort((a, b) => (a.rank || 0) - (b.rank || 0))
             .slice(0, 3);
 
@@ -132,7 +132,6 @@ async function loadWhatsOnDirectory() {
         const shows = await res.json();
         const today = new Date().toISOString().split('T')[0];
 
-        // Filter out expired shows automatically
         const activeShows = shows
             .filter(s => !s.expiryDate || s.expiryDate >= today)
             .sort((a, b) => (a.rank || 0) - (b.rank || 0));
