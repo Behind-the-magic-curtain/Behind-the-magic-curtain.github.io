@@ -15,14 +15,30 @@
     <style>
         body { background: #f0f3f6; min-height: 100vh; margin: 0; }
         
-        /* PIN Gate */
+        /* PIN Access Gate */
         #pin-gate { display: flex; align-items: center; justify-content: center; min-height: 85vh; padding: 20px; }
         .pin-box { background: #fff; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 380px; width: 100%; }
         .pin-box input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 1.6rem; text-align: center; letter-spacing: 8px; border: 2px solid #e0e0e0; border-radius: 8px; margin: 20px 0; font-family: monospace; }
 
-        /* Main Panel */
-        #admin-panel { display: none; padding: 30px 0 80px 0; }
-        .studio-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        /* Main Studio Panel */
+        #admin-panel { display: none; padding: 20px 0 80px 0; }
+        .studio-container { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Persistent Edit Mode Warning Banner */
+        #edit-banner {
+            display: none;
+            background: #fff3cd;
+            border: 2px solid #ffeeba;
+            color: #856404;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            align-items: center;
+            justify-content: space-between;
+        }
+        #edit-banner strong { font-family: var(--font-heading, sans-serif); font-size: 1.05rem; }
+
         .studio-card { background: #fff; border-radius: 12px; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 30px; }
         .studio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; }
         
@@ -40,7 +56,7 @@
 
         .field-error { color: #bd2419; font-size: 0.85rem; margin-top: 4px; display: none; font-weight: 600; }
 
-        /* Drag & Drop */
+        /* Drag & Drop Zone */
         .drop-zone { border: 2px dashed #00838f; background: #f8fafb; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: background 0.2s ease; }
         .drop-zone:hover { background: #edf7f8; }
         .drop-zone i { font-size: 2.2rem; color: #00838f; margin-bottom: 10px; }
@@ -51,7 +67,7 @@
         .main-badge { background: #ffd700; color: #222; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
         .img-controls button { background: #f0f3f6; border: 1px solid #d0d7de; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
 
-        /* WYSIWYG */
+        /* WYSIWYG Editor */
         .wysiwyg-toolbar { display: flex; flex-wrap: wrap; gap: 6px; background: #f8f9fa; border: 1.5px solid #e0e0e0; border-bottom: none; padding: 8px; border-radius: 6px 6px 0 0; }
         .wysiwyg-toolbar button { background: #fff; border: 1px solid #e0e0e0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
         .wysiwyg-toolbar button:hover { background: #00838f; color: #fff; }
@@ -61,8 +77,13 @@
         .checkbox-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 5px; }
         .checkbox-pill { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 16px; border-radius: 50px; border: 1px solid #e0e0e0; cursor: pointer; font-size: 0.9rem; }
         
-        .btn-delete { background: #d32f2f; color: #fff; border: none; padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-delete:hover { background: #b71c1c; }
+        /* Manage Table List Styles */
+        .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .crud-table th, .crud-table td { padding: 14px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        .crud-table th { background: #f8f9fa; font-family: var(--font-heading, sans-serif); font-size: 0.9rem; }
+        .rank-btn { background: #f0f3f6; border: 1px solid #d0d7de; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: #00838f; color: #fff; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; margin-right: 6px; }
+        .btn-delete { background: #d32f2f; color: #fff; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; }
 
         #status-toast { display: none; padding: 15px 20px; border-radius: 6px; margin-top: 20px; font-weight: 600; }
         .status-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
@@ -94,11 +115,22 @@
     <div id="admin-panel">
         <div class="studio-container">
             
+            <!-- Global Edit Mode Banner -->
+            <div id="edit-banner">
+                <div>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <strong>Editing Live Entry:</strong> <span id="edit-item-title">Item Name</span>
+                </div>
+                <button type="button" onclick="cancelEditMode()" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.85rem; background: #fff;">
+                    Cancel & Exit
+                </button>
+            </div>
+
             <div class="studio-card">
                 <div class="studio-header">
                     <div>
                         <h1 style="color: #bd2419; margin: 0; font-size: 2rem;">Behind The Magic Curtain Studio</h1>
-                        <p style="margin: 0; font-size: 0.9rem; color: #555;">Publish directly to your live website with no coding required.</p>
+                        <p style="margin: 0; font-size: 0.9rem; color: #555;">Visual Content Management System</p>
                     </div>
                     <div style="display: flex; gap: 10px;">
                         <button type="button" onclick="toggleSettingsModal()" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">
@@ -113,9 +145,9 @@
                 <!-- Studio Tabs -->
                 <div class="studio-nav-tabs">
                     <button type="button" class="tab-btn active" onclick="switchTab('tab-reviews', this)"><i class="fa-solid fa-star"></i> Reviews</button>
-                    <button type="button" class="tab-btn" onclick="switchTab('tab-theatres', this)"><i class="fa-solid fa-building-columns"></i> Theatres Guide</button>
+                    <button type="button" class="tab-btn" onclick="switchTab('tab-theatres', this)"><i class="fa-solid fa-building-columns"></i> Theatre Guide</button>
                     <button type="button" class="tab-btn" onclick="switchTab('tab-whatson', this)"><i class="fa-solid fa-calendar-days"></i> What's On</button>
-                    <button type="button" class="tab-btn" onclick="switchTab('tab-manage', this); loadSiteContent();"><i class="fa-solid fa-trash-can"></i> Manage / Delete</button>
+                    <button type="button" class="tab-btn" onclick="switchTab('tab-manage', this); loadManagementDashboard();"><i class="fa-solid fa-list-check"></i> Manage & Order Content</button>
                 </div>
 
                 <!-- GitHub API Settings Drawer -->
@@ -138,11 +170,12 @@
                     <button type="button" onclick="saveSettings()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 18px; font-size: 0.85rem;">Save Connection Settings</button>
                 </div>
 
-                <!-- TAB 1: REVIEWS -->
+                <!-- ================= TAB 1: REVIEWS ================= -->
                 <div id="tab-reviews" class="tab-content">
-                    <form id="form-review" onsubmit="event.preventDefault(); publishReviewFlow();">
+                    <form id="form-review" onsubmit="event.preventDefault(); handleReviewSubmit();">
+                        <input type="hidden" id="rev-edit-id" value="">
+                        
                         <div class="studio-grid">
-                            
                             <div class="form-group">
                                 <label for="rev-title">Show Title *</label>
                                 <input type="text" id="rev-title" placeholder="e.g. Wicked" required onkeyup="syncReviewMeta()">
@@ -191,7 +224,7 @@
                                 <div class="drop-zone" onclick="document.getElementById('img-file-picker').click()">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                     <p style="margin: 0; font-weight: 600;">Drag and drop image files here, or click to browse</p>
-                                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #777;">The top image will be the Main Poster.</p>
+                                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #777;">The top image is the Main Poster.</p>
                                     <input type="file" id="img-file-picker" accept="image/*" multiple style="display: none;" onchange="handleImageSelection(this.files)">
                                 </div>
                                 <div id="image-list-container" class="image-preview-list"></div>
@@ -199,12 +232,12 @@
 
                             <div class="form-group full-span">
                                 <label for="rev-image-alt">Main Image Description (For Screen Readers) *</label>
-                                <input type="text" id="rev-image-alt" placeholder="e.g. Cast of Wicked performing Defying Gravity on stage" required>
+                                <input type="text" id="rev-image-alt" placeholder="e.g. Cast of Wicked performing on stage" required>
                             </div>
 
                             <div class="form-group full-span">
                                 <label for="rev-summary">Short Card Summary (1–2 sentences for listing cards) *</label>
-                                <textarea id="rev-summary" rows="2" placeholder="Brief summary for homepage..." required></textarea>
+                                <textarea id="rev-summary" rows="2" placeholder="Brief summary of the experience..." required></textarea>
                             </div>
 
                             <div class="form-group full-span">
@@ -217,7 +250,7 @@
                                     <button type="button" onclick="formatDoc('createLink')"><i class="fa-solid fa-link"></i> Link</button>
                                 </div>
                                 <div id="wysiwyg-content" class="wysiwyg-editor" contenteditable="true">
-                                    <p>Write your detailed review here...</p>
+                                    <p>Write your review here...</p>
                                 </div>
                             </div>
 
@@ -227,19 +260,17 @@
                             </div>
 
                             <div class="form-group full-span">
-                                <label>Where Should This Be Added Automatically?</label>
+                                <label>Visibility & Homepage Status</label>
                                 <div class="checkbox-container">
-                                    <label class="checkbox-pill"><input type="checkbox" id="dest-home" checked> Add to Homepage (Featured Reviews)</label>
-                                    <label class="checkbox-pill"><input type="checkbox" id="dest-reviews" checked> Add to Reviews Page (All Reviews)</label>
-                                    <label class="checkbox-pill"><input type="checkbox" id="dest-whatson"> Add to What's On Guide</label>
+                                    <label class="checkbox-pill"><input type="checkbox" id="rev-featured" checked> <strong>Feature on Homepage (Slot #1 FIFO Queue)</strong></label>
+                                    <label class="checkbox-pill"><input type="checkbox" id="rev-published" checked> Publish to Live Website</label>
                                 </div>
                             </div>
-
                         </div>
 
                         <div style="margin-top: 30px; display: flex; gap: 15px; align-items: center;">
-                            <button type="submit" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Publish Directly to Website
+                            <button type="submit" id="rev-submit-btn" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Publish Review to Website
                             </button>
                             <span id="loading-spinner" style="display: none; color: #00838f; font-weight: 600;">
                                 <i class="fa-solid fa-spinner fa-spin"></i> Saving directly to GitHub...
@@ -248,9 +279,11 @@
                     </form>
                 </div>
 
-                <!-- TAB 2: THEATRES -->
+                <!-- ================= TAB 2: THEATRE GUIDE ================= -->
                 <div id="tab-theatres" class="tab-content" style="display: none;">
-                    <form id="form-theatre" onsubmit="event.preventDefault(); publishTheatreFlow();">
+                    <form id="form-theatre" onsubmit="event.preventDefault(); handleTheatreSubmit();">
+                        <input type="hidden" id="th-edit-id" value="">
+                        
                         <div class="studio-grid">
                             <div class="form-group">
                                 <label for="th-name">Theatre Name *</label>
@@ -262,8 +295,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="th-image-picker">Theatre Photo</label>
-                                <input type="file" id="th-image-picker" accept="image/*" onchange="previewSingleImage(this, 'th-img-preview-name')">
-                                <input type="hidden" id="th-img-preview-name" value="theatre-default.jpg">
+                                <input type="file" id="th-image-picker" accept="image/*" onchange="previewSingleImage(this, 'th-img-name')">
+                                <input type="hidden" id="th-img-name" value="theatre-default.jpg">
                             </div>
                             <div class="form-group">
                                 <label for="th-website">Official Theatre Website URL</label>
@@ -279,16 +312,18 @@
                             </div>
                         </div>
                         <div style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Add to Theatre Guide
+                            <button type="submit" id="th-submit-btn" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- TAB 3: WHAT'S ON -->
+                <!-- ================= TAB 3: WHAT'S ON ================= -->
                 <div id="tab-whatson" class="tab-content" style="display: none;">
-                    <form id="form-whatson" onsubmit="event.preventDefault(); publishWhatsOnFlow();">
+                    <form id="form-whatson" onsubmit="event.preventDefault(); handleWhatsOnSubmit();">
+                        <input type="hidden" id="wo-edit-id" value="">
+                        
                         <div class="studio-grid">
                             <div class="form-group">
                                 <label for="wo-title">Show Name *</label>
@@ -301,6 +336,10 @@
                             <div class="form-group">
                                 <label for="wo-dates">Booking Dates *</label>
                                 <input type="text" id="wo-dates" placeholder="e.g. Booking until October 2026" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="wo-expiry">End Date (Auto-Expiry Trigger)</label>
+                                <input type="date" id="wo-expiry">
                             </div>
                             <div class="form-group">
                                 <label for="wo-runtime">Runtime</label>
@@ -317,10 +356,10 @@
                                     <option value="Ages 12+">Ages 12+</option>
                                 </select>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group full-span">
                                 <label for="wo-image-picker">Show Poster</label>
-                                <input type="file" id="wo-image-picker" accept="image/*" onchange="previewSingleImage(this, 'wo-img-preview-name')">
-                                <input type="hidden" id="wo-img-preview-name" value="show-default.jpg">
+                                <input type="file" id="wo-image-picker" accept="image/*" onchange="previewSingleImage(this, 'wo-img-name')">
+                                <input type="hidden" id="wo-img-name" value="show-default.jpg">
                             </div>
                             <div class="form-group full-span">
                                 <label for="wo-desc">Short Description *</label>
@@ -336,27 +375,34 @@
                             </div>
                         </div>
                         <div style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Add to What's On Page
+                            <button type="submit" id="wo-submit-btn" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Save What's On Show
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- TAB 4: MANAGE / DELETE -->
+                <!-- ================= TAB 4: MANAGE & RE-ORDER ================= -->
                 <div id="tab-manage" class="tab-content" style="display: none;">
-                    <h2>Published Reviews</h2>
-                    <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Deleting a review permanently removes its page and clears its card from the website.</p>
-                    <div id="reviews-list-container">
-                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading published reviews...</p>
+                    <h2>Active Reviews (Public Directory Order)</h2>
+                    <p style="font-size: 0.95rem; color: #555;">Use the ▲ and ▼ buttons to change the order on the Reviews page. The top 3 marked "Featured" display on the Homepage.</p>
+                    
+                    <div id="manage-reviews-table-container">
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading data...</p>
                     </div>
 
-                    <hr style="margin: 35px 0;">
+                    <hr style="margin: 40px 0;">
 
-                    <h2>Uploaded Images (/images/)</h2>
-                    <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Remove unused photos from storage.</p>
-                    <div id="images-list-container">
-                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading image gallery...</p>
+                    <h2>What's On Listings</h2>
+                    <div id="manage-whatson-table-container">
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading data...</p>
+                    </div>
+
+                    <hr style="margin: 40px 0;">
+
+                    <h2>Theatre Guide Directory</h2>
+                    <div id="manage-theatres-table-container">
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading data...</p>
                     </div>
                 </div>
 
@@ -366,7 +412,7 @@
         </div>
     </div>
 
-    <!-- Load Dedicated Script Engine -->
+    <!-- Script Engine -->
     <script src="admin.js"></script>
 </body>
 </html>
