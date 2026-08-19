@@ -6,9 +6,75 @@
     <title>All Reviews | Behind the Magic Curtain</title>
     <meta name="description" content="Explore family-friendly theatre reviews across the UK, featuring parent guides, age recommendations, ADHD-friendly tips, and sensory notes.">
 
-    
+    <!-- OpenGraph / Social Sharing Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="All Reviews | Behind the Magic Curtain">
+    <meta property="og:description" content="Explore family-friendly theatre reviews across the UK with parent tips, age guides, ADHD notes, and sensory advice.">
+    <meta property="og:image" content="images/madagascar-review.jpg">
 
-                    <!-- Review Card: Madagascar -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets & Icons -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- Site Header & Navigation -->
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">Behind the Magic Curtain</a>
+            </div>
+            <nav class="main-nav" aria-label="Main Navigation">
+                <button class="nav-toggle" aria-label="Toggle navigation menu">
+                    <span class="hamburger"></span>
+                </button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="whats-on.html">What's On</a></li>
+                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                    <li><a href="reviews.html" class="active">Reviews</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Page Title Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1>Show Reviews</h1>
+                <p>Honest, family-focused reviews with practical tips for parents, neurodiversity advice, and age guides.</p>
+            </div>
+        </section>
+
+        <!-- Category Filter Section -->
+        <section class="filter-section">
+            <div class="container">
+                <h3>Filter by Category:</h3>
+                <div class="filter-buttons">
+                    <button type="button" class="filter-btn active" data-filter="all">All Reviews</button>
+                    <button type="button" class="filter-btn" data-filter="adhd">ADHD-Friendly</button>
+                    <button type="button" class="filter-btn" data-filter="sensory">Sensory Notes</button>
+                    <button type="button" class="filter-btn" data-filter="under5">Under 5s</button>
+                    <button type="button" class="filter-btn" data-filter="5plus">Ages 5–8</button>
+                    <button type="button" class="filter-btn" data-filter="older">Ages 9+ & Teens</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Reviews Grid -->
+        <section class="page-content" style="padding-top: 10px;">
+            <div class="container">
+                <div class="card-grid" id="all-reviews-grid">
+                    <!-- Dynamic review cards are loaded here automatically from data/reviews.json -->
+
+                    <!-- Static Fallback: Madagascar -->
                     <article class="card">
                         <img src="images/madagascar-review.jpg" alt="Madagascar the Musical stage cast" loading="lazy" decoding="async">
                         <div class="card-content">
@@ -30,7 +96,7 @@
                         </div>
                     </article>
 
-                    <!-- Review Card: Boy at the Back of the Class -->
+                    <!-- Static Fallback: The Boy At The Back Of The Class -->
                     <article class="card">
                         <img src="images/the-boy-at-the-back-of-the-class.jpg" alt="Book cover image The Boy at the Back of the Class" loading="lazy" decoding="async">
                         <div class="card-content">
@@ -51,7 +117,7 @@
                         </div>
                     </article>
 
-                    <!-- Review Card: Black Power Desk -->
+                    <!-- Static Fallback: Black Power Desk -->
                     <article class="card">
                         <img src="images/black-power-desk.jpg" alt="Celia and Dina sit next to the title Black Power Desk" loading="lazy" decoding="async">
                         <div class="card-content">
@@ -77,6 +143,7 @@
         </section>
     </main>
 
+    <!-- Global Footer -->
     <footer class="site-footer">
         <div class="container">
             <p class="footer-social-tagline">Follow us on social media</p>
@@ -88,10 +155,11 @@
                     <i class="fa-brands fa-instagram" aria-hidden="true"></i>
                 </a>
             </div>
-            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+            <p class="footer-copyright">&copy; 2026 Behind the Magic Curtain. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Core Dynamic Script -->
     <script src="script.js"></script>
 </body>
 </html>
