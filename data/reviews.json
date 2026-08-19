@@ -1,29 +1,5 @@
 [
   {
-    "id": "rev_1787130227936",
-    "title": "Test Review1",
-    "slug": "test-review1.html",
-    "subtitle": "Test Tagline",
-    "rating": 3.5,
-    "age": "Ages 7+",
-    "tags": {
-      "adhd": true,
-      "sensory": false,
-      "mature": false
-    },
-    "mainImage": "0q0a0533.jpg",
-    "altText": "Test Image1",
-    "summary": "Test Summary 1-2\n\nLine 2 with Break above",
-    "bodyHtml": "\n                                    <p>Write your review here...</p><p><br></p><p>Here is the full review</p><p><br></p><p>Blah blah blah</p>\n                                ",
-    "tips": [
-      "Never running ever again",
-      "This is a test"
-    ],
-    "featured": true,
-    "rank": 1,
-    "status": "published"
-  },
-  {
     "id": "rev_madagascar",
     "title": "Madagascar The Musical",
     "slug": "madagascar-the-musical.html",
