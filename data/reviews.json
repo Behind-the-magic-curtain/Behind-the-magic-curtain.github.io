@@ -1,25 +1,5 @@
 [
   {
-    "id": "rev_1787132292098",
-    "title": "Test Review",
-    "slug": "test-review.html",
-    "subtitle": "Test subs",
-    "rating": 4.3,
-    "age": "Ages 7+",
-    "tags": {
-      "adhd": true,
-      "sensory": false,
-      "mature": false
-    },
-    "mainImage": "placeholder.jpg",
-    "altText": "Test No image",
-    "summary": "Test summary",
-    "bodyHtml": "<p>Write your review here...test</p>",
-    "tips": [],
-    "rank": 1,
-    "status": "published"
-  },
-  {
     "id": "rev_madagascar",
     "title": "Madagascar The Musical",
     "slug": "madagascar-the-musical.html",
@@ -41,7 +21,7 @@
       "Loud noises: Expect some loud roars as you explore the jungles of Madagascar."
     ],
     "featured": true,
-    "rank": 2,
+    "rank": 1,
     "status": "published"
   },
   {
@@ -66,7 +46,7 @@
       "Themes & Tone: Sensitively tackles serious themes including the refugee experience."
     ],
     "featured": false,
-    "rank": 3,
+    "rank": 2,
     "status": "published"
   },
   {
@@ -90,7 +70,7 @@
       "Content Advisory: Contains strong, discriminatory language and depictions of violence."
     ],
     "featured": false,
-    "rank": 4,
+    "rank": 3,
     "status": "published"
   }
 ]
