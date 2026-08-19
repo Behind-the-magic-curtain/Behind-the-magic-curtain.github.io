@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Theatre Guide | Behind the Magic Curtain</title>
-    <meta name="description" content="Discover accessibility info, relaxed performance options, and family facilities at theatres across the UK.">
+    <meta name="description" content="A parent-focused guide to UK theatres, detailing accessibility, relaxed performances, sensory facilities, booster seats, and family travel.">
 
     <!-- OpenGraph / Social Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Theatre Guide | Behind the Magic Curtain">
-    <meta property="og:description" content="Everything you need to know about the UK's most family-friendly and accessible theatre venues.">
-    <meta property="og:image" content="images/james-theatre-first-trip.jpg">
+    <meta property="og:description" content="A parent-focused guide to UK theatres with details on accessibility, relaxed performances, and sensory facilities.">
+    <meta property="og:image" content="images/theatre-guide-hippodrome.jpg">
 
-    <!-- Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
@@ -23,6 +23,7 @@
 </head>
 <body>
 
+    <!-- Site Header & Navigation -->
     <header class="site-header">
         <div class="container">
             <div class="logo">
@@ -48,24 +49,23 @@
         <section class="page-header">
             <div class="container">
                 <h1>Theatre Guide</h1>
-                <p>Everything you need to know about the UK's most family-friendly and accessible venues.</p>
+                <p>Essential venue guides for parents: accessibility, relaxed performances, booster seat availability, and sensory support.</p>
             </div>
         </section>
 
         <!-- Theatre List Container -->
         <section class="page-content">
             <div class="container" id="theatre-list">
-                
-                <!-- START: Venue Card Example -->
+                <!-- Dynamic theatre cards are loaded here automatically from data/theatres.json -->
+
+                <!-- Static Fallback: Birmingham Hippodrome -->
                 <article class="theatre-card">
                     <div class="theatre-img-container">
-                        <img src="images/theatre-guide-hippodrome.jpg" alt="Birmingham Hippodrome exterior" loading="lazy" decoding="async">
+                        <img src="images/theatre-guide-hippodrome.jpg" alt="Birmingham Hippodrome" loading="lazy" decoding="async">
                     </div>
                     <div class="theatre-info">
                         <h2>Birmingham Hippodrome</h2>
-                        <span class="theatre-location">
-                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i> Birmingham
-                        </span>
+                        <span class="theatre-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> Birmingham</span>
                         <div class="theatre-meta">
                             <p><strong>Accessibility:</strong> Level access to stalls and circle via lifts, accessible toilets on all levels, booster seats available at kiosk, and Sennheiser infrared hearing system installed.</p>
                             <p><strong>Relaxed Performances:</strong> Regular relaxed and sensory-friendly performances scheduled for major pantomimes and touring family shows with chill-out zones in the foyer.</p>
@@ -73,14 +73,12 @@
                         <a href="https://www.birminghamhippodrome.com/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Theatre Website</a>
                     </div>
                 </article>
-                <!-- END: Venue Card Example -->
-
-                <!-- PASTE NEW THEATRE CARDS DIRECTLY BELOW THIS LINE -->
 
             </div>
         </section>
     </main>
 
+    <!-- Global Footer -->
     <footer class="site-footer">
         <div class="container">
             <p class="footer-social-tagline">Follow us on social media</p>
@@ -92,10 +90,11 @@
                     <i class="fa-brands fa-instagram" aria-hidden="true"></i>
                 </a>
             </div>
-            <p class="footer-copyright">&copy; 2025 Behind the Magic Curtain. All rights reserved.</p>
+            <p class="footer-copyright">&copy; 2026 Behind the Magic Curtain. All rights reserved.</p>
         </div>
     </footer>
 
+    <!-- Core Dynamic Script -->
     <script src="script.js"></script>
 </body>
 </html>
