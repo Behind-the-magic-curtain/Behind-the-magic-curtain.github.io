@@ -26,19 +26,5 @@
     "siteLink": "https://elfthemusicaluk.com/",
     "expiryDate": "2025-11-17",
     "rank": 2
-  },
-  {
-    "id": "wo_1787130400091",
-    "title": "Test WhatsOn1",
-    "venue": "Test Venue",
-    "dates": "Booking until the never never",
-    "expiryDate": "2026-08-21",
-    "runtime": "2hours",
-    "age": "Ages 0+",
-    "image": "gemini_generated_image_igy6anigy6anigy6.jpg",
-    "desc": "Descriptioni",
-    "ticketLink": "Ticketbookinglink.com",
-    "siteLink": "Productionwebsitelink.com",
-    "rank": 3
   }
 ]
