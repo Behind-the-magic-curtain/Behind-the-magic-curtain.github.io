@@ -1,11 +1,11 @@
 const MASTER_PIN = "3011";
 
-// Multi-section state cache
 let reviewImages = [];
 let theatreImages = [];
 let whatsonImages = [];
 let editMode = false;
 let currentCache = { reviews: [], whatson: [], theatres: [] };
+let draggedRowIndex = null;
 
 /* --- 1. PIN Security & Initialization --- */
 function unlockStudio() {
@@ -69,36 +69,59 @@ function switchTab(tabId, btn) {
     btn.classList.add('active');
 }
 
-/* --- 2. Validation & Image Handlers --- */
-function syncReviewMeta() {
-    if (editMode) return;
-    const title = document.getElementById('rev-title').value;
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-    document.getElementById('rev-slug').value = slug ? slug + '.html' : '';
+/* --- 2. In-Browser WebP Image Compressor --- */
+async function processAndCompressImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Scale max width/height to 1200px
+                const maxDim = 1200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height && width > maxDim) {
+                    height = Math.round((height * maxDim) / width);
+                    width = maxDim;
+                } else if (height > maxDim) {
+                    width = Math.round((width * maxDim) / height);
+                    height = maxDim;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert to WebP format at 85% quality
+                const webpBase64 = canvas.toDataURL('image/webp', 0.85);
+                const rawName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                const cleanWebpName = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.webp';
+
+                resolve({
+                    base64: webpBase64.split(',')[1],
+                    preview: webpBase64,
+                    name: cleanWebpName
+                });
+            };
+        };
+    });
 }
 
-function validateStarRating(input) {
-    const val = parseFloat(input.value);
-    const err = document.getElementById('star-err');
-    if (isNaN(val) || val < 0 || val > 5) {
-        err.style.display = 'block';
-        input.value = '5.0';
-        return false;
-    }
-    err.style.display = 'none';
-    input.value = val.toFixed(1);
-    return true;
-}
-
-function handleImageSelection(fileList, type) {
+async function handleImageSelection(fileList, type) {
     let targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
     if (type !== 'review') targetArray.length = 0;
 
     for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         if (file.type.startsWith('image/')) {
-            const cleanName = file.name.toLowerCase().replace(/\s+/g, '-');
-            targetArray.push({ file: file, name: cleanName, preview: URL.createObjectURL(file) });
+            const processed = await processAndCompressImage(file);
+            targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
         }
     }
     renderImagePreviews(type);
@@ -118,12 +141,11 @@ function renderImagePreviews(type) {
                     <img src="${item.preview}" alt="Preview">
                     <div>
                         <span style="font-weight:600; font-size:0.9rem;">${item.name}</span>
+                        <span style="font-size:0.75rem; color:#00838f; margin-left:8px; font-weight:700;">WEBP OPTIMIZED</span>
                         ${index === 0 ? '<span class="main-badge" style="margin-left:8px;">Main Photo</span>' : ''}
                     </div>
                 </div>
                 <div class="img-controls">
-                    ${type === 'review' && index > 0 ? `<button type="button" onclick="moveImage('review', ${index}, -1)" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
-                    ${type === 'review' && index < targetArray.length - 1 ? `<button type="button" onclick="moveImage('review', ${index}, 1)" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
                     <button type="button" onclick="removeImage('${type}', ${index})" title="Remove"><i class="fa-solid fa-trash" style="color:#bd2419;"></i></button>
                 </div>
             </div>
@@ -131,21 +153,30 @@ function renderImagePreviews(type) {
     });
 }
 
-function moveImage(type, index, dir) {
-    const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
-    const target = index + dir;
-    if (target >= 0 && target < targetArray.length) {
-        const temp = targetArray[index];
-        targetArray[index] = targetArray[target];
-        targetArray[target] = temp;
-        renderImagePreviews(type);
-    }
-}
-
 function removeImage(type, index) {
     const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
     targetArray.splice(index, 1);
     renderImagePreviews(type);
+}
+
+function syncReviewMeta() {
+    if (editMode) return;
+    const title = document.getElementById('rev-title').value;
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    document.getElementById('rev-slug').value = slug ? slug + '.html' : '';
+}
+
+function validateStarRating(input) {
+    const val = parseFloat(input.value);
+    const err = document.getElementById('star-err');
+    if (isNaN(val) || val < 0 || val > 5) {
+        err.style.display = 'block';
+        input.value = '5.0';
+        return false;
+    }
+    err.style.display = 'none';
+    input.value = val.toFixed(1);
+    return true;
 }
 
 function formatDoc(cmd, val = null) {
@@ -213,7 +244,7 @@ function enterEditReview(id) {
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
 
     if (item.mainImage) {
-        reviewImages = [{ file: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
+        reviewImages = [{ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
         renderImagePreviews('review');
     }
 }
@@ -240,7 +271,7 @@ function enterEditWhatsOn(id) {
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Show';
 
     if (item.image) {
-        whatsonImages = [{ file: null, name: item.image, preview: `images/${item.image}` }];
+        whatsonImages = [{ base64: null, name: item.image, preview: `images/${item.image}` }];
         renderImagePreviews('whatson');
     }
 }
@@ -263,7 +294,7 @@ function enterEditTheatre(id) {
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Theatre';
 
     if (item.image) {
-        theatreImages = [{ file: null, name: item.image, preview: `images/${item.image}` }];
+        theatreImages = [{ base64: null, name: item.image, preview: `images/${item.image}` }];
         renderImagePreviews('theatre');
     }
 }
@@ -292,7 +323,7 @@ function cancelEditMode() {
     renderImagePreviews('whatson');
 }
 
-/* --- 5. Data Flow: Reviews --- */
+/* --- 5. Data Flow Submissions --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -306,13 +337,12 @@ async function handleReviewSubmit() {
     const editId = document.getElementById('rev-edit-id').value;
     const isPublished = document.getElementById('rev-published').checked;
     
-    showToast('⏳ Updating reviews data...', 'status-loading');
+    showToast('⏳ Uploading WebP assets and saving...', 'status-loading');
 
     try {
         for (let item of reviewImages) {
-            if (item.file) {
-                const base64 = await toBase64(item.file);
-                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, base64.split(',')[1], `Upload image: ${item.name}`);
+            if (item.base64) {
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, item.base64, `Upload WebP photo: ${item.name}`);
             }
         }
 
@@ -343,11 +373,9 @@ async function handleReviewSubmit() {
         if (editId) {
             updatedReviews = reviews.map(r => r.id === editId ? reviewEntry : r);
         } else {
-            // New review placed at position 1, shifting previous ranks down
             updatedReviews.unshift(reviewEntry);
         }
 
-        // Re-index all ranks sequentially (1, 2, 3...)
         updatedReviews.forEach((r, idx) => r.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews data (${title})`);
@@ -355,14 +383,13 @@ async function handleReviewSubmit() {
         const pageHtml = buildFullReviewPageHtml(reviewEntry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish review page: ${title}`);
 
-        showToast(`🎉 Success! "${title}" is published!`, 'status-success');
+        showToast(`🎉 Success! "${title}" published with WebP images!`, 'status-success');
         cancelEditMode();
     } catch (err) {
         showToast(`❌ Error: ${err.message}`, 'status-error');
     }
 }
 
-/* --- 6. Data Flow: Theatres & What's On --- */
 async function handleTheatreSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -372,9 +399,8 @@ async function handleTheatreSubmit() {
 
     showToast('⏳ Saving Theatre Guide...', 'status-loading');
     try {
-        if (theatreImages.length > 0 && theatreImages[0].file) {
-            const base64 = await toBase64(theatreImages[0].file);
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${theatreImages[0].name}`, base64.split(',')[1], `Upload theatre image: ${theatreImages[0].name}`);
+        if (theatreImages.length > 0 && theatreImages[0].base64) {
+            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${theatreImages[0].name}`, theatreImages[0].base64, `Upload WebP theatre image: ${theatreImages[0].name}`);
         }
 
         const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
@@ -409,9 +435,8 @@ async function handleWhatsOnSubmit() {
 
     showToast('⏳ Saving What\'s On entry...', 'status-loading');
     try {
-        if (whatsonImages.length > 0 && whatsonImages[0].file) {
-            const base64 = await toBase64(whatsonImages[0].file);
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${whatsonImages[0].name}`, base64.split(',')[1], `Upload show poster: ${whatsonImages[0].name}`);
+        if (whatsonImages.length > 0 && whatsonImages[0].base64) {
+            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${whatsonImages[0].name}`, whatsonImages[0].base64, `Upload WebP show poster: ${whatsonImages[0].name}`);
         }
 
         const shows = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
@@ -441,7 +466,7 @@ async function handleWhatsOnSubmit() {
     }
 }
 
-/* --- 7. Full Management Dashboard Loader --- */
+/* --- 6. HTML5 Drag-and-Drop Management Tables --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
@@ -449,158 +474,131 @@ async function loadManagementDashboard() {
     // Load Reviews
     try {
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
-        currentCache.reviews = reviews;
-        const revContainer = document.getElementById('manage-reviews-table-container');
-        
-        revContainer.innerHTML = `
-            <table class="crud-table">
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">Rank</th>
-                        <th>Show Title</th>
-                        <th style="width: 150px;">Position / Slot</th>
-                        <th style="width: 110px;">Status</th>
-                        <th style="width: 180px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${reviews.sort((a,b) => (a.rank||0) - (b.rank||0)).map((r, i) => `
-                        <tr>
-                            <td>
-                                <div class="rank-cell">
-                                    <span class="rank-badge">#${i+1}</span>
-                                    <div class="rank-btns">
-                                        <button type="button" class="rank-btn" onclick="reorderRank('reviews', ${i}, -1)" title="Move Up">▲</button>
-                                        <button type="button" class="rank-btn" onclick="reorderRank('reviews', ${i}, 1)" title="Move Down">▼</button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><strong>${r.title}</strong></td>
-                            <td>${i < 3 ? `<span class="badge-featured">Homepage #${i+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory only</span>'}</td>
-                            <td><span class="badge-status" style="background:${r.status==='published'?'#2e7d32':'#757575'}">${r.status}</span></td>
-                            <td>
-                                <div class="action-btns">
-                                    <button type="button" class="btn-edit" onclick="enterEditReview('${r.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                                    <button type="button" class="btn-delete" onclick="deleteItem('reviews', '${r.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        currentCache.reviews = reviews.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
     } catch (err) {
-        document.getElementById('manage-reviews-table-container').innerHTML = `<p style="color:#bd2419;">Error loading reviews: ${err.message}</p>`;
+        document.getElementById('manage-reviews-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
 
     // Load What's On
     try {
         const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
-        currentCache.whatson = whatson;
-        const woContainer = document.getElementById('manage-whatson-table-container');
-        
-        woContainer.innerHTML = whatson.length === 0 ? '<p style="color:#555;">No What\'s On listings found.</p>' : `
-            <table class="crud-table">
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">Rank</th>
-                        <th>Show Title</th>
-                        <th>Venue</th>
-                        <th>End Date</th>
-                        <th style="width: 180px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${whatson.sort((a,b) => (a.rank||0) - (b.rank||0)).map((w, i) => `
-                        <tr>
-                            <td>
-                                <div class="rank-cell">
-                                    <span class="rank-badge">#${i+1}</span>
-                                    <div class="rank-btns">
-                                        <button type="button" class="rank-btn" onclick="reorderRank('whatson', ${i}, -1)" title="Move Up">▲</button>
-                                        <button type="button" class="rank-btn" onclick="reorderRank('whatson', ${i}, 1)" title="Move Down">▼</button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><strong>${w.title}</strong></td>
-                            <td>${w.venue}</td>
-                            <td>${w.expiryDate ? `<span style="font-size:0.85rem; color:#555;">${w.expiryDate}</span>` : '<span style="color:#aaa;">No Expiry</span>'}</td>
-                            <td>
-                                <div class="action-btns">
-                                    <button type="button" class="btn-edit" onclick="enterEditWhatsOn('${w.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                                    <button type="button" class="btn-delete" onclick="deleteItem('whatson', '${w.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        currentCache.whatson = whatson.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
     } catch (err) {
-        document.getElementById('manage-whatson-table-container').innerHTML = `<p style="color:#bd2419;">Error loading What's On: ${err.message}</p>`;
+        document.getElementById('manage-whatson-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
 
-    // Load Theatre Guide
+    // Load Theatres
     try {
         const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
-        currentCache.theatres = theatres;
-        const thContainer = document.getElementById('manage-theatres-table-container');
-        
-        thContainer.innerHTML = theatres.length === 0 ? '<p style="color:#555;">No theatres found.</p>' : `
-            <table class="crud-table">
-                <thead>
-                    <tr>
-                        <th style="width: 100px;">Rank</th>
-                        <th>Theatre Name</th>
-                        <th>City / Location</th>
-                        <th style="width: 180px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${theatres.sort((a,b) => (a.rank||0) - (b.rank||0)).map((t, i) => `
-                        <tr>
-                            <td>
-                                <div class="rank-cell">
-                                    <span class="rank-badge">#${i+1}</span>
-                                    <div class="rank-btns">
-                                        <button type="button" class="rank-btn" onclick="reorderRank('theatres', ${i}, -1)" title="Move Up">▲</button>
-                                        <button type="button" class="rank-btn" onclick="reorderRank('theatres', ${i}, 1)" title="Move Down">▼</button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><strong>${t.name}</strong></td>
-                            <td>${t.location}</td>
-                            <td>
-                                <div class="action-btns">
-                                    <button type="button" class="btn-edit" onclick="enterEditTheatre('${t.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
-                                    <button type="button" class="btn-delete" onclick="deleteItem('theatres', '${t.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        `;
+        currentCache.theatres = theatres.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
     } catch (err) {
-        document.getElementById('manage-theatres-table-container').innerHTML = `<p style="color:#bd2419;">Error loading Theatre Guide: ${err.message}</p>`;
+        document.getElementById('manage-theatres-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
 }
 
-async function reorderRank(type, index, dir) {
-    const creds = getCredentials();
-    const file = `data/${type}.json`;
-    const data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
-    
-    const target = index + dir;
-    if (target >= 0 && target < data.length) {
-        const temp = data[index];
-        data[index] = data[target];
-        data[target] = temp;
+function renderDraggableTable(type, containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-        data.forEach((item, idx) => item.rank = idx + 1);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, file, btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), `Re-order ${type}`);
-        loadManagementDashboard();
+    if (items.length === 0) {
+        container.innerHTML = `<p style="color:#666;">No ${type} entries found.</p>`;
+        return;
     }
+
+    let tableHtml = `
+        <table class="crud-table" id="table-${type}">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Rank</th>
+                    <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Review Title')}</th>
+                    ${type === 'reviews' ? '<th style="width: 160px;">Position / Slot</th>' : ''}
+                    ${type === 'whatson' ? '<th>Venue</th><th>End Date</th>' : ''}
+                    ${type === 'theatres' ? '<th>City / Location</th>' : ''}
+                    ${type === 'reviews' ? '<th style="width: 110px;">Status</th>' : ''}
+                    <th style="width: 180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    items.forEach((item, index) => {
+        tableHtml += `
+            <tr class="draggable-row" draggable="true" data-type="${type}" data-index="${index}">
+                <td>
+                    <span class="grab-handle"><i class="fa-solid fa-bars"></i></span>
+                    <span class="rank-badge">#${index + 1}</span>
+                </td>
+                <td><strong>${item.title || item.name}</strong></td>
+                ${type === 'reviews' ? `<td>${index < 3 ? `<span class="badge-featured">Homepage #${index+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory only</span>'}</td>` : ''}
+                ${type === 'whatson' ? `<td>${item.venue}</td><td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>` : ''}
+                ${type === 'theatres' ? `<td>${item.location}</td>` : ''}
+                ${type === 'reviews' ? `<td><span class="badge-status" style="background:${item.status==='published'?'#2e7d32':'#757575'}">${item.status}</span></td>` : ''}
+                <td>
+                    <div class="action-btns">
+                        <button type="button" class="btn-edit" onclick="${type === 'reviews' ? `enterEditReview('${item.id}')` : (type === 'whatson' ? `enterEditWhatsOn('${item.id}')` : `enterEditTheatre('${item.id}')`)}"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button type="button" class="btn-delete" onclick="deleteItem('${type}', '${item.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    container.innerHTML = tableHtml;
+
+    attachDragEventListeners(type);
+}
+
+function attachDragEventListeners(type) {
+    const table = document.getElementById(`table-${type}`);
+    if (!table) return;
+
+    const rows = table.querySelectorAll('.draggable-row');
+    rows.forEach(row => {
+        row.addEventListener('dragstart', (e) => {
+            draggedRowIndex = parseInt(row.getAttribute('data-index'));
+            row.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        row.addEventListener('dragend', () => {
+            row.classList.remove('dragging');
+            table.querySelectorAll('.draggable-row').forEach(r => r.classList.remove('drag-over'));
+        });
+
+        row.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            row.classList.add('drag-over');
+        });
+
+        row.addEventListener('dragleave', () => {
+            row.classList.remove('drag-over');
+        });
+
+        row.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            row.classList.remove('drag-over');
+            const targetIndex = parseInt(row.getAttribute('data-index'));
+
+            if (draggedRowIndex !== null && draggedRowIndex !== targetIndex) {
+                const list = currentCache[type];
+                const [movedItem] = list.splice(draggedRowIndex, 1);
+                list.splice(targetIndex, 0, movedItem);
+
+                list.forEach((item, idx) => item.rank = idx + 1);
+                
+                showToast(`⏳ Saving new ${type} order...`, 'status-loading');
+                const creds = getCredentials();
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `data/${type}.json`, btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), `Re-order ${type} via drag and drop`);
+                showToast(`✅ ${type} order updated!`, 'status-success');
+                loadManagementDashboard();
+            }
+        });
+    });
 }
 
 async function deleteItem(type, id) {
@@ -616,7 +614,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 8. Helper API Utilities --- */
+/* --- 7. Helper Utilities --- */
 function getCredentials() {
     const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
     const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
@@ -655,15 +653,6 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
         body: JSON.stringify({ message, content: contentBase64, ...(sha && { sha }) })
     });
     if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
-}
-
-function toBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
 }
 
 function buildFullReviewPageHtml(d) {
