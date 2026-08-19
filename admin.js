@@ -6,6 +6,7 @@ let whatsonImages = [];
 let editMode = false;
 let currentCache = { reviews: [], whatson: [], theatres: [] };
 let draggedRowIndex = null;
+let toastTimeout = null;
 
 /* --- 1. PIN Security & Initialization --- */
 function unlockStudio() {
@@ -69,7 +70,25 @@ function switchTab(tabId, btn) {
     btn.classList.add('active');
 }
 
-/* --- 2. In-Browser WebP Image Compressor --- */
+/* --- 2. Floating Pop-up Toast Notifications --- */
+function showToast(msg, type) {
+    const toast = document.getElementById('status-toast');
+    if (!toast) return;
+
+    if (toastTimeout) clearTimeout(toastTimeout);
+
+    toast.className = `${type} show`;
+    toast.innerHTML = msg;
+
+    // Auto-dismiss after 3.2 seconds unless it is in loading state
+    if (type !== 'status-loading') {
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3200);
+    }
+}
+
+/* --- 3. In-Browser WebP Image Compressor --- */
 async function processAndCompressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -81,7 +100,6 @@ async function processAndCompressImage(file) {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
-                // Scale max width/height to 1200px
                 const maxDim = 1200;
                 let width = img.width;
                 let height = img.height;
@@ -98,7 +116,6 @@ async function processAndCompressImage(file) {
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert to WebP format at 85% quality
                 const webpBase64 = canvas.toDataURL('image/webp', 0.85);
                 const rawName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
                 const cleanWebpName = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.webp';
@@ -189,7 +206,7 @@ function formatDoc(cmd, val = null) {
     document.getElementById('wysiwyg-content').focus();
 }
 
-/* --- 3. Settings & Feedback --- */
+/* --- 4. Settings --- */
 function toggleSettingsModal() {
     const el = document.getElementById('settings-drawer');
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
@@ -209,15 +226,7 @@ function loadSettings() {
     document.getElementById('gh-token').value = localStorage.getItem('btmc_gh_token') || '';
 }
 
-function showToast(msg, type) {
-    const toast = document.getElementById('status-toast');
-    toast.className = type;
-    toast.innerHTML = msg;
-    toast.style.display = 'block';
-    setTimeout(() => { toast.scrollIntoView({ behavior: 'smooth' }); }, 100);
-}
-
-/* --- 4. Edit Dispatchers --- */
+/* --- 5. Edit Dispatchers --- */
 function enterEditReview(id) {
     const item = currentCache.reviews.find(r => r.id === id);
     if (!item) return;
@@ -323,7 +332,7 @@ function cancelEditMode() {
     renderImagePreviews('whatson');
 }
 
-/* --- 5. Data Flow Submissions --- */
+/* --- 6. Data Submissions --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -466,7 +475,7 @@ async function handleWhatsOnSubmit() {
     }
 }
 
-/* --- 6. HTML5 Drag-and-Drop Management Tables --- */
+/* --- 7. HTML5 Drag-and-Drop Management Tables --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
@@ -614,7 +623,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 7. Helper Utilities --- */
+/* --- 8. Helper Utilities --- */
 function getCredentials() {
     const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
     const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
