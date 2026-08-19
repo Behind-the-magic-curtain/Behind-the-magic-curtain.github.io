@@ -22,7 +22,7 @@
 
         /* Main Studio Panel */
         #admin-panel { display: none; padding: 20px 0 80px 0; }
-        .studio-container { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+        .studio-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         
         /* Persistent Edit Mode Warning Banner */
         #edit-banner {
@@ -42,7 +42,7 @@
         .studio-card { background: #fff; border-radius: 12px; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 30px; }
         .studio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; }
         
-        /* Tabs */
+        /* Navigation Tabs */
         .studio-nav-tabs { display: flex; gap: 10px; border-bottom: 2px solid #e0e0e0; margin-bottom: 30px; flex-wrap: wrap; }
         .tab-btn { background: transparent; border: none; font-family: var(--font-heading, sans-serif); font-weight: 700; font-size: 1rem; color: #666; padding: 12px 20px; cursor: pointer; border-radius: 8px 8px 0 0; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
         .tab-btn:hover { color: #bd2419; }
@@ -51,15 +51,15 @@
         .studio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .full-span { grid-column: span 2; }
         label { display: block; font-family: var(--font-heading, sans-serif); font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; color: #222; }
-        input[type="text"], input[type="number"], select, textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-family: var(--font-body, sans-serif); font-size: 0.95rem; }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-family: var(--font-body, sans-serif); font-size: 0.95rem; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #00838f; }
 
         .field-error { color: #bd2419; font-size: 0.85rem; margin-top: 4px; display: none; font-weight: 600; }
 
-        /* Drag & Drop Zone */
-        .drop-zone { border: 2px dashed #00838f; background: #f8fafb; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer; transition: background 0.2s ease; }
+        /* Unified Drag & Drop Upload Zone */
+        .drop-zone { border: 2px dashed #00838f; background: #f8fafb; border-radius: 8px; padding: 25px; text-align: center; cursor: pointer; transition: background 0.2s ease; }
         .drop-zone:hover { background: #edf7f8; }
-        .drop-zone i { font-size: 2.2rem; color: #00838f; margin-bottom: 10px; }
+        .drop-zone i { font-size: 2rem; color: #00838f; margin-bottom: 8px; }
         .image-preview-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .img-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; }
         .img-item-left { display: flex; align-items: center; gap: 12px; }
@@ -77,13 +77,25 @@
         .checkbox-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 5px; }
         .checkbox-pill { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 16px; border-radius: 50px; border: 1px solid #e0e0e0; cursor: pointer; font-size: 0.9rem; }
         
-        /* Manage Table List Styles */
-        .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .crud-table th, .crud-table td { padding: 14px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        .crud-table th { background: #f8f9fa; font-family: var(--font-heading, sans-serif); font-size: 0.9rem; }
-        .rank-btn { background: #f0f3f6; border: 1px solid #d0d7de; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
-        .btn-edit { background: #00838f; color: #fff; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; margin-right: 6px; }
-        .btn-delete { background: #d32f2f; color: #fff; border: none; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; }
+        /* Clean CRUD Table Styling */
+        .crud-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+        .crud-table th, .crud-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+        .crud-table th { background: #f8f9fa; font-family: var(--font-heading, sans-serif); font-size: 0.9rem; color: #444; }
+        .crud-table tr:last-child td { border-bottom: none; }
+        .rank-cell { display: flex; align-items: center; gap: 8px; }
+        .rank-badge { font-weight: 800; font-size: 1rem; color: #333; min-width: 30px; }
+        .rank-btns { display: flex; flex-direction: column; gap: 3px; }
+        .rank-btn { background: #f0f3f6; border: 1px solid #d0d7de; padding: 3px 7px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; line-height: 1; }
+        .rank-btn:hover { background: #00838f; color: #fff; }
+        
+        .action-btns { display: flex; gap: 8px; }
+        .btn-edit { background: #00838f; color: #fff; border: none; padding: 7px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-edit:hover { background: #006064; }
+        .btn-delete { background: #d32f2f; color: #fff; border: none; padding: 7px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-delete:hover { background: #b71c1c; }
+
+        .badge-featured { background: #ffd700; color: #111; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; }
+        .badge-status { color: #fff; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; text-transform: uppercase; }
 
         #status-toast { display: none; padding: 15px 20px; border-radius: 6px; margin-top: 20px; font-weight: 600; }
         .status-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
@@ -94,6 +106,7 @@
             .studio-grid { grid-template-columns: 1fr; }
             .full-span { grid-column: span 1; }
             .studio-header { flex-direction: column; gap: 15px; text-align: center; }
+            .crud-table { display: block; overflow-x: auto; }
         }
     </style>
 </head>
@@ -219,15 +232,16 @@
                                 </div>
                             </div>
 
+                            <!-- Review Drag & Drop Upload Zone -->
                             <div class="form-group full-span">
                                 <label>Show Images (Drag & Drop or Browse) *</label>
-                                <div class="drop-zone" onclick="document.getElementById('img-file-picker').click()">
+                                <div class="drop-zone" onclick="document.getElementById('rev-img-picker').click()">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                     <p style="margin: 0; font-weight: 600;">Drag and drop image files here, or click to browse</p>
                                     <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #777;">The top image is the Main Poster.</p>
-                                    <input type="file" id="img-file-picker" accept="image/*" multiple style="display: none;" onchange="handleImageSelection(this.files)">
+                                    <input type="file" id="rev-img-picker" accept="image/*" multiple style="display: none;" onchange="handleImageSelection(this.files, 'review')">
                                 </div>
-                                <div id="image-list-container" class="image-preview-list"></div>
+                                <div id="review-image-list" class="image-preview-list"></div>
                             </div>
 
                             <div class="form-group full-span">
@@ -293,12 +307,19 @@
                                 <label for="th-location">City / Location *</label>
                                 <input type="text" id="th-location" placeholder="e.g. Wolverhampton" required>
                             </div>
-                            <div class="form-group">
-                                <label for="th-image-picker">Theatre Photo</label>
-                                <input type="file" id="th-image-picker" accept="image/*" onchange="previewSingleImage(this, 'th-img-name')">
-                                <input type="hidden" id="th-img-name" value="theatre-default.jpg">
+
+                            <!-- Theatre Drag & Drop Zone -->
+                            <div class="form-group full-span">
+                                <label>Theatre Photo (Drag & Drop or Browse) *</label>
+                                <div class="drop-zone" onclick="document.getElementById('th-img-picker').click()">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                    <p style="margin: 0; font-weight: 600;">Drag and drop theatre photo here, or click to browse</p>
+                                    <input type="file" id="th-img-picker" accept="image/*" style="display: none;" onchange="handleImageSelection(this.files, 'theatre')">
+                                </div>
+                                <div id="theatre-image-list" class="image-preview-list"></div>
                             </div>
-                            <div class="form-group">
+
+                            <div class="form-group full-span">
                                 <label for="th-website">Official Theatre Website URL</label>
                                 <input type="text" id="th-website" placeholder="https://www.grandtheatre.co.uk/">
                             </div>
@@ -356,11 +377,18 @@
                                     <option value="Ages 12+">Ages 12+</option>
                                 </select>
                             </div>
+
+                            <!-- What's On Drag & Drop Zone -->
                             <div class="form-group full-span">
-                                <label for="wo-image-picker">Show Poster</label>
-                                <input type="file" id="wo-image-picker" accept="image/*" onchange="previewSingleImage(this, 'wo-img-name')">
-                                <input type="hidden" id="wo-img-name" value="show-default.jpg">
+                                <label>Show Poster (Drag & Drop or Browse) *</label>
+                                <div class="drop-zone" onclick="document.getElementById('wo-img-picker').click()">
+                                    <i class="fa-solid fa-ticket"></i>
+                                    <p style="margin: 0; font-weight: 600;">Drag and drop show poster here, or click to browse</p>
+                                    <input type="file" id="wo-img-picker" accept="image/*" style="display: none;" onchange="handleImageSelection(this.files, 'whatson')">
+                                </div>
+                                <div id="whatson-image-list" class="image-preview-list"></div>
                             </div>
+
                             <div class="form-group full-span">
                                 <label for="wo-desc">Short Description *</label>
                                 <textarea id="wo-desc" rows="3" placeholder="A family-friendly stage show telling the story of a little lost bear..." required></textarea>
@@ -382,27 +410,27 @@
                     </form>
                 </div>
 
-                <!-- ================= TAB 4: MANAGE & RE-ORDER ================= -->
+                <!-- ================= TAB 4: MANAGE & ORDER CONTENT ================= -->
                 <div id="tab-manage" class="tab-content" style="display: none;">
                     <h2>Active Reviews (Public Directory Order)</h2>
-                    <p style="font-size: 0.95rem; color: #555;">Use the ▲ and ▼ buttons to change the order on the Reviews page. The top 3 marked "Featured" display on the Homepage.</p>
-                    
+                    <p style="font-size: 0.95rem; color: #555;">Use ▲ and ▼ to reorder reviews on the Reviews page. The top 3 marked "Homepage" appear on the front page.</p>
                     <div id="manage-reviews-table-container">
-                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading data...</p>
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading reviews...</p>
                     </div>
 
-                    <hr style="margin: 40px 0;">
+                    <hr style="margin: 40px 0; border: none; border-top: 1px solid #e0e0e0;">
 
                     <h2>What's On Listings</h2>
+                    <p style="font-size: 0.95rem; color: #555;">Shows with expired End Dates are automatically hidden from the public website.</p>
                     <div id="manage-whatson-table-container">
-                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading data...</p>
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading What's On shows...</p>
                     </div>
 
-                    <hr style="margin: 40px 0;">
+                    <hr style="margin: 40px 0; border: none; border-top: 1px solid #e0e0e0;">
 
                     <h2>Theatre Guide Directory</h2>
                     <div id="manage-theatres-table-container">
-                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading data...</p>
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading theatres...</p>
                     </div>
                 </div>
 
