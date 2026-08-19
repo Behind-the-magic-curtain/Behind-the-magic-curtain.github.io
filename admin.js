@@ -1,6 +1,11 @@
 const MASTER_PIN = "3011";
-let uploadedFiles = [];
+
+// Multi-section state cache
+let reviewImages = [];
+let theatreImages = [];
+let whatsonImages = [];
 let editMode = false;
+let currentCache = { reviews: [], whatson: [], theatres: [] };
 
 /* --- 1. PIN Security & Initialization --- */
 function unlockStudio() {
@@ -36,16 +41,27 @@ document.addEventListener('DOMContentLoaded', () => {
         loadSettings();
     }
 
-    const dropArea = document.querySelector('.drop-zone');
-    if (dropArea) {
-        ['dragenter', 'dragover'].forEach(n => dropArea.addEventListener(n, e => { e.preventDefault(); dropArea.style.background = '#edf7f8'; }, false));
-        ['dragleave', 'drop'].forEach(n => dropArea.addEventListener(n, e => { e.preventDefault(); dropArea.style.background = '#f8fafb'; }, false));
-        dropArea.addEventListener('drop', e => {
-            e.preventDefault();
-            handleImageSelection(e.dataTransfer.files);
-        }, false);
-    }
+    // Attach drag & drop listeners to all drop zones
+    setupDropZones();
 });
+
+function setupDropZones() {
+    const zones = [
+        { el: document.querySelector('#tab-reviews .drop-zone'), type: 'review' },
+        { el: document.querySelector('#tab-theatres .drop-zone'), type: 'theatre' },
+        { el: document.querySelector('#tab-whatson .drop-zone'), type: 'whatson' }
+    ];
+
+    zones.forEach(({ el, type }) => {
+        if (!el) return;
+        ['dragenter', 'dragover'].forEach(n => el.addEventListener(n, e => { e.preventDefault(); el.style.background = '#edf7f8'; }, false));
+        ['dragleave', 'drop'].forEach(n => el.addEventListener(n, e => { e.preventDefault(); el.style.background = '#f8fafb'; }, false));
+        el.addEventListener('drop', e => {
+            e.preventDefault();
+            handleImageSelection(e.dataTransfer.files, type);
+        }, false);
+    });
+}
 
 function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
@@ -54,7 +70,7 @@ function switchTab(tabId, btn) {
     btn.classList.add('active');
 }
 
-/* --- 2. Validation & Image Helpers --- */
+/* --- 2. Validation & Unified Image Handling --- */
 function syncReviewMeta() {
     if (editMode) return;
     const title = document.getElementById('rev-title').value;
@@ -75,60 +91,64 @@ function validateStarRating(input) {
     return true;
 }
 
-function handleImageSelection(fileList) {
+function handleImageSelection(fileList, type) {
+    let targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
+    
+    // For Theatre and What's On, enforce single image
+    if (type !== 'review') targetArray.length = 0;
+
     for (let i = 0; i < fileList.length; i++) {
         const file = fileList[i];
         if (file.type.startsWith('image/')) {
             const cleanName = file.name.toLowerCase().replace(/\s+/g, '-');
-            uploadedFiles.push({ file: file, name: cleanName, preview: URL.createObjectURL(file) });
+            targetArray.push({ file: file, name: cleanName, preview: URL.createObjectURL(file) });
         }
     }
-    renderImagePreviews();
+    renderImagePreviews(type);
 }
 
-function renderImagePreviews() {
-    const container = document.getElementById('image-list-container');
+function renderImagePreviews(type) {
+    const containerId = type === 'review' ? 'review-image-list' : (type === 'theatre' ? 'theatre-image-list' : 'whatson-image-list');
+    const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
     container.innerHTML = '';
-    uploadedFiles.forEach((item, index) => {
+    targetArray.forEach((item, index) => {
         container.innerHTML += `
             <div class="img-item">
                 <div class="img-item-left">
                     <img src="${item.preview}" alt="Preview">
                     <div>
                         <span style="font-weight:600; font-size:0.9rem;">${item.name}</span>
-                        ${index === 0 ? '<span class="main-badge" style="margin-left:8px;">Main Poster</span>' : ''}
+                        ${index === 0 ? '<span class="main-badge" style="margin-left:8px;">Main Photo</span>' : ''}
                     </div>
                 </div>
                 <div class="img-controls">
-                    ${index > 0 ? `<button type="button" onclick="moveImage(${index}, -1)" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
-                    ${index < uploadedFiles.length - 1 ? `<button type="button" onclick="moveImage(${index}, 1)" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
-                    <button type="button" onclick="removeImage(${index})" title="Remove"><i class="fa-solid fa-trash" style="color:#bd2419;"></i></button>
+                    ${type === 'review' && index > 0 ? `<button type="button" onclick="moveImage('review', ${index}, -1)" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
+                    ${type === 'review' && index < targetArray.length - 1 ? `<button type="button" onclick="moveImage('review', ${index}, 1)" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
+                    <button type="button" onclick="removeImage('${type}', ${index})" title="Remove"><i class="fa-solid fa-trash" style="color:#bd2419;"></i></button>
                 </div>
             </div>
         `;
     });
 }
 
-function moveImage(index, dir) {
+function moveImage(type, index, dir) {
+    const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
     const target = index + dir;
-    if (target >= 0 && target < uploadedFiles.length) {
-        const temp = uploadedFiles[index];
-        uploadedFiles[index] = uploadedFiles[target];
-        uploadedFiles[target] = temp;
-        renderImagePreviews();
+    if (target >= 0 && target < targetArray.length) {
+        const temp = targetArray[index];
+        targetArray[index] = targetArray[target];
+        targetArray[target] = temp;
+        renderImagePreviews(type);
     }
 }
 
-function removeImage(index) {
-    uploadedFiles.splice(index, 1);
-    renderImagePreviews();
-}
-
-function previewSingleImage(input, hiddenId) {
-    if (input.files && input.files[0]) {
-        const cleanName = input.files[0].name.toLowerCase().replace(/\s+/g, '-');
-        document.getElementById(hiddenId).value = cleanName;
-    }
+function removeImage(type, index) {
+    const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
+    targetArray.splice(index, 1);
+    renderImagePreviews(type);
 }
 
 function formatDoc(cmd, val = null) {
@@ -141,7 +161,7 @@ function formatDoc(cmd, val = null) {
     document.getElementById('wysiwyg-content').focus();
 }
 
-/* --- 3. Settings & Feedback Toast --- */
+/* --- 3. Settings & Feedback --- */
 function toggleSettingsModal() {
     const el = document.getElementById('settings-drawer');
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
@@ -169,30 +189,86 @@ function showToast(msg, type) {
     setTimeout(() => { toast.scrollIntoView({ behavior: 'smooth' }); }, 100);
 }
 
-/* --- 4. Edit Mode Handling --- */
-function enterEditMode(type, item) {
+/* --- 4. Clean Edit Mode Dispatcher --- */
+function enterEditReview(id) {
+    const item = currentCache.reviews.find(r => r.id === id);
+    if (!item) return;
+
     editMode = true;
     document.getElementById('edit-banner').style.display = 'flex';
-    document.getElementById('edit-item-title').textContent = `${type}: ${item.title || item.name}`;
+    document.getElementById('edit-item-title').textContent = `Review: ${item.title}`;
 
-    if (type === 'Review') {
-        switchTab('tab-reviews', document.querySelector('.tab-btn:nth-child(1)'));
-        document.getElementById('rev-edit-id').value = item.id;
-        document.getElementById('rev-title').value = item.title;
-        document.getElementById('rev-slug').value = item.slug;
-        document.getElementById('rev-subtitle').value = item.subtitle;
-        document.getElementById('rev-rating').value = item.rating;
-        document.getElementById('rev-age').value = item.age;
-        document.getElementById('tag-adhd').checked = !!item.tags?.adhd;
-        document.getElementById('tag-sensory').checked = !!item.tags?.sensory;
-        document.getElementById('tag-mature').checked = !!item.tags?.mature;
-        document.getElementById('rev-image-alt').value = item.altText || '';
-        document.getElementById('rev-summary').value = item.summary || '';
-        document.getElementById('wysiwyg-content').innerHTML = item.bodyHtml || '';
-        document.getElementById('rev-tips').value = (item.tips || []).join('\n');
-        document.getElementById('rev-featured').checked = !!item.featured;
-        document.getElementById('rev-published').checked = item.status === 'published';
-        document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
+    switchTab('tab-reviews', document.querySelector('.tab-btn:nth-child(1)'));
+    document.getElementById('rev-edit-id').value = item.id;
+    document.getElementById('rev-title').value = item.title || '';
+    document.getElementById('rev-slug').value = item.slug || '';
+    document.getElementById('rev-subtitle').value = item.subtitle || '';
+    document.getElementById('rev-rating').value = item.rating || '5.0';
+    document.getElementById('rev-age').value = item.age || 'Ages 7+';
+    document.getElementById('tag-adhd').checked = !!item.tags?.adhd;
+    document.getElementById('tag-sensory').checked = !!item.tags?.sensory;
+    document.getElementById('tag-mature').checked = !!item.tags?.mature;
+    document.getElementById('rev-image-alt').value = item.altText || '';
+    document.getElementById('rev-summary').value = item.summary || '';
+    document.getElementById('wysiwyg-content').innerHTML = item.bodyHtml || '<p></p>';
+    document.getElementById('rev-tips').value = (item.tips || []).join('\n');
+    document.getElementById('rev-featured').checked = !!item.featured;
+    document.getElementById('rev-published').checked = item.status === 'published';
+    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
+
+    if (item.mainImage) {
+        reviewImages = [{ file: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
+        renderImagePreviews('review');
+    }
+}
+
+function enterEditWhatsOn(id) {
+    const item = currentCache.whatson.find(w => w.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `What's On: ${item.title}`;
+
+    switchTab('tab-whatson', document.querySelector('.tab-btn:nth-child(3)'));
+    document.getElementById('wo-edit-id').value = item.id;
+    document.getElementById('wo-title').value = item.title || '';
+    document.getElementById('wo-venue').value = item.venue || '';
+    document.getElementById('wo-dates').value = item.dates || '';
+    document.getElementById('wo-expiry').value = item.expiryDate || '';
+    document.getElementById('wo-runtime').value = item.runtime || '';
+    document.getElementById('wo-age').value = item.age || 'Ages 4+';
+    document.getElementById('wo-desc').value = item.desc || '';
+    document.getElementById('wo-ticket-link').value = item.ticketLink || '';
+    document.getElementById('wo-site-link').value = item.siteLink || '';
+    document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Show';
+
+    if (item.image) {
+        whatsonImages = [{ file: null, name: item.image, preview: `images/${item.image}` }];
+        renderImagePreviews('whatson');
+    }
+}
+
+function enterEditTheatre(id) {
+    const item = currentCache.theatres.find(t => t.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `Theatre: ${item.name}`;
+
+    switchTab('tab-theatres', document.querySelector('.tab-btn:nth-child(2)'));
+    document.getElementById('th-edit-id').value = item.id;
+    document.getElementById('th-name').value = item.name || '';
+    document.getElementById('th-location').value = item.location || '';
+    document.getElementById('th-website').value = item.website || '';
+    document.getElementById('th-access').value = item.accessibility || '';
+    document.getElementById('th-relaxed').value = item.relaxed || '';
+    document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Theatre';
+
+    if (item.image) {
+        theatreImages = [{ file: null, name: item.image, preview: `images/${item.image}` }];
+        renderImagePreviews('theatre');
     }
 }
 
@@ -200,11 +276,24 @@ function cancelEditMode() {
     editMode = false;
     document.getElementById('edit-banner').style.display = 'none';
     document.getElementById('form-review').reset();
+    document.getElementById('form-whatson').reset();
+    document.getElementById('form-theatre').reset();
+    
     document.getElementById('rev-edit-id').value = '';
+    document.getElementById('wo-edit-id').value = '';
+    document.getElementById('th-edit-id').value = '';
+
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Review to Website';
+    document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save What\'s On Show';
+    document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry';
+
     document.getElementById('wysiwyg-content').innerHTML = '<p>Write your review here...</p>';
-    uploadedFiles = [];
-    renderImagePreviews();
+    reviewImages = [];
+    theatreImages = [];
+    whatsonImages = [];
+    renderImagePreviews('review');
+    renderImagePreviews('theatre');
+    renderImagePreviews('whatson');
 }
 
 /* --- 5. Data Flow: Reviews --- */
@@ -225,10 +314,11 @@ async function handleReviewSubmit() {
     showToast('⏳ Updating reviews data...', 'status-loading');
 
     try {
-        // Upload images
-        for (let item of uploadedFiles) {
-            const base64 = await toBase64(item.file);
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, base64.split(',')[1], `Upload image: ${item.name}`);
+        for (let item of reviewImages) {
+            if (item.file) {
+                const base64 = await toBase64(item.file);
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, base64.split(',')[1], `Upload image: ${item.name}`);
+            }
         }
 
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
@@ -245,7 +335,7 @@ async function handleReviewSubmit() {
                 sensory: document.getElementById('tag-sensory').checked,
                 mature: document.getElementById('tag-mature').checked
             },
-            mainImage: uploadedFiles.length > 0 ? uploadedFiles[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.jpg' : 'placeholder.jpg'),
+            mainImage: reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.jpg' : 'placeholder.jpg'),
             altText: document.getElementById('rev-image-alt').value.trim(),
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
@@ -259,30 +349,26 @@ async function handleReviewSubmit() {
         if (editId) {
             updatedReviews = reviews.map(r => r.id === editId ? reviewEntry : r);
         } else {
-            // New entry takes #1 rank, shifts rest down
             updatedReviews.forEach(r => r.rank = (r.rank || 1) + 1);
             updatedReviews.unshift(reviewEntry);
         }
 
-        // Apply FIFO Queue (Rule of 3 for Featured)
         if (isFeatured) {
             let featuredCount = 0;
             updatedReviews.forEach(r => {
                 if (r.featured && r.id !== reviewEntry.id) {
                     featuredCount++;
-                    if (featuredCount >= 2) r.featured = false; // Only keep 2 other items featured
+                    if (featuredCount >= 2) r.featured = false;
                 }
             });
         }
 
-        // Save JSON data
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews data (${title})`);
 
-        // Generate Standalone Review Page
         const pageHtml = buildFullReviewPageHtml(reviewEntry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish review page: ${title}`);
 
-        showToast(`🎉 Success! "${title}" is published to the site!`, 'status-success');
+        showToast(`🎉 Success! "${title}" is published!`, 'status-success');
         cancelEditMode();
     } catch (err) {
         showToast(`❌ Error: ${err.message}`, 'status-error');
@@ -294,33 +380,33 @@ async function handleTheatreSubmit() {
     const creds = getCredentials();
     if (!creds) return;
 
+    const editId = document.getElementById('th-edit-id').value;
     const name = document.getElementById('th-name').value.trim();
-    const picker = document.getElementById('th-image-picker');
-    let imgName = document.getElementById('th-img-name').value;
 
     showToast('⏳ Saving Theatre Guide...', 'status-loading');
     try {
-        if (picker.files.length > 0) {
-            const base64 = await toBase64(picker.files[0]);
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${imgName}`, base64.split(',')[1], `Upload theatre image: ${imgName}`);
+        if (theatreImages.length > 0 && theatreImages[0].file) {
+            const base64 = await toBase64(theatreImages[0].file);
+            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${theatreImages[0].name}`, base64.split(',')[1], `Upload theatre image: ${theatreImages[0].name}`);
         }
 
         const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
         const entry = {
-            id: 'th_' + Date.now(),
+            id: editId || 'th_' + Date.now(),
             name,
             location: document.getElementById('th-location').value.trim(),
-            image: imgName,
+            image: theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.jpg' : 'theatre-default.jpg'),
             website: document.getElementById('th-website').value.trim(),
             accessibility: document.getElementById('th-access').value.trim(),
             relaxed: document.getElementById('th-relaxed').value.trim(),
-            rank: theatres.length + 1
+            rank: editId ? (theatres.find(t => t.id === editId)?.rank || 1) : theatres.length + 1
         };
 
-        theatres.push(entry);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/theatres.json', btoa(unescape(encodeURIComponent(JSON.stringify(theatres, null, 2)))), `Add theatre: ${name}`);
+        const updatedTheatres = editId ? theatres.map(t => t.id === editId ? entry : t) : [...theatres, entry];
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/theatres.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedTheatres, null, 2)))), `Save theatre: ${name}`);
         showToast(`✅ Successfully saved "${name}" to Theatre Guide!`, 'status-success');
-        document.getElementById('form-theatre').reset();
+        cancelEditMode();
     } catch (err) {
         showToast(`❌ Error: ${err.message}`, 'status-error');
     }
@@ -330,76 +416,84 @@ async function handleWhatsOnSubmit() {
     const creds = getCredentials();
     if (!creds) return;
 
+    const editId = document.getElementById('wo-edit-id').value;
     const title = document.getElementById('wo-title').value.trim();
-    const picker = document.getElementById('wo-image-picker');
-    let imgName = document.getElementById('wo-img-name').value;
 
     showToast('⏳ Saving What\'s On entry...', 'status-loading');
     try {
-        if (picker.files.length > 0) {
-            const base64 = await toBase64(picker.files[0]);
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${imgName}`, base64.split(',')[1], `Upload show poster: ${imgName}`);
+        if (whatsonImages.length > 0 && whatsonImages[0].file) {
+            const base64 = await toBase64(whatsonImages[0].file);
+            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${whatsonImages[0].name}`, base64.split(',')[1], `Upload show poster: ${whatsonImages[0].name}`);
         }
 
         const shows = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
         const entry = {
-            id: 'wo_' + Date.now(),
+            id: editId || 'wo_' + Date.now(),
             title,
             venue: document.getElementById('wo-venue').value.trim(),
             dates: document.getElementById('wo-dates').value.trim(),
             expiryDate: document.getElementById('wo-expiry').value,
             runtime: document.getElementById('wo-runtime').value.trim(),
             age: document.getElementById('wo-age').value,
-            image: imgName,
+            image: whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.jpg' : 'show-default.jpg'),
             desc: document.getElementById('wo-desc').value.trim(),
             ticketLink: document.getElementById('wo-ticket-link').value.trim(),
             siteLink: document.getElementById('wo-site-link').value.trim(),
-            rank: shows.length + 1
+            rank: editId ? (shows.find(w => w.id === editId)?.rank || 1) : shows.length + 1
         };
 
-        shows.push(entry);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/whatson.json', btoa(unescape(encodeURIComponent(JSON.stringify(shows, null, 2)))), `Add What's On: ${title}`);
+        const updatedShows = editId ? shows.map(w => w.id === editId ? entry : w) : [...shows, entry];
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/whatson.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedShows, null, 2)))), `Save What's On: ${title}`);
         showToast(`✅ Successfully saved "${title}" to What's On!`, 'status-success');
-        document.getElementById('form-whatson').reset();
+        cancelEditMode();
     } catch (err) {
         showToast(`❌ Error: ${err.message}`, 'status-error');
     }
 }
 
-/* --- 7. Management Dashboard & Up/Down Sorting --- */
+/* --- 7. Full Management Dashboard Loader --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
 
+    // Load Reviews
     try {
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
+        currentCache.reviews = reviews;
         const revContainer = document.getElementById('manage-reviews-table-container');
         
         revContainer.innerHTML = `
             <table class="crud-table">
                 <thead>
                     <tr>
-                        <th>Rank</th>
+                        <th style="width: 90px;">Rank</th>
                         <th>Show Title</th>
-                        <th>Featured</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th style="width: 140px;">Featured</th>
+                        <th style="width: 110px;">Status</th>
+                        <th style="width: 180px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${reviews.sort((a,b) => (a.rank||0) - (b.rank||0)).map((r, i) => `
                         <tr>
                             <td>
-                                <strong>#${i+1}</strong>
-                                <button type="button" class="rank-btn" onclick="reorderRank('reviews', ${i}, -1)">▲</button>
-                                <button type="button" class="rank-btn" onclick="reorderRank('reviews', ${i}, 1)">▼</button>
+                                <div class="rank-cell">
+                                    <span class="rank-badge">#${i+1}</span>
+                                    <div class="rank-btns">
+                                        <button type="button" class="rank-btn" onclick="reorderRank('reviews', ${i}, -1)" title="Move Up">▲</button>
+                                        <button type="button" class="rank-btn" onclick="reorderRank('reviews', ${i}, 1)" title="Move Down">▼</button>
+                                    </div>
+                                </div>
                             </td>
                             <td><strong>${r.title}</strong></td>
-                            <td>${r.featured ? '<span class="main-badge">Homepage #'+(i+1)+'</span>' : '—'}</td>
-                            <td><span class="tag" style="background:${r.status==='published'?'#2e7d32':'#777'}">${r.status}</span></td>
+                            <td>${r.featured ? `<span class="badge-featured">Homepage #${i+1}</span>` : '<span style="color:#aaa;">—</span>'}</td>
+                            <td><span class="badge-status" style="background:${r.status==='published'?'#2e7d32':'#757575'}">${r.status}</span></td>
                             <td>
-                                <button type="button" class="btn-edit" onclick='enterEditMode("Review", ${JSON.stringify(r)})'>Edit</button>
-                                <button type="button" class="btn-delete" onclick="deleteItem('reviews', '${r.id}')">Delete</button>
+                                <div class="action-btns">
+                                    <button type="button" class="btn-edit" onclick="enterEditReview('${r.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                    <button type="button" class="btn-delete" onclick="deleteItem('reviews', '${r.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
                             </td>
                         </tr>
                     `).join('')}
@@ -407,7 +501,99 @@ async function loadManagementDashboard() {
             </table>
         `;
     } catch (err) {
-        showToast(`Error loading dashboard: ${err.message}`, 'status-error');
+        document.getElementById('manage-reviews-table-container').innerHTML = `<p style="color:#bd2419;">Error loading reviews: ${err.message}</p>`;
+    }
+
+    // Load What's On
+    try {
+        const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
+        currentCache.whatson = whatson;
+        const woContainer = document.getElementById('manage-whatson-table-container');
+        
+        woContainer.innerHTML = whatson.length === 0 ? '<p style="color:#555;">No What\'s On listings found.</p>' : `
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">Rank</th>
+                        <th>Show Title</th>
+                        <th>Venue</th>
+                        <th>End Date</th>
+                        <th style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${whatson.sort((a,b) => (a.rank||0) - (b.rank||0)).map((w, i) => `
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span class="rank-badge">#${i+1}</span>
+                                    <div class="rank-btns">
+                                        <button type="button" class="rank-btn" onclick="reorderRank('whatson', ${i}, -1)" title="Move Up">▲</button>
+                                        <button type="button" class="rank-btn" onclick="reorderRank('whatson', ${i}, 1)" title="Move Down">▼</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><strong>${w.title}</strong></td>
+                            <td>${w.venue}</td>
+                            <td>${w.expiryDate ? `<span style="font-size:0.85rem; color:#555;">${w.expiryDate}</span>` : '<span style="color:#aaa;">No Expiry</span>'}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="btn-edit" onclick="enterEditWhatsOn('${w.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                    <button type="button" class="btn-delete" onclick="deleteItem('whatson', '${w.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    } catch (err) {
+        document.getElementById('manage-whatson-table-container').innerHTML = `<p style="color:#bd2419;">Error loading What's On: ${err.message}</p>`;
+    }
+
+    // Load Theatre Guide
+    try {
+        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        currentCache.theatres = theatres;
+        const thContainer = document.getElementById('manage-theatres-table-container');
+        
+        thContainer.innerHTML = theatres.length === 0 ? '<p style="color:#555;">No theatres found.</p>' : `
+            <table class="crud-table">
+                <thead>
+                    <tr>
+                        <th style="width: 90px;">Rank</th>
+                        <th>Theatre Name</th>
+                        <th>City / Location</th>
+                        <th style="width: 180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${theatres.sort((a,b) => (a.rank||0) - (b.rank||0)).map((t, i) => `
+                        <tr>
+                            <td>
+                                <div class="rank-cell">
+                                    <span class="rank-badge">#${i+1}</span>
+                                    <div class="rank-btns">
+                                        <button type="button" class="rank-btn" onclick="reorderRank('theatres', ${i}, -1)" title="Move Up">▲</button>
+                                        <button type="button" class="rank-btn" onclick="reorderRank('theatres', ${i}, 1)" title="Move Down">▼</button>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><strong>${t.name}</strong></td>
+                            <td>${t.location}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button type="button" class="btn-edit" onclick="enterEditTheatre('${t.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                                    <button type="button" class="btn-delete" onclick="deleteItem('theatres', '${t.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    } catch (err) {
+        document.getElementById('manage-theatres-table-container').innerHTML = `<p style="color:#bd2419;">Error loading Theatre Guide: ${err.message}</p>`;
     }
 }
 
@@ -440,7 +626,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 8. Helper Functions --- */
+/* --- 8. Helper API Utilities --- */
 function getCredentials() {
     const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
     const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
