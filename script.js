@@ -1,15 +1,15 @@
 /*
  * BEHIND THE MAGIC CURTAIN - CORE SITE ENGINE
- * Handles Mobile Nav, Swiper Carousels, Auto Copyright & Dynamic JSON Renderers
+ * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support & Dynamic Footer
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
-    initCopyrightFooter();
+    initGlobalFooter();
     initDynamicPages();
 });
 
-/* --- 1. Mobile Navigation & Touch Handler --- */
+/* --- 1. Mobile Navigation --- */
 function initNavigation() {
     const navToggle = document.querySelector('.nav-toggle');
     const mainNav = document.querySelector('.main-nav');
@@ -28,15 +28,25 @@ function initNavigation() {
     }
 }
 
-/* --- 2. Dynamic Footer Copyright & Domain Link --- */
-function initCopyrightFooter() {
+/* --- 2. Global Footer Controller (Domain + Mailto + Copyright) --- */
+function initGlobalFooter() {
     const copyrightElements = document.querySelectorAll('.footer-copyright');
     const currentYear = new Date().getFullYear();
     const domainUrl = "https://behindthemagiccurtain.co.uk";
-    const brandName = "Behind the Magic Curtain";
+    const emailAddress = "Hello@behindthemagiccurtain.co.uk";
 
     copyrightElements.forEach(el => {
-        el.innerHTML = `&copy; ${currentYear} <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; font-weight: 600;"><i class="fa-solid fa-globe" style="margin-right: 4px; color: var(--color-secondary, #ffd700);"></i>${brandName}</a>. All rights reserved.`;
+        el.innerHTML = `
+            <div style="margin-bottom: 8px;">
+                <a href="mailto:${emailAddress}" style="color: inherit; text-decoration: none; font-weight: 600; margin-right: 15px;">
+                    <i class="fa-solid fa-envelope" style="margin-right: 5px; color: var(--color-secondary, #ffd700);"></i>${emailAddress}
+                </a>
+                <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; font-weight: 600;">
+                    <i class="fa-solid fa-globe" style="margin-right: 5px; color: var(--color-secondary, #ffd700);"></i>behindthemagiccurtain.co.uk
+                </a>
+            </div>
+            <div>&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
+        `;
     });
 }
 
@@ -53,7 +63,6 @@ function initDynamicPages() {
     if (isTheatrePage) loadTheatreGuideDirectory();
 }
 
-/* --- Dynamic Loader: Homepage (Takes Exact Top 3 Published Reviews) --- */
 async function loadFeaturedReviews() {
     const container = document.querySelector('.home-featured .card-grid');
     if (!container) return;
@@ -63,7 +72,6 @@ async function loadFeaturedReviews() {
         if (!res.ok) throw new Error('Could not load reviews data');
         const reviews = await res.json();
 
-        // Sort by numerical rank and take the top 3 published items
         const featured = reviews
             .filter(r => r.status === 'published')
             .sort((a, b) => (a.rank || 0) - (b.rank || 0))
@@ -75,7 +83,6 @@ async function loadFeaturedReviews() {
     }
 }
 
-/* --- Dynamic Loader: All Reviews Directory + Live Filter --- */
 async function loadReviewsDirectory() {
     const container = document.getElementById('all-reviews-grid');
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -115,13 +122,11 @@ async function loadReviewsDirectory() {
                 render(btn.getAttribute('data-filter'));
             });
         });
-
     } catch (err) {
         console.warn('Reviews directory fallback:', err);
     }
 }
 
-/* --- Dynamic Loader: What\'s On Listings + Auto Expiry --- */
 async function loadWhatsOnDirectory() {
     const container = document.getElementById('whatson-list');
     if (!container) return;
@@ -144,7 +149,6 @@ async function loadWhatsOnDirectory() {
     }
 }
 
-/* --- Dynamic Loader: Theatre Guide --- */
 async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
     if (!container) return;
@@ -155,14 +159,13 @@ async function loadTheatreGuideDirectory() {
         const theatres = await res.json();
 
         const sortedTheatres = theatres.sort((a, b) => (a.rank || 0) - (b.rank || 0));
-
         container.innerHTML = sortedTheatres.map(t => buildTheatreCardHTML(t)).join('');
     } catch (err) {
         console.warn('Theatre guide fallback:', err);
     }
 }
 
-/* --- Card HTML Template Generators --- */
+/* --- Card Generators --- */
 function buildReviewCardHTML(r) {
     const ratingPercent = Math.min(100, Math.max(0, ((parseFloat(r.rating) || 5) / 5) * 100));
     
@@ -235,15 +238,3 @@ function buildTheatreCardHTML(t) {
         </div>
     </article>`;
 }
-
-/* --- 4. Swiper Carousel Auto-Initializer (Review Detail Pages) --- */
-window.addEventListener('load', () => {
-    if (typeof Swiper !== 'undefined' && document.querySelector('.swiper')) {
-        new Swiper('.swiper', {
-            loop: true,
-            pagination: { el: '.swiper-pagination', clickable: true },
-            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            keyboard: { enabled: true }
-        });
-    }
-});
