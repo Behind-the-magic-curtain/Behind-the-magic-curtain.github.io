@@ -1,0 +1,76 @@
+[
+  {
+    "id": "rev_madagascar",
+    "title": "Madagascar The Musical",
+    "slug": "madagascar-the-musical.html",
+    "subtitle": "This lively, high-energy production is crack-a-lackin' entertainment for all the family.",
+    "rating": 4.0,
+    "age": "Ages 3+",
+    "tags": {
+      "adhd": true,
+      "sensory": true,
+      "mature": false
+    },
+    "mainImage": "madagascar-review.jpg",
+    "altText": "Madagascar the musical cast on stage",
+    "summary": "It’s crack-a-lackin' entertainment for all the family! This high-energy show is the perfect length for a younger audience.",
+    "bodyHtml": "<p>Natural food chains don’t matter when you live in luxury at New York’s Central Park Zoo. Best friends Alex the Lion and Marty the Zebra have everything they need...</p><p>The musical production showcases a fantastic mix of theatrical puppetry, mixed in with the main characters in full costumes.</p>",
+    "tips": [
+      "Running Time: 1hr 45min (including an interval).",
+      "Pacing: A lively, high-energy production with an upbeat score.",
+      "Loud noises: Expect some loud roars as you explore the jungles of Madagascar."
+    ],
+    "featured": true,
+    "rank": 1,
+    "status": "published"
+  },
+  {
+    "id": "rev_boy_back_class",
+    "title": "The Boy At The Back Of The Class",
+    "slug": "the-boy-at-the-back-of-the-class.html",
+    "subtitle": "Thought provoking tale of courage, friendship and compassion.",
+    "rating": 5.0,
+    "age": "Ages 7+",
+    "tags": {
+      "adhd": true,
+      "sensory": false,
+      "mature": false
+    },
+    "mainImage": "the-boy-at-the-back-of-the-class.jpg",
+    "altText": "Book cover image The Boy at the back of the Class",
+    "summary": "The Boy at the Back of the Class is an award-winning book that tells the story of a 9-year-old refugee arriving in the UK.",
+    "bodyHtml": "<p>Written by Onjali Q. Raúf, adapted for a live audience by Nick Ahad and directed by Monique Touko, this is one of the most powerful pieces of theatre I have ever seen.</p>",
+    "tips": [
+      "Running Time: Approx. 2 hours (including an interval).",
+      "Pacing: A story-driven play focusing on dialogue, mystery, and character.",
+      "Themes & Tone: Sensitively tackles serious themes including the refugee experience."
+    ],
+    "featured": true,
+    "rank": 2,
+    "status": "published"
+  },
+  {
+    "id": "rev_black_power_desk",
+    "title": "Black Power Desk",
+    "slug": "black-power-desk.html",
+    "subtitle": "We are human first!",
+    "rating": 5.0,
+    "age": "Ages 12+",
+    "tags": {
+      "adhd": false,
+      "sensory": false,
+      "mature": true
+    },
+    "mainImage": "black-power-desk.jpg",
+    "altText": "Celia and Dina sit next to the title Black Power Desk",
+    "summary": "Powerful and gripping, Black Power Desk tells the story of two sisters battling racial oppression in 1970's London.",
+    "bodyHtml": "<p>Black Power Desk is an extraordinary work of art, a retelling of history and yet devastatingly relevant today.</p>",
+    "tips": [
+      "Running time: Approximately 2hrs 30mins (Incl. Interval)",
+      "Content Advisory: Contains strong, discriminatory language and depictions of violence."
+    ],
+    "featured": true,
+    "rank": 3,
+    "status": "published"
+  }
+]
