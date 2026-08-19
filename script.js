@@ -104,3 +104,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
+// Auto-update footer copyright year
+document.addEventListener('DOMContentLoaded', () => {
+    const copyrightElements = document.querySelectorAll('.footer-copyright');
+    const currentYear = new Date().getFullYear();
+    copyrightElements.forEach(el => {
+        el.innerHTML = `&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.`;
+    });
+});
