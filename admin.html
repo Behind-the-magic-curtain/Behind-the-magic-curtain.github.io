@@ -95,20 +95,46 @@
         .badge-featured { background: #ffd700; color: #111; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; }
         .badge-status { color: #fff; font-weight: 700; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; display: inline-block; text-transform: uppercase; }
 
-        #status-toast { display: none; padding: 15px 20px; border-radius: 6px; margin-top: 20px; font-weight: 600; }
-        .status-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-        .status-error { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
-        .status-loading { background: #e0f7fa; color: #00838f; border: 1px solid #80deea; }
+        /* Floating Popup Toast */
+        #status-toast {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 99999;
+            min-width: 320px;
+            max-width: 480px;
+            padding: 16px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            display: none;
+            opacity: 0;
+            transform: translateY(-15px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #status-toast.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .status-success { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #a5d6a7; }
+        .status-error { background: #ffebee; color: #b71c1c; border: 1.5px solid #ef9a9a; }
+        .status-loading { background: #e0f7fa; color: #006064; border: 1.5px solid #80deea; }
 
         @media (max-width: 768px) {
             .studio-grid { grid-template-columns: 1fr; }
             .full-span { grid-column: span 1; }
             .studio-header { flex-direction: column; gap: 15px; text-align: center; }
             .crud-table { display: block; overflow-x: auto; }
+            #status-toast { top: 15px; right: 15px; left: 15px; min-width: auto; }
         }
     </style>
 </head>
 <body>
+
+    <!-- Floating Global Popup Toast Container -->
+    <div id="status-toast"></div>
 
     <!-- PIN Access Gate -->
     <div id="pin-gate">
@@ -404,7 +430,7 @@
                     </form>
                 </div>
 
-                <!-- TAB 4: MANAGE & ORDER (HTML5 DRAG & DROP) -->
+                <!-- TAB 4: MANAGE & ORDER -->
                 <div id="tab-manage" class="tab-content" style="display: none;">
                     <h2>Active Reviews (Public Directory Order)</h2>
                     <p style="font-size: 0.95rem; color: #555;">Grab and drag any row with <strong>☰</strong> to rearrange positions. The top 3 automatically appear on the Homepage.</p>
@@ -429,7 +455,6 @@
                     </div>
                 </div>
 
-                <div id="status-toast"></div>
             </div>
 
         </div>
