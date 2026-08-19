@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadSettings();
     }
 
-    // Attach drag & drop listeners to all drop zones
     setupDropZones();
 });
 
@@ -70,7 +69,7 @@ function switchTab(tabId, btn) {
     btn.classList.add('active');
 }
 
-/* --- 2. Validation & Unified Image Handling --- */
+/* --- 2. Validation & Image Handlers --- */
 function syncReviewMeta() {
     if (editMode) return;
     const title = document.getElementById('rev-title').value;
@@ -93,8 +92,6 @@ function validateStarRating(input) {
 
 function handleImageSelection(fileList, type) {
     let targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : whatsonImages);
-    
-    // For Theatre and What's On, enforce single image
     if (type !== 'review') targetArray.length = 0;
 
     for (let i = 0; i < fileList.length; i++) {
@@ -189,7 +186,7 @@ function showToast(msg, type) {
     setTimeout(() => { toast.scrollIntoView({ behavior: 'smooth' }); }, 100);
 }
 
-/* --- 4. Clean Edit Mode Dispatcher --- */
+/* --- 4. Edit Dispatchers --- */
 function enterEditReview(id) {
     const item = currentCache.reviews.find(r => r.id === id);
     if (!item) return;
@@ -212,7 +209,6 @@ function enterEditReview(id) {
     document.getElementById('rev-summary').value = item.summary || '';
     document.getElementById('wysiwyg-content').innerHTML = item.bodyHtml || '<p></p>';
     document.getElementById('rev-tips').value = (item.tips || []).join('\n');
-    document.getElementById('rev-featured').checked = !!item.featured;
     document.getElementById('rev-published').checked = item.status === 'published';
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
 
@@ -308,7 +304,6 @@ async function handleReviewSubmit() {
     if (!validateStarRating(ratingInput)) return;
 
     const editId = document.getElementById('rev-edit-id').value;
-    const isFeatured = document.getElementById('rev-featured').checked;
     const isPublished = document.getElementById('rev-published').checked;
     
     showToast('⏳ Updating reviews data...', 'status-loading');
@@ -340,7 +335,6 @@ async function handleReviewSubmit() {
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
             tips: document.getElementById('rev-tips').value.split('\n').filter(t => t.trim()),
-            featured: isFeatured,
             rank: editId ? (reviews.find(r => r.id === editId)?.rank || 1) : 1,
             status: isPublished ? 'published' : 'draft'
         };
@@ -349,19 +343,12 @@ async function handleReviewSubmit() {
         if (editId) {
             updatedReviews = reviews.map(r => r.id === editId ? reviewEntry : r);
         } else {
-            updatedReviews.forEach(r => r.rank = (r.rank || 1) + 1);
+            // New review placed at position 1, shifting previous ranks down
             updatedReviews.unshift(reviewEntry);
         }
 
-        if (isFeatured) {
-            let featuredCount = 0;
-            updatedReviews.forEach(r => {
-                if (r.featured && r.id !== reviewEntry.id) {
-                    featuredCount++;
-                    if (featuredCount >= 2) r.featured = false;
-                }
-            });
-        }
+        // Re-index all ranks sequentially (1, 2, 3...)
+        updatedReviews.forEach((r, idx) => r.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews data (${title})`);
 
@@ -403,6 +390,7 @@ async function handleTheatreSubmit() {
         };
 
         const updatedTheatres = editId ? theatres.map(t => t.id === editId ? entry : t) : [...theatres, entry];
+        updatedTheatres.forEach((t, idx) => t.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/theatres.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedTheatres, null, 2)))), `Save theatre: ${name}`);
         showToast(`✅ Successfully saved "${name}" to Theatre Guide!`, 'status-success');
@@ -443,6 +431,7 @@ async function handleWhatsOnSubmit() {
         };
 
         const updatedShows = editId ? shows.map(w => w.id === editId ? entry : w) : [...shows, entry];
+        updatedShows.forEach((w, idx) => w.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/whatson.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedShows, null, 2)))), `Save What's On: ${title}`);
         showToast(`✅ Successfully saved "${title}" to What's On!`, 'status-success');
@@ -467,9 +456,9 @@ async function loadManagementDashboard() {
             <table class="crud-table">
                 <thead>
                     <tr>
-                        <th style="width: 90px;">Rank</th>
+                        <th style="width: 100px;">Rank</th>
                         <th>Show Title</th>
-                        <th style="width: 140px;">Featured</th>
+                        <th style="width: 150px;">Position / Slot</th>
                         <th style="width: 110px;">Status</th>
                         <th style="width: 180px;">Actions</th>
                     </tr>
@@ -487,7 +476,7 @@ async function loadManagementDashboard() {
                                 </div>
                             </td>
                             <td><strong>${r.title}</strong></td>
-                            <td>${r.featured ? `<span class="badge-featured">Homepage #${i+1}</span>` : '<span style="color:#aaa;">—</span>'}</td>
+                            <td>${i < 3 ? `<span class="badge-featured">Homepage #${i+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory only</span>'}</td>
                             <td><span class="badge-status" style="background:${r.status==='published'?'#2e7d32':'#757575'}">${r.status}</span></td>
                             <td>
                                 <div class="action-btns">
@@ -514,7 +503,7 @@ async function loadManagementDashboard() {
             <table class="crud-table">
                 <thead>
                     <tr>
-                        <th style="width: 90px;">Rank</th>
+                        <th style="width: 100px;">Rank</th>
                         <th>Show Title</th>
                         <th>Venue</th>
                         <th>End Date</th>
@@ -561,7 +550,7 @@ async function loadManagementDashboard() {
             <table class="crud-table">
                 <thead>
                     <tr>
-                        <th style="width: 90px;">Rank</th>
+                        <th style="width: 100px;">Rank</th>
                         <th>Theatre Name</th>
                         <th>City / Location</th>
                         <th style="width: 180px;">Actions</th>
@@ -620,6 +609,7 @@ async function deleteItem(type, id) {
     const file = `data/${type}.json`;
     let data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
     data = data.filter(item => item.id !== id);
+    data.forEach((item, idx) => item.rank = idx + 1);
     
     await commitGitHubFile(creds.owner, creds.repo, creds.token, file, btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), `Delete from ${type}`);
     showToast('✅ Entry deleted successfully!', 'status-success');
@@ -715,7 +705,7 @@ function buildFullReviewPageHtml(d) {
                     <li><a href="whats-on.html">What's On</a></li>
                     <li><a href="theatre-guide.html">Theatre Guide</a></li>
                     <li><a href="tips-for-parents.html">Tips for Parents</a></li>
-                    <li><a href="reviews.html" class="active">Reviews</a></li>
+                    <li><a href="reviews.html">Reviews</a></li>
                 </ul>
             </nav>
         </div>
