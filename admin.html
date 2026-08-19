@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katy's Studio Dashboard | Behind the Magic Curtain</title>
     
-    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
@@ -15,16 +14,13 @@
     <style>
         body { background: #f0f3f6; min-height: 100vh; margin: 0; }
         
-        /* PIN Access Gate */
         #pin-gate { display: flex; align-items: center; justify-content: center; min-height: 85vh; padding: 20px; }
         .pin-box { background: #fff; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 380px; width: 100%; }
         .pin-box input { width: 100%; box-sizing: border-box; padding: 14px; font-size: 1.6rem; text-align: center; letter-spacing: 8px; border: 2px solid #e0e0e0; border-radius: 8px; margin: 20px 0; font-family: monospace; }
 
-        /* Main Studio Panel */
         #admin-panel { display: none; padding: 20px 0 80px 0; }
         .studio-container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
         
-        /* Persistent Edit Mode Warning Banner */
         #edit-banner {
             display: none;
             background: #fff3cd;
@@ -42,7 +38,6 @@
         .studio-card { background: #fff; border-radius: 12px; padding: 35px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); margin-bottom: 30px; }
         .studio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; }
         
-        /* Navigation Tabs */
         .studio-nav-tabs { display: flex; gap: 10px; border-bottom: 2px solid #e0e0e0; margin-bottom: 30px; flex-wrap: wrap; }
         .tab-btn { background: transparent; border: none; font-family: var(--font-heading, sans-serif); font-weight: 700; font-size: 1rem; color: #666; padding: 12px 20px; cursor: pointer; border-radius: 8px 8px 0 0; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px; }
         .tab-btn:hover { color: #bd2419; }
@@ -56,7 +51,7 @@
 
         .field-error { color: #bd2419; font-size: 0.85rem; margin-top: 4px; display: none; font-weight: 600; }
 
-        /* Unified Drag & Drop Upload Zone */
+        /* Unified Dropzones */
         .drop-zone { border: 2px dashed #00838f; background: #f8fafb; border-radius: 8px; padding: 25px; text-align: center; cursor: pointer; transition: background 0.2s ease; }
         .drop-zone:hover { background: #edf7f8; }
         .drop-zone i { font-size: 2rem; color: #00838f; margin-bottom: 8px; }
@@ -67,7 +62,7 @@
         .main-badge { background: #ffd700; color: #222; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
         .img-controls button { background: #f0f3f6; border: 1px solid #d0d7de; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
 
-        /* WYSIWYG Editor */
+        /* WYSIWYG */
         .wysiwyg-toolbar { display: flex; flex-wrap: wrap; gap: 6px; background: #f8f9fa; border: 1.5px solid #e0e0e0; border-bottom: none; padding: 8px; border-radius: 6px 6px 0 0; }
         .wysiwyg-toolbar button { background: #fff; border: 1px solid #e0e0e0; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
         .wysiwyg-toolbar button:hover { background: #00838f; color: #fff; }
@@ -77,17 +72,20 @@
         .checkbox-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 5px; }
         .checkbox-pill { display: inline-flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 16px; border-radius: 50px; border: 1px solid #e0e0e0; cursor: pointer; font-size: 0.9rem; }
         
-        /* Clean CRUD Table Styling */
+        /* Drag-and-Drop Interactive Table */
         .crud-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
         .crud-table th, .crud-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
         .crud-table th { background: #f8f9fa; font-family: var(--font-heading, sans-serif); font-size: 0.9rem; color: #444; }
         .crud-table tr:last-child td { border-bottom: none; }
-        .rank-cell { display: flex; align-items: center; gap: 8px; }
-        .rank-badge { font-weight: 800; font-size: 1rem; color: #333; min-width: 30px; }
-        .rank-btns { display: flex; flex-direction: column; gap: 3px; }
-        .rank-btn { background: #f0f3f6; border: 1px solid #d0d7de; padding: 3px 7px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; line-height: 1; }
-        .rank-btn:hover { background: #00838f; color: #fff; }
         
+        .draggable-row { cursor: grab; transition: background 0.15s ease; user-select: none; }
+        .draggable-row:active { cursor: grabbing; }
+        .draggable-row.dragging { opacity: 0.4; background: #e0f7fa !important; }
+        .draggable-row.drag-over { border-top: 3px solid #00838f !important; }
+
+        .grab-handle { color: #888; margin-right: 10px; font-size: 1.1rem; cursor: grab; }
+        .rank-badge { font-weight: 800; font-size: 1rem; color: #333; }
+
         .action-btns { display: flex; gap: 8px; }
         .btn-edit { background: #00838f; color: #fff; border: none; padding: 7px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
         .btn-edit:hover { background: #006064; }
@@ -112,7 +110,7 @@
 </head>
 <body>
 
-    <!-- 1. PIN Security Gate -->
+    <!-- PIN Access Gate -->
     <div id="pin-gate">
         <div class="pin-box">
             <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.5rem; color: #bd2419; margin-bottom: 12px;"></i>
@@ -124,11 +122,10 @@
         </div>
     </div>
 
-    <!-- 2. Main Studio Panel -->
+    <!-- Main Studio Panel -->
     <div id="admin-panel">
         <div class="studio-container">
             
-            <!-- Global Edit Mode Banner -->
             <div id="edit-banner">
                 <div>
                     <i class="fa-solid fa-pen-to-square"></i>
@@ -155,7 +152,7 @@
                     </div>
                 </div>
 
-                <!-- Studio Tabs -->
+                <!-- Tabs -->
                 <div class="studio-nav-tabs">
                     <button type="button" class="tab-btn active" onclick="switchTab('tab-reviews', this)"><i class="fa-solid fa-star"></i> Reviews</button>
                     <button type="button" class="tab-btn" onclick="switchTab('tab-theatres', this)"><i class="fa-solid fa-building-columns"></i> Theatre Guide</button>
@@ -176,14 +173,14 @@
                             <input type="text" id="gh-repo" placeholder="e.g. Behind-the-magic-curtain.github.io">
                         </div>
                         <div class="form-group full-span">
-                            <label>GitHub Personal Access Token (Token with 'repo' scope)</label>
+                            <label>GitHub Personal Access Token (with 'repo' scope)</label>
                             <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
                         </div>
                     </div>
                     <button type="button" onclick="saveSettings()" class="btn btn-primary" style="margin-top: 10px; padding: 8px 18px; font-size: 0.85rem;">Save Connection Settings</button>
                 </div>
 
-                <!-- ================= TAB 1: REVIEWS ================= -->
+                <!-- TAB 1: REVIEWS -->
                 <div id="tab-reviews" class="tab-content">
                     <form id="form-review" onsubmit="event.preventDefault(); handleReviewSubmit();">
                         <input type="hidden" id="rev-edit-id" value="">
@@ -232,13 +229,13 @@
                                 </div>
                             </div>
 
-                            <!-- Review Drag & Drop Upload Zone -->
+                            <!-- Review Drag & Drop Zone -->
                             <div class="form-group full-span">
-                                <label>Show Images (Drag & Drop or Browse) *</label>
+                                <label>Show Images (Drag & Drop or Browse) — Auto-optimized to WebP *</label>
                                 <div class="drop-zone" onclick="document.getElementById('rev-img-picker').click()">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                     <p style="margin: 0; font-weight: 600;">Drag and drop image files here, or click to browse</p>
-                                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #777;">The top image is the Main Poster.</p>
+                                    <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #777;">The top image is used as the Main Poster.</p>
                                     <input type="file" id="rev-img-picker" accept="image/*" multiple style="display: none;" onchange="handleImageSelection(this.files, 'review')">
                                 </div>
                                 <div id="review-image-list" class="image-preview-list"></div>
@@ -274,10 +271,9 @@
                             </div>
 
                             <div class="form-group full-span">
-                                <label>Visibility & Homepage Status</label>
+                                <label>Publishing Status</label>
                                 <div class="checkbox-container">
-                                    <label class="checkbox-pill"><input type="checkbox" id="rev-featured" checked> <strong>Feature on Homepage (Slot #1 FIFO Queue)</strong></label>
-                                    <label class="checkbox-pill"><input type="checkbox" id="rev-published" checked> Publish to Live Website</label>
+                                    <label class="checkbox-pill"><input type="checkbox" id="rev-published" checked> Publish Live Immediately</label>
                                 </div>
                             </div>
                         </div>
@@ -287,13 +283,13 @@
                                 <i class="fa-solid fa-cloud-arrow-up"></i> Publish Review to Website
                             </button>
                             <span id="loading-spinner" style="display: none; color: #00838f; font-weight: 600;">
-                                <i class="fa-solid fa-spinner fa-spin"></i> Saving directly to GitHub...
+                                <i class="fa-solid fa-spinner fa-spin"></i> Processing & Saving to GitHub...
                             </span>
                         </div>
                     </form>
                 </div>
 
-                <!-- ================= TAB 2: THEATRE GUIDE ================= -->
+                <!-- TAB 2: THEATRE GUIDE -->
                 <div id="tab-theatres" class="tab-content" style="display: none;">
                     <form id="form-theatre" onsubmit="event.preventDefault(); handleTheatreSubmit();">
                         <input type="hidden" id="th-edit-id" value="">
@@ -308,9 +304,8 @@
                                 <input type="text" id="th-location" placeholder="e.g. Wolverhampton" required>
                             </div>
 
-                            <!-- Theatre Drag & Drop Zone -->
                             <div class="form-group full-span">
-                                <label>Theatre Photo (Drag & Drop or Browse) *</label>
+                                <label>Theatre Photo (Drag & Drop or Browse) — Auto-optimized to WebP *</label>
                                 <div class="drop-zone" onclick="document.getElementById('th-img-picker').click()">
                                     <i class="fa-solid fa-building-columns"></i>
                                     <p style="margin: 0; font-weight: 600;">Drag and drop theatre photo here, or click to browse</p>
@@ -340,7 +335,7 @@
                     </form>
                 </div>
 
-                <!-- ================= TAB 3: WHAT'S ON ================= -->
+                <!-- TAB 3: WHAT'S ON -->
                 <div id="tab-whatson" class="tab-content" style="display: none;">
                     <form id="form-whatson" onsubmit="event.preventDefault(); handleWhatsOnSubmit();">
                         <input type="hidden" id="wo-edit-id" value="">
@@ -378,9 +373,8 @@
                                 </select>
                             </div>
 
-                            <!-- What's On Drag & Drop Zone -->
                             <div class="form-group full-span">
-                                <label>Show Poster (Drag & Drop or Browse) *</label>
+                                <label>Show Poster (Drag & Drop or Browse) — Auto-optimized to WebP *</label>
                                 <div class="drop-zone" onclick="document.getElementById('wo-img-picker').click()">
                                     <i class="fa-solid fa-ticket"></i>
                                     <p style="margin: 0; font-weight: 600;">Drag and drop show poster here, or click to browse</p>
@@ -410,10 +404,10 @@
                     </form>
                 </div>
 
-                <!-- ================= TAB 4: MANAGE & ORDER CONTENT ================= -->
+                <!-- TAB 4: MANAGE & ORDER (HTML5 DRAG & DROP) -->
                 <div id="tab-manage" class="tab-content" style="display: none;">
                     <h2>Active Reviews (Public Directory Order)</h2>
-                    <p style="font-size: 0.95rem; color: #555;">Use ▲ and ▼ to reorder reviews on the Reviews page. The top 3 marked "Homepage" appear on the front page.</p>
+                    <p style="font-size: 0.95rem; color: #555;">Grab and drag any row with <strong>☰</strong> to rearrange positions. The top 3 automatically appear on the Homepage.</p>
                     <div id="manage-reviews-table-container">
                         <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading reviews...</p>
                     </div>
@@ -421,7 +415,7 @@
                     <hr style="margin: 40px 0; border: none; border-top: 1px solid #e0e0e0;">
 
                     <h2>What's On Listings</h2>
-                    <p style="font-size: 0.95rem; color: #555;">Shows with expired End Dates are automatically hidden from the public website.</p>
+                    <p style="font-size: 0.95rem; color: #555;">Drag rows with <strong>☰</strong> to change display order on the What's On page.</p>
                     <div id="manage-whatson-table-container">
                         <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading What's On shows...</p>
                     </div>
@@ -429,6 +423,7 @@
                     <hr style="margin: 40px 0; border: none; border-top: 1px solid #e0e0e0;">
 
                     <h2>Theatre Guide Directory</h2>
+                    <p style="font-size: 0.95rem; color: #555;">Drag rows with <strong>☰</strong> to set theatre listing order.</p>
                     <div id="manage-theatres-table-container">
                         <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading theatres...</p>
                     </div>
@@ -440,7 +435,6 @@
         </div>
     </div>
 
-    <!-- Script Engine -->
     <script src="admin.js"></script>
 </body>
 </html>
