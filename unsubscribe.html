@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Manage Subscription & Privacy Preferences | Behind the Magic Curtain</title>
+    <meta name="description" content="Manage your Behind the Magic Curtain email subscription preferences or request complete data deletion.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .privacy-container {
+            max-width: 680px;
+            margin: 60px auto 80px auto;
+            padding: 0 20px;
+        }
+        .privacy-card {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            padding: 40px 30px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--color-border);
+            text-align: center;
+        }
+        .privacy-card h1 {
+            font-size: 1.85rem;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+        .privacy-card p.subtitle {
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+        .option-group {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .choice-card {
+            background: #f8fafb;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .choice-card:hover {
+            border-color: var(--color-accent);
+            background: #edf7f8;
+        }
+        .choice-card input[type="radio"] {
+            margin-top: 4px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-primary);
+        }
+        .choice-text strong {
+            display: block;
+            color: var(--color-text);
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        .choice-text span {
+            font-size: 0.85rem;
+            color: #666666;
+            line-height: 1.4;
+            display: block;
+        }
+        .input-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 0.92rem;
+            margin-bottom: 6px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--color-border);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: var(--color-accent);
+        }
+        .btn-submit-action {
+            width: 100%;
+            background-color: var(--color-primary);
+            color: #ffffff;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+        .btn-submit-action:hover {
+            background-color: #8c170e;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="whats-on.html">What's On</a></li>
+                    <li><a href="theatre-guide.html">Theatre Guide</a></li>
+                    <li><a href="tips-for-parents.html">Tips for Parents</a></li>
+                    <li><a href="reviews.html">Reviews</a></li>
+                    <li><a href="disneyland-paris.html">Disneyland Paris</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="privacy-container">
+        <div class="privacy-card">
+            <i class="fa-solid fa-shield-halved" style="font-size: 2.5rem; color: var(--color-primary); margin-bottom: 12px;"></i>
+            <h1>Subscription & Privacy Center</h1>
+            <p class="subtitle">We respect your inbox and privacy. Choose how you would like to manage your details below.</p>
+
+            <form id="privacy-form" onsubmit="event.preventDefault(); handlePrivacySubmit();">
+                <div class="input-group">
+                    <label for="pref-email">Your Registered Email Address *</label>
+                    <input type="email" id="pref-email" required placeholder="e.g. sarah@example.com">
+                </div>
+
+                <div class="option-group">
+                    <label class="choice-card">
+                        <input type="radio" name="privacy_action" value="unsubscribe" checked>
+                        <div class="choice-text">
+                            <strong>Option 1: Unsubscribe from Emails</strong>
+                            <span>Stop receiving newsletters and guide updates. Any past anonymous sensory ratings you contributed remain to help other families.</span>
+                        </div>
+                    </label>
+
+                    <label class="choice-card">
+                        <input type="radio" name="privacy_action" value="delete">
+                        <div class="choice-text">
+                            <strong style="color: var(--color-primary);">Option 2: Delete All My Stored Data (GDPR Purge)</strong>
+                            <span>Permanently scrub your name, email, and historical contact records from all systems.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-submit-action" id="btn-submit-pref">
+                    <i class="fa-solid fa-check"></i> Apply Preferences
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-copyright"></div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const prefillEmail = params.get('email');
+            if (prefillEmail) {
+                document.getElementById('pref-email').value = decodeURIComponent(prefillEmail);
+            }
+        });
+
+        function handlePrivacySubmit() {
+            const emailInput = document.getElementById('pref-email');
+            const email = emailInput.value.trim();
+            const action = document.querySelector('input[name="privacy_action"]:checked').value;
+
+            if (!email || !email.includes('@')) {
+                triggerGlobalToast('Please enter a valid email address.', false);
+                return;
+            }
+
+            const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
+            const ENTRY_OPTIN = "entry.1934084784";
+            const ENTRY_CONTACT = "entry.1983797623";
+            const ENTRY_DIARY = "entry.266837979";
+
+            const optInStatus = action === 'delete' ? "Request - Delete All Data" : "Request - Unsubscribe";
+            const contactInfo = `User (${email})`;
+            const payloadText = action === 'delete' ? "USER_GDPR_PURGE_REQUEST" : "USER_UNSUBSCRIBE_REQUEST";
+
+            // Hidden IFrame background transmission
+            let iframe = document.getElementById('hidden_privacy_iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.name = 'hidden_privacy_iframe';
+                iframe.id = 'hidden_privacy_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+
+            let form = document.getElementById('dynamic_privacy_form');
+            if (form) form.remove();
+
+            form = document.createElement('form');
+            form.id = 'dynamic_privacy_form';
+            form.action = FORM_RESPONSE_URL;
+            form.method = 'POST';
+            form.target = 'hidden_privacy_iframe';
+            form.style.display = 'none';
+
+            const addField = (n, v) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = n;
+                input.value = v;
+                form.appendChild(input);
+            };
+
+            addField(ENTRY_OPTIN, optInStatus);
+            addField(ENTRY_CONTACT, contactInfo);
+            addField(ENTRY_DIARY, payloadText);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            if (action === 'delete') {
+                triggerGlobalToast('🗑️ All personal data has been queued for permanent deletion. Confirmation email sent.', true);
+            } else {
+                triggerGlobalToast('✅ You have been unsubscribed from all future emails.', true);
+            }
+
+            emailInput.value = '';
+        }
+    </script>
+</body>
+</html>
