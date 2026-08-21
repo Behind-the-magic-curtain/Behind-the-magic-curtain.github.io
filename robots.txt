@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: https://behindthemagiccurtain.co.uk/sitemap.xml
