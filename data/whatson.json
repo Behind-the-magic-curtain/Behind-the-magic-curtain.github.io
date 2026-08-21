@@ -1,19 +1,5 @@
 [
   {
-    "id": "wo_elf",
-    "title": "Elf The Musical",
-    "venue": "Wolverhampton Grand Theatre",
-    "dates": "Booking 11th-16th November 2025",
-    "expiryDate": "2025-12-31",
-    "runtime": "2hrs 25mins (Incl. Interval)",
-    "age": "Ages 0+",
-    "image": "elf-the-musical.jpg",
-    "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
-    "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
-    "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 1
-  },
-  {
     "id": "wo_paddington",
     "title": "Paddington The Musical",
     "venue": "The Savoy Theatre, London",
@@ -25,6 +11,20 @@
     "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
     "siteLink": "https://paddingtonthemusical.com/",
     "expiryDate": "2026-10-31",
+    "rank": 1
+  },
+  {
+    "id": "wo_elf",
+    "title": "Elf The Musical",
+    "venue": "Wolverhampton Grand Theatre",
+    "dates": "Booking 11th-16th November 2025",
+    "expiryDate": "2025-12-31",
+    "runtime": "2hrs 25mins (Incl. Interval)",
+    "age": "Ages 0+",
+    "image": "elf-the-musical.jpg",
+    "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
+    "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
+    "siteLink": "https://elfthemusicaluk.com/",
     "rank": 2
   }
 ]
