@@ -3,6 +3,25 @@
  * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support, Global Footer & Mailing List Form
  */
 
+/* --- GOOGLE ANALYTICS 4 CENTRAL AUTO-LOADER --- */
+(function initGA() {
+    const GA_ID = 'G-CPHCSFHVJK'; // Your BTMC Measurement ID
+    
+    // Skip tracking during local file testing
+    if (window.location.hostname === 'localhost' || !GA_ID.startsWith('G-')) return;
+
+    const gaScript = document.createElement('script');
+    gaScript.async = true;
+    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+    document.head.appendChild(gaScript);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+})();
+
 document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initGlobalFooter();
