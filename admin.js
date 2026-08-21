@@ -158,7 +158,7 @@ function renderImagePreviews(type) {
                     <div>
                         <span style="font-weight:600; font-size:0.9rem;">${item.name}</span>
                         <span style="font-size:0.75rem; color:#00838f; margin-left:8px; font-weight:700;">WEBP OPTIMIZED</span>
-                        ${index === 0 ? '<span class="main-badge" style="margin-left:8px;">Main Photo</span>' : ''}
+                        ${index === 0 ? '<span class="main-badge" style="margin-left:8px;">Main Poster</span>' : '<span style="font-size:0.72rem; color:#666; margin-left:8px;">Gallery Image</span>'}
                     </div>
                 </div>
                 <div class="img-controls">
@@ -251,10 +251,16 @@ function enterEditReview(id) {
     document.getElementById('rev-published').checked = item.status === 'published';
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
 
+    reviewImages = [];
     if (item.mainImage) {
-        reviewImages = [{ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
-        renderImagePreviews('review');
+        reviewImages.push({ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` });
     }
+    if (item.galleryImages && Array.isArray(item.galleryImages)) {
+        item.galleryImages.forEach(gImg => {
+            reviewImages.push({ base64: null, name: gImg, preview: `images/${gImg}` });
+        });
+    }
+    renderImagePreviews('review');
 }
 
 function enterEditWhatsOn(id) {
@@ -383,6 +389,8 @@ async function handleReviewSubmit() {
 
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
         
+        const galleryList = reviewImages.slice(1).map(img => img.name);
+
         const reviewEntry = {
             id: editId || 'rev_' + Date.now(),
             title,
@@ -395,7 +403,8 @@ async function handleReviewSubmit() {
                 sensory: document.getElementById('tag-sensory').checked,
                 mature: document.getElementById('tag-mature').checked
             },
-            mainImage: reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.jpg' : 'placeholder.jpg'),
+            mainImage: reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.webp' : 'placeholder.webp'),
+            galleryImages: galleryList,
             altText: document.getElementById('rev-image-alt').value.trim(),
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
@@ -443,7 +452,7 @@ async function handleTheatreSubmit() {
             id: editId || 'th_' + Date.now(),
             name,
             location: document.getElementById('th-location').value.trim(),
-            image: theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.jpg' : 'theatre-default.jpg'),
+            image: theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.webp' : 'theatre-default.webp'),
             website: document.getElementById('th-website').value.trim(),
             accessibility: document.getElementById('th-access').value.trim(),
             relaxed: document.getElementById('th-relaxed').value.trim(),
@@ -483,7 +492,7 @@ async function handleWhatsOnSubmit() {
             expiryDate: document.getElementById('wo-expiry').value,
             runtime: document.getElementById('wo-runtime').value.trim(),
             age: document.getElementById('wo-age').value,
-            image: whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.jpg' : 'show-default.jpg'),
+            image: whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.webp' : 'show-default.webp'),
             desc: document.getElementById('wo-desc').value.trim(),
             ticketLink: document.getElementById('wo-ticket-link').value.trim(),
             siteLink: document.getElementById('wo-site-link').value.trim(),
@@ -542,7 +551,6 @@ async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
 
-    // Load Reviews
     try {
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
         currentCache.reviews = reviews.sort((a,b) => (a.rank||0) - (b.rank||0));
@@ -551,7 +559,6 @@ async function loadManagementDashboard() {
         document.getElementById('manage-reviews-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
 
-    // Load What's On
     try {
         const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
         currentCache.whatson = whatson.sort((a,b) => (a.rank||0) - (b.rank||0));
@@ -560,7 +567,6 @@ async function loadManagementDashboard() {
         document.getElementById('manage-whatson-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
 
-    // Load Theatres
     try {
         const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
         currentCache.theatres = theatres.sort((a,b) => (a.rank||0) - (b.rank||0));
@@ -569,7 +575,6 @@ async function loadManagementDashboard() {
         document.getElementById('manage-theatres-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
 
-    // Load Disneyland
     try {
         const dlp = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
         currentCache.disneyland = dlp;
@@ -739,7 +744,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 8. Helper Utilities --- */
+/* --- 8. Helper Utilities & HTML Page Builder --- */
 function getCredentials() {
     const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
     const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
@@ -792,6 +797,25 @@ function buildFullReviewPageHtml(d) {
         tipsSection = `<article>\n<h3>Key Info for Parents</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
     }
 
+    let gallerySection = '';
+    if (d.galleryImages && Array.isArray(d.galleryImages) && d.galleryImages.length > 0) {
+        gallerySection = `
+        <div class="review-gallery">
+            <h2>Production Gallery</h2>
+            <div class="swiper review-swiper">
+                <div class="swiper-wrapper">
+                    ${d.galleryImages.map(imgName => `
+                    <div class="swiper-slide">
+                        <img src="images/${imgName}" alt="Production scene from ${d.title}" loading="lazy">
+                    </div>`).join('\n')}
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev" aria-label="Previous slide"></div>
+                <div class="swiper-button-next" aria-label="Next slide"></div>
+            </div>
+        </div>`;
+    }
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -808,6 +832,7 @@ function buildFullReviewPageHtml(d) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </head>
 <body>
     <header class="site-header">
@@ -819,7 +844,7 @@ function buildFullReviewPageHtml(d) {
                     <li><a href="whats-on.html">What's On</a></li>
                     <li><a href="theatre-guide.html">Theatre Guide</a></li>
                     <li><a href="tips-for-parents.html">Tips for Parents</a></li>
-                    <li><a href="reviews.html">Reviews</a></li>
+                    <li><a href="reviews.html" class="active">Reviews</a></li>
                     <li><a href="disneyland-paris.html">Disneyland Paris</a></li>
                 </ul>
             </nav>
@@ -844,16 +869,31 @@ function buildFullReviewPageHtml(d) {
                 <img src="images/${d.mainImage}" alt="${d.altText}" class="review-main-image" loading="lazy" decoding="async">
                 <h2>Our Family Verdict</h2>
                 ${d.bodyHtml}
+                ${gallerySection}
                 ${tipsSection}
             </div>
         </section>
     </main>
     <footer class="site-footer">
         <div class="container">
-            <p class="footer-copyright">&copy; 2026 Behind the Magic Curtain. All rights reserved.</p>
+            <div class="footer-copyright"></div>
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"><\/script>
     <script src="script.js"><\/script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.querySelector('.review-swiper')) {
+                new Swiper('.review-swiper', {
+                    loop: true,
+                    speed: 600,
+                    pagination: { el: '.swiper-pagination', clickable: true },
+                    navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+                    keyboard: { enabled: true }
+                });
+            }
+        });
+    <\/script>
 </body>
 </html>`;
 }
