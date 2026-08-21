@@ -26,5 +26,19 @@
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
     "rank": 2
+  },
+  {
+    "id": "wo_1787350698547",
+    "title": "Dog Man: The Musical",
+    "venue": "Wolverhampton Grand Theatre",
+    "dates": "28-29 August 2026",
+    "expiryDate": "2026-08-29",
+    "runtime": "1 hour 20 minutes (including a 20 minute interval)",
+    "age": "Ages 0+",
+    "image": "dog-man-the-musical.webp",
+    "desc": "With the head of a dog and the body of a policeman, Dog Man loves to fight crime and chew on furniture!.. Paw-sitively brilliant stage adaptation based on Dav Pilkey's worldwide bestselling Dog Man book series.",
+    "ticketLink": "https://www.grandtheatre.co.uk/whats-on/dog-man-the-musical/#book",
+    "siteLink": "https://www.dogman.live/",
+    "rank": 3
   }
 ]
