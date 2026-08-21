@@ -10,8 +10,8 @@
     "fearFactor": 1,
     "noiseLevel": 2,
     "darkness": 4,
-    "sensoryNotes": "Suspended dark ride flying over London and Neverland with glowing UV blacklight.",
-    "adhdTip": "Continuous moving boarding belt. Very popular; aim for early rope drop or fireworks time."
+    "sensoryNotes": "Suspended flying galleon gliding over London and Neverland with vibrant UV blacklight scenery.",
+    "adhdTip": "Continuous moving boarding belt. Very popular queue; aim for early rope drop or during evening fireworks."
   },
   {
     "id": "dlp_pirates",
@@ -24,8 +24,8 @@
     "fearFactor": 3,
     "noiseLevel": 4,
     "darkness": 4,
-    "sensoryNotes": "Atmospheric boat voyage with indoor cannon fire, two mild drops, and dark water scenery.",
-    "adhdTip": "Ear defenders advised during the fortress cannonade. Queue area is dark and cool."
+    "sensoryNotes": "Atmospheric boat voyage with indoor cannon fire, battle audio, two minor water drops, and dim lighting.",
+    "adhdTip": "Ear defenders advised during the fortress cannonade. The queue area is dark, cool, and spacious."
   },
   {
     "id": "dlp_big_thunder",
@@ -38,8 +38,8 @@
     "fearFactor": 3,
     "noiseLevel": 4,
     "darkness": 3,
-    "sensoryNotes": "Fast runaway mine train with roaring track audio, sudden sharp turns, and dark tunnel plunges.",
-    "adhdTip": "Queue line can echo loudly under the timber shelter. Visualise the underground tunnel drops beforehand."
+    "sensoryNotes": "Runaway mine train racing around an island with roaring track audio, sudden sharp turns, and dark underwater tunnels.",
+    "adhdTip": "Queue line can echo loudly under the timber shelter. Prepare cautious children for the final pitch-black tunnel dive."
   },
   {
     "id": "dlp_phantom_manor",
@@ -52,8 +52,8 @@
     "fearFactor": 4,
     "noiseLevel": 3,
     "darkness": 5,
-    "sensoryNotes": "Gothic ghost tour with stretching portrait rooms, spooky orchestrations, and glowing skeletons.",
-    "adhdTip": "Pre-show room has a brief moment of complete darkness and a thunderclap scream."
+    "sensoryNotes": "Gothic ghost tour with stretching portrait rooms, spooky orchestrations, singing skeletons, and brief pitch blackouts.",
+    "adhdTip": "Pre-show holding room includes a brief moment of complete darkness paired with a thunderclap scream."
   },
   {
     "id": "dlp_hyperspace",
@@ -66,8 +66,8 @@
     "fearFactor": 4,
     "noiseLevel": 5,
     "darkness": 5,
-    "sensoryNotes": "High-speed indoor coaster with catapult launch, full inversions, lasers, and loud soundtrack.",
-    "adhdTip": "High physical intensity. Best ridden when fully prepared for sensory overload and headrest vibrations."
+    "sensoryNotes": "High-velocity indoor coaster with catapult launch, 3 inversions, flashing lasers, and blaring John Williams music.",
+    "adhdTip": "High physical intensity and restraint vibration. Keep head back firmly against the headrest."
   },
   {
     "id": "dlp_its_a_small_world",
@@ -80,8 +80,8 @@
     "fearFactor": 1,
     "noiseLevel": 3,
     "darkness": 1,
-    "sensoryNotes": "Gentle, colourful canal cruise with singing animatronic dolls. Bright pastel lighting.",
-    "adhdTip": "Repetitive catchy theme tune; ideal low-intensity sensory decompression ride."
+    "sensoryNotes": "Gentle, colourful canal cruise with singing animatronic dolls. Bright pastel lighting throughout.",
+    "adhdTip": "Repetitive catchy theme tune; an ideal low-intensity sensory decompression ride."
   },
   {
     "id": "dlp_buzz_lightyear",
@@ -94,8 +94,8 @@
     "fearFactor": 1,
     "noiseLevel": 4,
     "darkness": 3,
-    "sensoryNotes": "Interactive laser-firing ride with joystick spin control, arcade sounds, and neon robot targets.",
-    "adhdTip": "Tactile and engaging; riders can control the spinning speed of the cruiser."
+    "sensoryNotes": "Interactive laser-firing dark ride with joystick spin control, arcade sound effects, and neon robot targets.",
+    "adhdTip": "Tactile and engaging; riders can control the spinning speed of the cruiser or leave it facing forward."
   },
   {
     "id": "dlp_star_tours",
@@ -109,7 +109,7 @@
     "noiseLevel": 4,
     "darkness": 4,
     "sensoryNotes": "3D motion flight simulator with hydraulic cabin movement, rapid flight drops, and blasters.",
-    "adhdTip": "Take off 3D glasses if visual motion simulator nausea occurs."
+    "adhdTip": "Children can take off 3D glasses if visual motion simulator dizziness occurs."
   },
   {
     "id": "dlp_indiana_jones",
@@ -122,8 +122,8 @@
     "fearFactor": 3,
     "noiseLevel": 4,
     "darkness": 1,
-    "sensoryNotes": "Outdoor mine cart coaster with a tight 360-degree inversion loop and rapid track jolts.",
-    "adhdTip": "Ride is fast and relatively bumpy; check head positioning against padded restraints."
+    "sensoryNotes": "Outdoor mine cart coaster with sudden drops, sharp turns, and a tight 360-degree vertical inversion loop.",
+    "adhdTip": "Coaster track is relatively bumpy; ensure smaller teens brace their shoulders against padded restraints."
   },
   {
     "id": "dlp_snow_white",
@@ -238,6 +238,62 @@
     "adhdTip": "Flies higher than Dumbo; great evening view of Discoveryland."
   },
   {
+    "id": "dlp_carrousel_lancelot",
+    "name": "Le Carrousel de Lancelot",
+    "park": "Disneyland Park",
+    "land": "Fantasyland",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 1,
+    "sensoryNotes": "Traditional grand carousel with carved horses, gentle organ music, and canopy lighting.",
+    "adhdTip": "Gentle, soothing motion. Outer horses are stationary for cautious younger riders."
+  },
+  {
+    "id": "dlp_thunder_mesa_boat",
+    "name": "Thunder Mesa Riverboat Landing",
+    "park": "Disneyland Park",
+    "land": "Frontierland",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 1,
+    "sensoryNotes": "Scenic paddle-steamer boat tour around Rivers of the Far West with wilderness audio.",
+    "adhdTip": "Excellent sensory decompression space with benches and open river breezes."
+  },
+  {
+    "id": "dlp_disneyland_railroad",
+    "name": "Disneyland Railroad",
+    "park": "Disneyland Park",
+    "land": "Parkwide (Main Street / Frontierland / Fantasyland / Discoveryland)",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 3,
+    "darkness": 2,
+    "sensoryNotes": "Authentic steam train circling the entire park with Grand Canyon diorama sound effects.",
+    "adhdTip": "Great transportation option to rest tired feet between lands."
+  },
+  {
+    "id": "dlp_main_street_vehicles",
+    "name": "Main Street Vehicles",
+    "park": "Disneyland Park",
+    "land": "Main Street, U.S.A.",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 1,
+    "sensoryNotes": "Charming vintage cars, fire engines, and paddy wagons taking a one-way trip up Main Street.",
+    "adhdTip": "Operates mostly in the mornings; delightful low-key ride for toddlers."
+  },
+  {
     "id": "dlp_dragon_lair",
     "name": "La Tanière du Dragon",
     "park": "Disneyland Park",
@@ -248,7 +304,7 @@
     "fearFactor": 3,
     "noiseLevel": 2,
     "darkness": 4,
-    "sensoryNotes": "Walkthrough cave under the castle with an enormous audio-animatronic sleeping dragon that periodically awakens and growls.",
+    "sensoryNotes": "Walkthrough cave under the castle with an enormous animatronic dragon that awakens and growls.",
     "adhdTip": "Self-paced walkthrough; easy to exit immediately if child feels intimidated."
   },
   {
@@ -264,6 +320,62 @@
     "darkness": 1,
     "sensoryNotes": "Outdoor hedge maze with water fountains, singing cards, and Queen of Hearts castle lookout.",
     "adhdTip": "Great tactile space for active children to explore at their own pace."
+  },
+  {
+    "id": "dlp_adventure_isle",
+    "name": "Adventure Isle & Swiss Family Treehouse",
+    "park": "Disneyland Park",
+    "land": "Adventureland",
+    "type": "Walkthrough",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 2,
+    "noiseLevel": 2,
+    "darkness": 3,
+    "sensoryNotes": "Rope suspension bridges, pirate caves, skull rock tunnels, and giant treehouse climb.",
+    "adhdTip": "Unstructured outdoor play space ideal for burning excess physical energy."
+  },
+  {
+    "id": "dlp_nautilus",
+    "name": "Les Mystères du Nautilus",
+    "park": "Disneyland Park",
+    "land": "Discoveryland",
+    "type": "Walkthrough",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 2,
+    "noiseLevel": 2,
+    "darkness": 4,
+    "sensoryNotes": "Walkthrough recreation of Captain Nemo's submarine with bubble effects, organ music, and a giant squid encounter.",
+    "adhdTip": "Dimly lit, quiet indoor attraction with gentle ambient sea sounds."
+  },
+  {
+    "id": "dlp_aladdin_passage",
+    "name": "Le Passage Enchanté d'Aladdin",
+    "park": "Disneyland Park",
+    "land": "Adventureland",
+    "type": "Walkthrough",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 1,
+    "darkness": 2,
+    "sensoryNotes": "Intimate stone walkway featuring miniature window dioramas telling Aladdin's story.",
+    "adhdTip": "Very quiet, self-paced, and rarely crowded."
+  },
+  {
+    "id": "dlp_sleeping_beauty_gallery",
+    "name": "La Galerie de la Belle au Bois Dormant",
+    "park": "Disneyland Park",
+    "land": "Fantasyland (Castle Upper Level)",
+    "type": "Walkthrough",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 1,
+    "darkness": 2,
+    "sensoryNotes": "Stained glass windows, woven tapestries, and castle balcony overlook.",
+    "adhdTip": "Calm, beautiful space inside Sleeping Beauty Castle."
   },
   {
     "id": "dlp_tower_of_terror",
@@ -305,7 +417,7 @@
     "noiseLevel": 3,
     "darkness": 3,
     "sensoryNotes": "Trackless 3D glasses ride with heat/cold physical blasts, water sprays, and quick scurrying motions.",
-    "adhdTip": "3D glasses can be removed if visual simulation triggers dizziness without breaking the experience."
+    "adhdTip": "3D glasses can be removed if visual simulation triggers dizziness."
   },
   {
     "id": "dlp_flight_force",
@@ -374,7 +486,7 @@
     "fearFactor": 1,
     "noiseLevel": 2,
     "darkness": 1,
-    "sensoryNotes": "Circular caterpillar-style undulating ride around a giant dog bowl.",
+    "sensoryNotes": "Circular undulating caterpillar ride around a giant dog bowl.",
     "adhdTip": "Low sensory stimulation; very toddler-friendly."
   },
   {
@@ -390,6 +502,62 @@
     "darkness": 1,
     "sensoryNotes": "Tram tour featuring a flash flood and fire canyon demonstration with real water and heat blasts.",
     "adhdTip": "Canyon catastrophe scene creates sudden flame and loud water deluge."
+  },
+  {
+    "id": "dlp_cars_rallye",
+    "name": "Cars Quatre Roues Rallye",
+    "park": "Walt Disney Studios",
+    "land": "Worlds of Pixar",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 2,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 1,
+    "sensoryNotes": "Spinning car ride with figure-eight rotating turntable motion in Radiator Springs.",
+    "adhdTip": "Centrifugal turns without height drops; fun for young Pixar fans."
+  },
+  {
+    "id": "dlp_flying_carpets",
+    "name": "Les Tapis Volants - Flying Carpets Over Agrabah",
+    "park": "Walt Disney Studios",
+    "land": "Toon Studio",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 2,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 1,
+    "sensoryNotes": "Rotating aerial carpet spinner with front-row tilt and back-row height control levers.",
+    "adhdTip": "Similar to Dumbo; riders control their altitude directly."
+  },
+  {
+    "id": "dlp_raiponce_spin",
+    "name": "Raiponce Tangled Spin",
+    "park": "Walt Disney Studios",
+    "land": "Adventure Way",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 2,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 1,
+    "sensoryNotes": "Gentle spinning boat attraction floating under glowing floating lanterns.",
+    "adhdTip": "Smooth, beautiful family ride inspired by Tangled's lantern scene."
+  },
+  {
+    "id": "dlp_frozen_ever_after",
+    "name": "Frozen Ever After",
+    "park": "Walt Disney Studios",
+    "land": "World of Frozen",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 2,
+    "fearFactor": 2,
+    "noiseLevel": 3,
+    "darkness": 3,
+    "sensoryNotes": "Musical dark boat voyage to Elsa's Ice Palace with animatronics, singing, backward slide, and minor water drop.",
+    "adhdTip": "Features a short backward track glide followed by a mild splash drop."
   },
   {
     "id": "dlp_together_musical",
@@ -417,7 +585,7 @@
     "noiseLevel": 4,
     "darkness": 3,
     "sensoryNotes": "Acrobatic musical spectacular with high-decibel live drumming, aerialists swinging over the audience, and rich lighting.",
-    "adhdTip": "Very dynamic and loud. Ear defenders recommended for sound-sensitive kids."
+    "adhdTip": "Dynamic and loud. Ear defenders recommended for sound-sensitive kids."
   },
   {
     "id": "dlp_mickey_magician",
@@ -432,6 +600,20 @@
     "darkness": 2,
     "sensoryNotes": "Broadway-style illusions with classic Disney musical numbers, dancing, and stage magic.",
     "adhdTip": "Rapid scene changes hold attention well."
+  },
+  {
+    "id": "dlp_stitch_live",
+    "name": "Stitch Live!",
+    "park": "Walt Disney Studios",
+    "land": "Production Courtyard",
+    "type": "Show",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 3,
+    "darkness": 2,
+    "sensoryNotes": "Interactive digital screen comedy show where animated Stitch talks and jokes directly with audience members in real time.",
+    "adhdTip": "Floor mat seating up front for kids; relaxed and interactive."
   },
   {
     "id": "dlp_stars_on_parade",
@@ -460,5 +642,61 @@
     "darkness": 4,
     "sensoryNotes": "Castle projection show accompanied by drone swarms, laser arrays, and fireworks.",
     "adhdTip": "High crowd density. Stand toward the Main Street Train Station for a clearer exit route."
+  },
+  {
+    "id": "dlp_disney_dreams",
+    "name": "Disney Dreams! Nighttime Fireworks",
+    "park": "Disneyland Park",
+    "land": "Sleeping Beauty Castle",
+    "type": "Show",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 2,
+    "noiseLevel": 5,
+    "darkness": 4,
+    "sensoryNotes": "Classic castle projection and pyrotechnic show with water fountains, laser beams, and fireworks.",
+    "adhdTip": "Ear defenders strongly recommended during the loud finale bursts."
+  },
+  {
+    "id": "dlp_halloween_festival",
+    "name": "Disney Halloween Festival Cavalcade",
+    "park": "Disneyland Park",
+    "land": "Main Street, U.S.A. (Seasonal Sept–Nov)",
+    "type": "Show",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 2,
+    "noiseLevel": 4,
+    "darkness": 1,
+    "sensoryNotes": "Autumn parade featuring Mickey's Illusion Manor float, lively pumpkin dancers, and classic Disney Villains.",
+    "adhdTip": "Vibrant and upbeat rather than genuinely scary; great introductory Halloween fun."
+  },
+  {
+    "id": "dlp_christmas_parade",
+    "name": "Mickey's Dazzling Christmas Parade",
+    "park": "Disneyland Park",
+    "land": "Main Street, U.S.A. (Seasonal Nov–Jan)",
+    "type": "Show",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 4,
+    "darkness": 3,
+    "sensoryNotes": "Illuminated holiday floats, festive musical anthems, simulated snowfall along Main Street, and Santa Claus.",
+    "adhdTip": "Runs both daytime and after dark; the evening version features glowing tree lighting stops."
+  },
+  {
+    "id": "dlp_hero_training_center",
+    "name": "Hero Training Center",
+    "park": "Walt Disney Studios",
+    "land": "Avengers Campus",
+    "type": "Walkthrough",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 2,
+    "sensoryNotes": "Interactive character experience with Spider-Man, Iron Man, or Captain Marvel featuring high-speed 360-degree dynamic photo capture.",
+    "adhdTip": "Requires booking via the Disneyland Paris app Virtual Queue."
   }
 ]
