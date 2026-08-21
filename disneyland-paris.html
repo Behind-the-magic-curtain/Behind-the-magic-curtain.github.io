@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Dedicated Disneyland Paris Page Styling */
         .dlp-hero-banner {
             background: linear-gradient(180deg, #bd2419 0%, #00838f 60%, #ffffff 100%);
             padding: 70px 0 40px 0;
@@ -33,7 +32,6 @@
             margin: 0 auto;
         }
 
-        /* Hub Resource Cards */
         .dlp-resource-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -74,7 +72,6 @@
             flex-grow: 1;
         }
 
-        /* High-Contrast Action Buttons with Crisp Hover States */
         .btn-dlp-checklist {
             width: 100%;
             background-color: #005587;
@@ -86,8 +83,6 @@
         .btn-dlp-checklist:hover {
             background-color: #003a5c;
             border-color: #003a5c;
-            color: #ffffff !important;
-            box-shadow: 0 6px 14px rgba(0, 85, 135, 0.35);
             transform: translateY(-2px);
         }
 
@@ -102,12 +97,9 @@
         .btn-dlp-shows:hover {
             background-color: #8c170e;
             border-color: #8c170e;
-            color: #ffffff !important;
-            box-shadow: 0 6px 14px rgba(189, 36, 25, 0.35);
             transform: translateY(-2px);
         }
 
-        /* Interactive Sensory Rater Box */
         .sensory-rater-card {
             background: #ffffff;
             border-radius: var(--radius-lg);
@@ -197,7 +189,6 @@
             color: var(--color-accent);
         }
         
-        /* Custom Sensory Sliders */
         .sensory-range-slider {
             -webkit-appearance: none;
             appearance: none;
@@ -243,29 +234,25 @@
             color: #718096;
             margin-top: -2px;
         }
-        .slider-endpoints i {
-            font-size: 1rem;
-        }
         .slider-endpoints .icon-max {
             font-size: 1.25rem;
             color: var(--color-primary);
         }
 
-        /* Live Stage Explanation Tag */
         .slider-dynamic-desc {
             font-size: 0.82rem;
             font-weight: 600;
             color: var(--color-accent);
             background: #e6f6f7;
-            padding: 5px 10px;
+            padding: 6px 10px;
             border-radius: var(--radius-sm);
             margin-top: 4px;
-            min-height: 28px;
+            min-height: 38px;
             display: flex;
             align-items: center;
+            line-height: 1.35;
         }
 
-        /* Notes Box */
         .rater-notes-group {
             margin-bottom: 25px;
         }
@@ -290,7 +277,6 @@
             border-color: var(--color-accent);
         }
 
-        /* Rater Buttons & Crowdsource Disclaimer */
         .rater-button-row {
             display: flex;
             gap: 15px;
@@ -309,43 +295,51 @@
             transform: translateY(-2px);
         }
 
-        .btn-crowdsource-share {
-            background-color: transparent;
-            color: #00838f;
-            border: 2px solid #00838f;
-            font-weight: 700;
-        }
-        .btn-crowdsource-share:hover {
-            background-color: #00838f;
-            color: #ffffff;
-            transform: translateY(-2px);
-        }
-
         .crowdsource-notice {
             background-color: #f1f8f9;
             border-left: 4px solid var(--color-accent);
-            padding: 12px 16px;
+            padding: 14px 18px;
             border-radius: 4px;
-            font-size: 0.84rem;
+            font-size: 0.86rem;
             color: #445566;
-            line-height: 1.5;
-            margin-top: 15px;
+            line-height: 1.55;
+            margin-top: 20px;
         }
         .crowdsource-notice strong {
             color: #223344;
         }
 
-        /* Saved Local Diary Log */
         .diary-log-section {
             margin-top: 30px;
             border-top: 1px dashed var(--color-border);
             padding-top: 25px;
         }
+        .diary-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
         .diary-log-section h3 {
             font-size: 1.25rem;
             color: var(--color-primary);
-            margin-bottom: 15px;
+            margin: 0;
         }
+        .btn-share-all {
+            background-color: #00838f;
+            color: #ffffff !important;
+            border: 2px solid #00838f;
+            font-size: 0.88rem;
+            padding: 8px 16px;
+        }
+        .btn-share-all:hover {
+            background-color: #005662;
+            border-color: #005662;
+            transform: translateY(-2px);
+        }
+
         .diary-entries-list {
             display: flex;
             flex-direction: column;
@@ -371,7 +365,7 @@
             font-size: 0.82rem;
             color: #555555;
             display: flex;
-            gap: 12px;
+            gap: 14px;
             flex-wrap: wrap;
         }
 
@@ -383,10 +377,11 @@
             .rater-sliders-grid {
                 grid-template-columns: 1fr;
             }
-            .rater-button-row {
+            .diary-header-row {
                 flex-direction: column;
+                align-items: flex-start;
             }
-            .rater-button-row .btn {
+            .btn-share-all {
                 width: 100%;
             }
         }
@@ -411,7 +406,6 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
         <section class="dlp-hero-banner">
             <div class="container">
                 <h1>Disneyland Paris: Sensory & Family Guide</h1>
@@ -419,11 +413,9 @@
             </div>
         </section>
 
-        <!-- Printable Resources Hub -->
         <section style="padding: 20px 0 40px 0;">
             <div class="container">
                 <div class="dlp-resource-grid">
-                    <!-- Rides Checklist Card -->
                     <div class="dlp-resource-card">
                         <i class="fa-solid fa-clipboard-list main-icon" style="color: #005587;"></i>
                         <h2 style="color: #005587;">Rides & Attractions Checklist</h2>
@@ -433,7 +425,6 @@
                         </a>
                     </div>
 
-                    <!-- Shows Planner Card -->
                     <div class="dlp-resource-card">
                         <i class="fa-solid fa-masks-theater main-icon" style="color: #bd2419;"></i>
                         <h2 style="color: #bd2419;">Shows & Parades Guide</h2>
@@ -444,12 +435,11 @@
                     </div>
                 </div>
 
-                <!-- Interactive In-Park Sensory Rater Tool -->
+                <!-- Interactive Sensory Rater -->
                 <div class="sensory-rater-card" id="rater-app">
                     <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #ffd700;"></i> Interactive In-Park Sensory Rater</h2>
-                    <p class="sensory-rater-intro">Select any Disneyland Paris ride, parade, or stage show below to adjust its sensory metrics. Save scores locally to your phone's browser diary or submit anonymous community feedback.</p>
+                    <p class="sensory-rater-intro">Rate any attraction or show as you explore the parks. Your ratings automatically save locally to your phone for offline use, and you can contribute your complete trip diary to the community database at the end of the day!</p>
 
-                    <!-- Dynamic Attraction Dropdown -->
                     <div class="rater-select-group">
                         <label for="attraction-select"><i class="fa-solid fa-map-pin" style="color: var(--color-primary); margin-right: 6px;"></i>Select an Attraction or Show:</label>
                         <select id="attraction-select" class="rater-select">
@@ -457,37 +447,36 @@
                         </select>
                     </div>
 
-                    <!-- 4 Sensory Factor Sliders -->
                     <div class="rater-sliders-grid">
-                        <!-- 1. Speed & Thrill -->
+                        <!-- Speed & Thrill -->
                         <div class="slider-box">
                             <div class="slider-header">
                                 <span class="slider-title"><i class="fa-solid fa-gauge-high" style="color: #00838f;"></i> Thrill & Speed Level</span>
                                 <span class="slider-score" id="val-speed">3 / 5</span>
                             </div>
                             <div class="slider-endpoints">
-                                <span><i class="fa-solid fa-person-walking"></i> Gentle Walkthrough</span>
+                                <span><i class="fa-solid fa-person-walking"></i> Walkthrough / Slow Boat</span>
                                 <span>Fast Inversions <i class="fa-solid fa-rocket icon-max"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-speed">
-                            <div class="slider-dynamic-desc" id="desc-speed">Level 3: Moderate coaster acceleration or mild dips.</div>
+                            <div class="slider-dynamic-desc" id="desc-speed">Level 3: Moderate coaster acceleration or mild track dips.</div>
                         </div>
 
-                        <!-- 2. Spookiness & Fear -->
+                        <!-- Spookiness & Fear -->
                         <div class="slider-box">
                             <div class="slider-header">
                                 <span class="slider-title"><i class="fa-solid fa-ghost" style="color: #8e1088;"></i> Spookiness / Fear Factor</span>
                                 <span class="slider-score" id="val-fear">3 / 5</span>
                             </div>
                             <div class="slider-endpoints">
-                                <span><i class="fa-regular fa-face-smile"></i> Friendly & Playful</span>
-                                <span>Intense Scare <i class="fa-solid fa-skull icon-max"></i></span>
+                                <span><i class="fa-regular fa-face-smile"></i> Friendly & Cheerful</span>
+                                <span>Startling Drops / Dark <i class="fa-solid fa-skull icon-max"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-fear">
                             <div class="slider-dynamic-desc" id="desc-fear">Level 3: Atmospheric spookiness, skeletons, or mild tension.</div>
                         </div>
 
-                        <!-- 3. Noise Exposure -->
+                        <!-- Noise Exposure -->
                         <div class="slider-box">
                             <div class="slider-header">
                                 <span class="slider-title"><i class="fa-solid fa-volume-high" style="color: #bd2419;"></i> Noise & Volume Exposure</span>
@@ -495,13 +484,13 @@
                             </div>
                             <div class="slider-endpoints">
                                 <span><i class="fa-solid fa-music"></i> Quiet Melodies</span>
-                                <span>Pyros & Sirens <i class="fa-solid fa-headphones icon-max" title="Ear defenders recommended"></i></span>
+                                <span>Pyros & Screams <i class="fa-solid fa-headphones icon-max" title="Ear defenders recommended"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-noise">
-                            <div class="slider-dynamic-desc" id="desc-noise">Level 3: Loud theatre music and group crowd cheering.</div>
+                            <div class="slider-dynamic-desc" id="desc-noise">Level 3: Loud theatre audio and group crowd cheering.</div>
                         </div>
 
-                        <!-- 4. Darkness & Strobe -->
+                        <!-- Darkness & Strobe -->
                         <div class="slider-box">
                             <div class="slider-header">
                                 <span class="slider-title"><i class="fa-solid fa-moon" style="color: #222222;"></i> Darkness & Strobe Effects</span>
@@ -509,41 +498,40 @@
                             </div>
                             <div class="slider-endpoints">
                                 <span><i class="fa-solid fa-sun"></i> Daylight / Bright</span>
-                                <span>Pitch Black / Strobes <i class="fa-solid fa-bolt-lightning icon-max"></i></span>
+                                <span>Total Blackout / Strobes <i class="fa-solid fa-bolt-lightning icon-max"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-darkness">
-                            <div class="slider-dynamic-desc" id="desc-darkness">Level 3: Dim indoor lighting with occasional spotlight effects.</div>
+                            <div class="slider-dynamic-desc" id="desc-darkness">Level 3: Dim indoor lighting with spotlight effects.</div>
                         </div>
                     </div>
 
-                    <!-- Custom Verdict / Advice Box -->
                     <div class="rater-notes-group">
                         <label for="rater-notes"><i class="fa-solid fa-pen" style="color: var(--color-primary); margin-right: 6px;"></i>Your Child's Verdict / Specific Advice:</label>
                         <textarea id="rater-notes" class="rater-textarea" placeholder="e.g. Loved the drop, but needed ear defenders during the indoor cannon scene..."></textarea>
                     </div>
 
-                    <!-- Rater Actions -->
                     <div class="rater-button-row">
                         <button type="button" class="btn btn-diary-save" id="btn-save-diary">
                             <i class="fa-solid fa-bookmark"></i> Save to My Park Diary
                         </button>
-                        <button type="button" class="btn btn-crowdsource-share" id="btn-share-community">
-                            <i class="fa-solid fa-users"></i> Share Feedback with BTMC Community
-                        </button>
-                    </div>
-
-                    <!-- Crowdsource Transparency Notice -->
-                    <div class="crowdsource-notice">
-                        <i class="fa-solid fa-shield-heart" style="color: var(--color-accent); margin-right: 6px;"></i>
-                        <strong>Community Crowdsourcing Promise:</strong> All shared sensory feedback is submitted 100% anonymously with personal identifiers omitted. Your real-world ratings help us expand our open database to empower other neurodivergent families visiting Disneyland Paris.
                     </div>
 
                     <!-- Saved Park Diary Log -->
                     <div class="diary-log-section" id="diary-section">
-                        <h3><i class="fa-solid fa-book-open" style="margin-right: 8px;"></i>Your Saved Park Diary (<span id="diary-count">0</span>)</h3>
-                        <div class="diary-entries-list" id="diary-entries-list">
-                            <p style="color: #777; font-size: 0.9rem;">No attractions saved yet. Rate an attraction above and click "Save to My Park Diary"!</p>
+                        <div class="diary-header-row">
+                            <h3><i class="fa-solid fa-book-open" style="margin-right: 8px;"></i>Your Saved Park Diary (<span id="diary-count">0</span>)</h3>
+                            <button type="button" class="btn btn-share-all" id="btn-share-all-diary" style="display: none;">
+                                <i class="fa-solid fa-users"></i> Share Entire Diary with BTMC Community
+                            </button>
                         </div>
+                        <div class="diary-entries-list" id="diary-entries-list">
+                            <p style="color: #777; font-size: 0.9rem;">No attractions saved yet. Select an attraction above and click "Save to My Park Diary"!</p>
+                        </div>
+                    </div>
+
+                    <div class="crowdsource-notice">
+                        <i class="fa-solid fa-shield-heart" style="color: var(--color-accent); margin-right: 6px;"></i>
+                        <strong>Community Crowdsourcing Promise:</strong> When you share your Park Diary, your feedback is submitted 100% anonymously with personal identifiers omitted. Your real-world ratings help us update our open database to empower other neurodivergent families visiting Disneyland Paris.
                     </div>
                 </div>
             </div>
@@ -558,36 +546,37 @@
 
     <script src="script.js"></script>
     <script>
-        /* Interactive Sensory Rater Controller */
-        const GOOGLE_FORM_PREFILL_URL = "https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/viewform";
+        const GOOGLE_FORM_BASE_URL = "https://docs.google.com/forms/d/e/YOUR_GOOGLE_FORM_ID/viewform";
+        // Google Form Field Entry Token:
+        const GOOGLE_ENTRY_DIARY_PAYLOAD = "entry.11111111";
 
         const sliderDefinitions = {
             speed: {
-                1: "Level 1: Gentle walkthrough, stationary show, or smooth slow boat.",
+                1: "Level 1: Gentle walkthrough, stationary show, or slow boat.",
                 2: "Level 2: Mild motion, gentle elevation changes, or slight swivels.",
                 3: "Level 3: Moderate coaster acceleration or mild track dips.",
                 4: "Level 4: Fast roller coaster speeds, sudden drops, and centrifugal spins.",
-                5: "Level 5: Extreme speeds, sudden catapult launches, and 360° inversions."
+                5: "Level 5: High speeds, sudden catapult launches, and 360° inversions."
             },
             fear: {
-                1: "Level 1: Completely friendly, bright, cheerful, and approachable.",
-                2: "Level 2: Minor theatrical drama or mild suspenseful music cues.",
+                1: "Level 1: Completely friendly, bright, and cheerful.",
+                2: "Level 2: Minor theatrical drama or mild suspenseful music.",
                 3: "Level 3: Atmospheric spookiness, skeletons, or mild tension.",
-                4: "Level 4: Frightening imagery, scary animatronics, and jump scares.",
-                5: "Level 5: Intense psychological terror, sudden drops, and macabre themes."
+                4: "Level 4: Wicked Witch/villain jump reveals or dark spooky caves.",
+                5: "Level 5: Intense dark ride suspense, startling jump effects, or sudden elevator drops."
             },
             noise: {
                 1: "Level 1: Quiet ambient background music and soft acoustic audio.",
-                2: "Level 2: Standard theatre dialogue and pleasant orchestral levels.",
-                3: "Level 3: Loud theatre music, sound effects, and group crowd cheering.",
-                4: "Level 4: Booming cannons, fireworks, loud thunder, and echoing queues.",
-                5: "Level 5: Blaring sirens, continuous indoor screams, and heavy bass pyros."
+                2: "Level 2: Standard theatre dialogue and pleasant orchestrations.",
+                3: "Level 3: Loud theatre audio, sound effects, and group crowd cheering.",
+                4: "Level 4: Booming cannons, fireworks, thunder, and echoing queues.",
+                5: "Level 5: Blaring sirens, loud screams, and heavy bass pyros."
             },
             darkness: {
                 1: "Level 1: Full outdoor daylight or completely bright indoor lighting.",
                 2: "Level 2: Warm ambient stage lighting without abrupt changes.",
-                3: "Level 3: Dim indoor lighting with occasional spotlight effects.",
-                4: "Level 4: Dark ride environment with glowing UV blacklights and projections.",
+                3: "Level 3: Dim indoor lighting with spotlight effects.",
+                4: "Level 4: Dark ride environment with glowing UV blacklights.",
                 5: "Level 5: Total blackouts, strobe lightning flashes, and laser beams."
             }
         };
@@ -608,20 +597,20 @@
                     attractionDatabase = await res.json();
                 }
             } catch (err) {
-                console.warn('Using fallback attraction lists:', err);
+                console.warn('Disneyland database load fallback:', err);
             }
 
             if (attractionDatabase.length > 0) {
                 const rideGroup = document.createElement('optgroup');
-                rideGroup.label = "🎢 Rides & Attractions";
+                rideGroup.label = "🎢 Rides & Walkthrough Attractions";
                 const showGroup = document.createElement('optgroup');
-                showGroup.label = "🎭 Shows, Parades & Fireworks";
+                showGroup.label = "🎭 Shows, Parades & Nighttime Specials";
 
                 attractionDatabase.forEach(item => {
                     const opt = document.createElement('option');
                     opt.value = item.id;
                     opt.textContent = `${item.name} (${item.park} - ${item.land})`;
-                    if (item.category === 'show') {
+                    if (item.type === 'Show') {
                         showGroup.appendChild(opt);
                     } else {
                         rideGroup.appendChild(opt);
@@ -632,27 +621,24 @@
                 selectEl.appendChild(showGroup);
             }
 
-            // Slider Listeners for Real-Time Feedback
             ['speed', 'fear', 'noise', 'darkness'].forEach(key => {
                 const slider = document.getElementById(`range-${key}`);
                 slider.addEventListener('input', (e) => updateSliderUI(key, e.target.value));
             });
 
-            // Populate on dropdown selection
             selectEl.addEventListener('change', (e) => {
                 const selected = attractionDatabase.find(a => a.id === e.target.value);
                 if (selected) {
-                    setSliderValue('speed', selected.speed || 3);
-                    setSliderValue('fear', selected.fear || 3);
-                    setSliderValue('noise', selected.noise || 3);
+                    setSliderValue('speed', selected.thrillLevel || 3);
+                    setSliderValue('fear', selected.fearFactor || 3);
+                    setSliderValue('noise', selected.noiseLevel || 3);
                     setSliderValue('darkness', selected.darkness || 3);
-                    document.getElementById('rater-notes').value = selected.sensoryNotes ? `[BTMC Baseline] ${selected.sensoryNotes}` : '';
+                    document.getElementById('rater-notes').value = selected.sensoryNotes ? `[BTMC Guide Note] ${selected.sensoryNotes}` : '';
                 }
             });
 
-            // Action Buttons
             document.getElementById('btn-save-diary').addEventListener('click', saveToLocalDiary);
-            document.getElementById('btn-share-community').addEventListener('click', shareWithCommunity);
+            document.getElementById('btn-share-all-diary').addEventListener('click', shareEntireDiaryWithCommunity);
         }
 
         function setSliderValue(key, val) {
@@ -667,7 +653,6 @@
             document.getElementById(`desc-${key}`).textContent = desc;
         }
 
-        /* --- Local Diary Functionality (Offline Browser Storage) --- */
         function saveToLocalDiary() {
             const selectEl = document.getElementById('attraction-select');
             const selectedText = selectEl.options[selectEl.selectedIndex]?.text;
@@ -694,20 +679,24 @@
             localStorage.setItem('btmc_dlp_diary', JSON.stringify(diary));
 
             loadSavedDiary();
-            alert(`✅ Saved "${entry.attraction}" to your offline Park Diary!`);
+            alert(`✅ Saved "${entry.attraction}" to your Park Diary!`);
         }
 
         function loadSavedDiary() {
             const listEl = document.getElementById('diary-entries-list');
             const countEl = document.getElementById('diary-count');
+            const shareBtn = document.getElementById('btn-share-all-diary');
             const diary = JSON.parse(localStorage.getItem('btmc_dlp_diary') || '[]');
 
             countEl.textContent = diary.length;
 
             if (diary.length === 0) {
-                listEl.innerHTML = '<p style="color: #777; font-size: 0.9rem;">No attractions saved yet. Rate an attraction above and click "Save to My Park Diary"!</p>';
+                shareBtn.style.display = 'none';
+                listEl.innerHTML = '<p style="color: #777; font-size: 0.9rem;">No attractions saved yet. Select an attraction above and click "Save to My Park Diary"!</p>';
                 return;
             }
+
+            shareBtn.style.display = 'inline-flex';
 
             listEl.innerHTML = diary.map((item, idx) => `
                 <div class="diary-entry-card">
@@ -735,26 +724,28 @@
             loadSavedDiary();
         }
 
-        /* --- Community Sharing Modal / Pre-fill Bridge --- */
-        function shareWithCommunity() {
-            const selectEl = document.getElementById('attraction-select');
-            const selectedText = selectEl.options[selectEl.selectedIndex]?.text;
-            
-            if (!selectEl.value) {
-                alert('Please select an attraction or show first before sharing feedback!');
+        /* --- Share Entire Park Diary with BTMC Community --- */
+        function shareEntireDiaryWithCommunity() {
+            const diary = JSON.parse(localStorage.getItem('btmc_dlp_diary') || '[]');
+            if (diary.length === 0) {
+                alert('Your park diary is empty. Rate and save some attractions first!');
                 return;
             }
 
-            const speed = document.getElementById('range-speed').value;
-            const fear = document.getElementById('range-fear').value;
-            const noise = document.getElementById('range-noise').value;
-            const darkness = document.getElementById('range-darkness').value;
-            const notes = encodeURIComponent(document.getElementById('rater-notes').value.trim());
+            // Build a compiled text digest of all saved entries
+            let payloadText = `=== BTMC DLP COMMUNITY TRIP LOG (${diary.length} Attractions) ===\n\n`;
+            diary.forEach((item, index) => {
+                payloadText += `[#${index + 1}] ${item.attraction}\n`;
+                payloadText += `• Scores: Speed ${item.speed}/5 | Fear ${item.fear}/5 | Noise ${item.noise}/5 | Dark ${item.darkness}/5\n`;
+                if (item.notes) {
+                    payloadText += `• Parent Note: "${item.notes}"\n`;
+                }
+                payloadText += `\n`;
+            });
 
-            // Open Pre-filled Google Form (replace params with actual Google Form entry IDs when generated)
-            const targetUrl = `${GOOGLE_FORM_PREFILL_URL}?usp=pp_url&entry.123456=${encodeURIComponent(selectedText)}&entry.speed=${speed}&entry.fear=${fear}&entry.noise=${noise}&entry.darkness=${darkness}&entry.notes=${notes}`;
-            
-            const confirmed = confirm(`Share anonymous rating for "${selectedText}"?\n\n• Speed: ${speed}/5\n• Fear: ${fear}/5\n• Noise: ${noise}/5\n• Darkness: ${darkness}/5\n\nClick OK to submit anonymously via the BTMC Community Form.`);
+            const targetUrl = `${GOOGLE_FORM_BASE_URL}?usp=pp_url&${GOOGLE_ENTRY_DIARY_PAYLOAD}=${encodeURIComponent(payloadText.trim())}`;
+
+            const confirmed = confirm(`Share your entire Park Diary (${diary.length} rated attractions) with the BTMC neurodivergent parenting community?\n\nAll entries will be submitted anonymously in a single batch.\n\nClick OK to open the submission form.`);
             if (confirmed) {
                 window.open(targetUrl, '_blank');
             }
