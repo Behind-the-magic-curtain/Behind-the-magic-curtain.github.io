@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Disneyland Paris Page Layout */
+        /* Disneyland Paris Layout */
         .dlp-hero-banner {
             background: linear-gradient(180deg, #bd2419 0%, #00838f 60%, #ffffff 100%);
             padding: 70px 0 40px 0;
@@ -74,7 +74,7 @@
             flex-grow: 1;
         }
 
-        /* Printable Action Buttons with High-Contrast Text & Clear Hover */
+        /* Buttons with High Contrast & Hover States */
         .btn-dlp-checklist {
             width: 100%;
             background-color: #005587;
@@ -107,7 +107,7 @@
             box-shadow: 0 6px 14px rgba(189, 36, 25, 0.35);
         }
 
-        /* Sensory Rater Box */
+        /* Interactive Sensory Rater Card */
         .sensory-rater-card {
             background: #ffffff;
             border-radius: var(--radius-lg);
@@ -584,13 +584,12 @@
     <script src="script.js"></script>
     <script>
         /* ==========================================================================
-           GOOGLE FORM INTEGRATION CONFIGURATION
-           Paste your values obtained from Step 2 below:
+           GOOGLE FORM DIRECT BACKGROUND INTEGRATION
            ========================================================================== */
-        const GOOGLE_FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/viewform";
-        const ENTRY_OPTIN = "entry.1934084784";    // Token for 'Mailing List Opt-In Status'
-        const ENTRY_CONTACT = "entry.1983797623";  // Token for 'Parent Name & Email'
-        const ENTRY_DIARY = "entry.266837979";    // Token for 'Trip Diary Log & Sensory Ratings'
+        const GOOGLE_FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFONhsgdObg/viewform";
+        const ENTRY_OPTIN = "entry.1934084784";
+        const ENTRY_CONTACT = "entry.1983797623";
+        const ENTRY_DIARY = "entry.266837979";
 
         const sliderDefinitions = {
             speed: {
@@ -785,7 +784,7 @@
             loadSavedDiary();
         }
 
-        function shareEntireDiaryWithCommunity() {
+        async function shareEntireDiaryWithCommunity() {
             const diary = JSON.parse(localStorage.getItem('btmc_dlp_diary') || '[]');
             if (diary.length === 0) {
                 alert('Your park diary is empty. Rate and save some attractions first!');
@@ -815,14 +814,30 @@
                 payloadText += `\n`;
             });
 
-            const targetUrl = `${GOOGLE_FORM_BASE_URL}?usp=pp_url&${ENTRY_OPTIN}=${encodeURIComponent(optInStatus)}&${ENTRY_CONTACT}=${encodeURIComponent(contactInfo)}&${ENTRY_DIARY}=${encodeURIComponent(payloadText.trim())}`;
-
             const confirmMsg = isOptIn 
                 ? `Submit your ${diary.length} diary entries and join the BTMC Family Club as ${email}?`
                 : `Submit your ${diary.length} diary entries 100% anonymously to the community database?`;
 
-            if (confirm(confirmMsg)) {
-                window.open(targetUrl, '_blank');
+            if (!confirm(confirmMsg)) return;
+
+            // Direct silent background post to Google Forms endpoint
+            const SUBMIT_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFONhsgdObg/formResponse";
+
+            const formData = new FormData();
+            formData.append("entry.1934084784", optInStatus);
+            formData.append("entry.1983797623", contactInfo);
+            formData.append("entry.266837979", payloadText.trim());
+
+            try {
+                await fetch(SUBMIT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                });
+                alert('🎉 Thank you! Your park diary has been successfully submitted to the BTMC community database.');
+            } catch (err) {
+                console.error('Submission error:', err);
+                alert('There was an issue sending your diary. Please check your internet connection.');
             }
         }
     </script>
