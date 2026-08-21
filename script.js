@@ -105,6 +105,14 @@ function initGlobalFooter() {
             </p>
         </div>
 
+        <!-- Hidden Native Form Bridge for Footer Submission -->
+        <iframe name="footer_submit_target_iframe" id="footer_submit_target_iframe" style="display:none;"></iframe>
+        <form id="native_footer_form" action="https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse" method="POST" target="footer_submit_target_iframe" style="display:none;">
+            <input type="hidden" name="entry.1934084784" id="footer_gform_optin">
+            <input type="hidden" name="entry.1983797623" id="footer_gform_contact">
+            <input type="hidden" name="entry.266837979" id="footer_gform_diary">
+        </form>
+
         <div style="margin-bottom: 12px; font-size: 0.95rem;">
             <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}
@@ -123,55 +131,28 @@ function handleFooterNewsletterSubmit() {
     const emailInput = document.getElementById('footer-user-email');
     
     const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
 
     if (!email || !email.includes('@')) {
         triggerGlobalToast('Please enter a valid email address.', false);
         return;
     }
 
-    const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
-    const ENTRY_OPTIN = "entry.1934084784";
-    const ENTRY_CONTACT = "entry.1983797623";
-    const ENTRY_DIARY = "entry.266837979";
-
     const optInStatus = "Yes - Join Club";
     const contactInfo = `${name || 'Friend'} (${email})`;
     const payloadText = "General Website Footer Signup";
 
-    let iframe = document.getElementById('hidden_footer_submit_iframe');
-    if (!iframe) {
-        iframe = document.createElement('iframe');
-        iframe.name = 'hidden_footer_submit_iframe';
-        iframe.id = 'hidden_footer_submit_iframe';
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
+    const optinField = document.getElementById('footer_gform_optin');
+    const contactField = document.getElementById('footer_gform_contact');
+    const diaryField = document.getElementById('footer_gform_diary');
+    const nativeForm = document.getElementById('native_footer_form');
+
+    if (optinField && contactField && diaryField && nativeForm) {
+        optinField.value = optInStatus;
+        contactField.value = contactInfo;
+        diaryField.value = payloadText;
+        nativeForm.submit();
     }
-
-    let form = document.getElementById('dynamic_footer_hidden_form');
-    if (form) form.remove();
-
-    form = document.createElement('form');
-    form.id = 'dynamic_footer_hidden_form';
-    form.action = FORM_RESPONSE_URL;
-    form.method = 'POST';
-    form.target = 'hidden_footer_submit_iframe';
-    form.style.display = 'none';
-
-    const addField = (n, v) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = n;
-        input.value = v;
-        form.appendChild(input);
-    };
-
-    addField(ENTRY_OPTIN, optInStatus);
-    addField(ENTRY_CONTACT, contactInfo);
-    addField(ENTRY_DIARY, payloadText);
-
-    document.body.appendChild(form);
-    form.submit();
 
     nameInput.value = '';
     emailInput.value = '';
