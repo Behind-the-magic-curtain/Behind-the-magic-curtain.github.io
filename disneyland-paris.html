@@ -175,7 +175,7 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         
         .slider-header {
@@ -191,7 +191,6 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            min-width: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -214,10 +213,11 @@
             padding: 8px 10px;
             border-radius: var(--radius-sm);
             line-height: 1.35;
-            min-height: 48px;
+            min-height: 46px;
             display: flex;
             align-items: center;
             border-left: 3px solid var(--color-accent);
+            margin-bottom: 4px;
         }
 
         .slider-endpoints {
@@ -228,13 +228,13 @@
             font-weight: 500;
             color: #64748b;
             margin-top: 2px;
-            white-space: nowrap;
             gap: 6px;
         }
         .slider-endpoints span {
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            white-space: nowrap;
         }
         .slider-endpoints .icon-max {
             font-size: 1.05rem;
@@ -396,20 +396,25 @@
             color: #ffffff !important;
             border: 2px solid #00838f;
             font-size: 0.92rem;
-            padding: 12px 20px;
+            padding: 12px 18px;
             width: 100%;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             border-radius: 50px;
             cursor: pointer;
             font-weight: 700;
+            text-align: center;
         }
         .btn-share-all:hover {
             background-color: #005662;
             border-color: #005662;
             color: #ffffff !important;
+        }
+        .btn-share-all .sync-badge {
+            white-space: nowrap;
+            display: inline-block;
         }
 
         /* Mobile Sticky Action Bar */
@@ -435,8 +440,8 @@
         }
         .floating-action-bar .btn {
             flex: 1;
-            padding: 10px 14px;
-            font-size: 0.85rem;
+            padding: 10px 12px;
+            font-size: 0.82rem;
             border-radius: 8px;
         }
 
@@ -541,6 +546,25 @@
                 max-width: none;
             }
         }
+
+        /* Streamlined endpoint labels on mobile viewports */
+        @media (max-width: 600px) {
+            .slider-endpoints .label-text {
+                display: none;
+            }
+            .slider-endpoints .icon-left,
+            .slider-endpoints .icon-max {
+                font-size: 1.1rem;
+            }
+            .slider-endpoints .label-min {
+                font-size: 0.72rem;
+                font-weight: 600;
+            }
+            .slider-endpoints .label-max {
+                font-size: 0.72rem;
+                font-weight: 600;
+            }
+        }
     </style>
 </head>
 <body>
@@ -613,8 +637,8 @@
                             </div>
                             <div class="slider-dynamic-desc" id="desc-speed">Level 3: Moderate coaster acceleration or mild track dips.</div>
                             <div class="slider-endpoints">
-                                <span><i class="fa-solid fa-person-walking"></i> Walkthrough / Slow Boat</span>
-                                <span>Fast Inversions <i class="fa-solid fa-rocket icon-max"></i></span>
+                                <span class="label-min"><i class="fa-solid fa-person-walking icon-left"></i> <span class="label-text">Walkthrough / Slow Boat</span></span>
+                                <span class="label-max"><span class="label-text">Fast Inversions</span> <i class="fa-solid fa-rocket icon-max"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-speed">
                         </div>
@@ -627,8 +651,8 @@
                             </div>
                             <div class="slider-dynamic-desc" id="desc-fear">Level 3: Atmospheric spookiness, skeletons, or mild tension.</div>
                             <div class="slider-endpoints">
-                                <span><i class="fa-regular fa-face-smile"></i> Friendly & Cheerful</span>
-                                <span>Startling Drops / Dark <i class="fa-solid fa-skull icon-max"></i></span>
+                                <span class="label-min"><i class="fa-regular fa-face-smile icon-left"></i> <span class="label-text">Friendly & Cheerful</span></span>
+                                <span class="label-max"><span class="label-text">Startling Drops / Dark</span> <i class="fa-solid fa-skull icon-max"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-fear">
                         </div>
@@ -641,8 +665,8 @@
                             </div>
                             <div class="slider-dynamic-desc" id="desc-noise">Level 3: Loud theatre audio and group crowd cheering.</div>
                             <div class="slider-endpoints">
-                                <span><i class="fa-solid fa-music"></i> Quiet Melodies</span>
-                                <span>Pyros & Screams <i class="fa-solid fa-headphones icon-max"></i></span>
+                                <span class="label-min"><i class="fa-solid fa-music icon-left"></i> <span class="label-text">Quiet Melodies</span></span>
+                                <span class="label-max"><span class="label-text">Pyros & Screams</span> <i class="fa-solid fa-headphones icon-max" title="Ear defenders recommended"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-noise">
                         </div>
@@ -655,8 +679,8 @@
                             </div>
                             <div class="slider-dynamic-desc" id="desc-darkness">Level 3: Dim indoor lighting with spotlight effects.</div>
                             <div class="slider-endpoints">
-                                <span><i class="fa-solid fa-sun"></i> Daylight / Bright</span>
-                                <span>Total Blackout / Strobes <i class="fa-solid fa-bolt-lightning icon-max"></i></span>
+                                <span class="label-min"><i class="fa-solid fa-sun icon-left"></i> <span class="label-text">Daylight / Bright</span></span>
+                                <span class="label-max"><span class="label-text">Total Blackout / Strobes</span> <i class="fa-solid fa-bolt-lightning icon-max"></i></span>
                             </div>
                             <input type="range" min="1" max="5" value="3" class="sensory-range-slider" id="range-darkness">
                         </div>
@@ -688,7 +712,9 @@
                             <h4><i class="fa-solid fa-users" style="margin-right: 6px;"></i> Share Your Diary with BTMC</h4>
                             <p>Your real-world ratings help us update our open database to empower other neurodivergent families visiting Disneyland Paris.</p>
                             <button type="button" class="btn btn-share-all" id="btn-open-share-modal">
-                                <i class="fa-solid fa-paper-plane"></i> Share Entire Diary (<span class="sync-diary-count">0</span> Attractions)
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Share Entire Diary</span>
+                                <span class="sync-badge">(<span class="sync-diary-count">0</span> Attractions)</span>
                             </button>
                         </div>
                     </div>
@@ -703,7 +729,9 @@
             <i class="fa-solid fa-bookmark"></i> Save Score
         </button>
         <button type="button" class="btn btn-share-all" id="sticky-btn-share" style="display: none;">
-            <i class="fa-solid fa-paper-plane"></i> Share Diary (<span class="sync-diary-count">0</span>)
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>Share</span>
+            <span class="sync-badge">(<span class="sync-diary-count">0</span>)</span>
         </button>
     </div>
 
@@ -975,7 +1003,7 @@
             });
         }
 
-        /* Modal & Direct Cross-Origin Form Submission */
+        /* Modal & Native Cross-Origin Form Submission */
         function initModalListeners() {
             const modal = document.getElementById('share-modal');
             const openBtns = [document.getElementById('btn-open-share-modal'), document.getElementById('sticky-btn-share')];
@@ -1010,7 +1038,7 @@
             document.getElementById('btn-confirm-submit').addEventListener('click', executeSilentSubmission);
         }
 
-        async function executeSilentSubmission() {
+        function executeSilentSubmission() {
             const diary = JSON.parse(localStorage.getItem('btmc_dlp_diary') || '[]');
             if (diary.length === 0) return;
 
@@ -1034,34 +1062,51 @@
                 payloadText += `\n`;
             });
 
-            // Robust Form Ingestion (URLSearchParams)
-            const formData = new URLSearchParams();
-            formData.append(ENTRY_OPTIN, optInStatus);
-            formData.append(ENTRY_CONTACT, contactInfo);
-            formData.append(ENTRY_DIARY, payloadText.trim());
+            // True cross-origin submission using an injected hidden iframe + native form submission
+            let iframe = document.getElementById('hidden_submit_iframe');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.name = 'hidden_submit_iframe';
+                iframe.id = 'hidden_submit_iframe';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
 
-            try {
-                await fetch(FORM_RESPONSE_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
+            let form = document.getElementById('dynamic_hidden_form');
+            if (form) form.remove();
 
-                document.getElementById('share-modal').classList.remove('modal-active');
+            form = document.createElement('form');
+            form.id = 'dynamic_hidden_form';
+            form.action = FORM_RESPONSE_URL;
+            form.method = 'POST';
+            form.target = 'hidden_submit_iframe';
+            form.style.display = 'none';
 
-                if (isOptIn) {
-                    showSiteToast(`🎉 Welcome ${name || ''}! Your diary is shared and a confirmation is on its way to ${email}.`, 'toast-success', 'fa-paper-plane');
-                    document.getElementById('modal-toggle-newsletter').checked = false;
-                    document.getElementById('modal-newsletter-inputs').style.display = 'none';
-                    document.getElementById('modal-user-name').value = '';
-                    document.getElementById('modal-user-email').value = '';
-                } else {
-                    showSiteToast('❤️ Thank you for supporting the BTMC community! Your anonymous diary has been submitted.', 'toast-success', 'fa-hands-holding-heart');
-                }
-            } catch (err) {
-                console.error('Submission error:', err);
-                showSiteToast('Network error sending diary. Please check your internet connection.', 'toast-info', 'fa-triangle-exclamation');
+            const addField = (name, value) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                form.appendChild(input);
+            };
+
+            addField(ENTRY_OPTIN, optInStatus);
+            addField(ENTRY_CONTACT, contactInfo);
+            addField(ENTRY_DIARY, payloadText.trim());
+
+            document.body.appendChild(form);
+            form.submit();
+
+            document.getElementById('share-modal').classList.remove('modal-active');
+
+            if (isOptIn) {
+                showSiteToast(`🎉 Welcome ${name || ''}! Your diary is shared and a confirmation is on its way to ${email}.`, 'toast-success', 'fa-paper-plane');
+                document.getElementById('modal-toggle-newsletter').checked = false;
+                document.getElementById('modal-newsletter-inputs').style.display = 'none';
+                document.getElementById('modal-user-name').value = '';
+                document.getElementById('modal-user-email').value = '';
+            } else {
+                showSiteToast('❤️ Thank you for supporting the BTMC community! Your anonymous diary has been submitted.', 'toast-success', 'fa-hands-holding-heart');
             }
         }
     </script>
