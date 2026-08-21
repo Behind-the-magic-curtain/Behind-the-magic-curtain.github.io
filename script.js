@@ -1,6 +1,6 @@
 /*
  * BEHIND THE MAGIC CURTAIN - CORE SITE ENGINE
- * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support & Dynamic Footer
+ * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support & Dynamic Email Footer
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,15 +37,15 @@ function initGlobalFooter() {
 
     copyrightElements.forEach(el => {
         el.innerHTML = `
-            <div style="margin-bottom: 8px;">
-                <a href="mailto:${emailAddress}" style="color: inherit; text-decoration: none; font-weight: 600; margin-right: 15px;">
-                    <i class="fa-solid fa-envelope" style="margin-right: 5px; color: var(--color-secondary, #ffd700);"></i>${emailAddress}
+            <div style="margin-bottom: 10px; font-size: 0.95rem;">
+                <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}
                 </a>
-                <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none; font-weight: 600;">
-                    <i class="fa-solid fa-globe" style="margin-right: 5px; color: var(--color-secondary, #ffd700);"></i>behindthemagiccurtain.co.uk
+                <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk
                 </a>
             </div>
-            <div>&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
+            <div style="font-size: 0.85rem; color: #888888;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
         `;
     });
 }
