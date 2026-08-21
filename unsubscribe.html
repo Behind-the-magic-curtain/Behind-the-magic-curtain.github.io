@@ -186,7 +186,7 @@
 
         function handlePrivacySubmit() {
             const emailInput = document.getElementById('pref-email');
-            const email = emailInput.value.trim();
+            const email = emailInput.value.trim().toLowerCase();
             const action = document.querySelector('input[name="privacy_action"]:checked').value;
 
             if (!email || !email.includes('@')) {
@@ -203,7 +203,7 @@
             const contactInfo = `User (${email})`;
             const payloadText = action === 'delete' ? "USER_GDPR_PURGE_REQUEST" : "USER_UNSUBSCRIBE_REQUEST";
 
-            // Hidden IFrame background transmission
+            // Injected hidden iframe + native form submission
             let iframe = document.getElementById('hidden_privacy_iframe');
             if (!iframe) {
                 iframe = document.createElement('iframe');
@@ -239,7 +239,7 @@
             form.submit();
 
             if (action === 'delete') {
-                triggerGlobalToast('🗑️ All personal data has been queued for permanent deletion. Confirmation email sent.', true);
+                triggerGlobalToast('🗑️ All personal data has been permanently deleted. Confirmation email sent.', true);
             } else {
                 triggerGlobalToast('✅ You have been unsubscribed from all future emails.', true);
             }
