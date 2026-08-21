@@ -14,7 +14,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        /* Base Disneyland Hub Styles */
         .dlp-hero-banner {
             background: linear-gradient(180deg, #bd2419 0%, #00838f 60%, #ffffff 100%);
             padding: 55px 0 35px 0;
@@ -34,7 +33,6 @@
             line-height: 1.5;
         }
 
-        /* Hub Printable Resources */
         .dlp-resource-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -105,7 +103,6 @@
             transform: translateY(-2px);
         }
 
-        /* Sensory Rater Box */
         .sensory-rater-card {
             background: #ffffff;
             border-radius: var(--radius-lg);
@@ -131,7 +128,7 @@
             font-size: 0.95rem;
             color: var(--color-text-light);
             margin-bottom: 22px;
-            line-height: 1.5;
+            line-height: 1.55;
         }
 
         .rater-select-group {
@@ -161,7 +158,6 @@
             border-color: var(--color-accent);
         }
 
-        /* Mobile-First Sliders Grid */
         .rater-sliders-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -204,7 +200,6 @@
             flex-shrink: 0;
         }
 
-        /* Dynamic Description Placed Directly Above Slider */
         .slider-dynamic-desc {
             font-size: 0.82rem;
             font-weight: 600;
@@ -322,7 +317,6 @@
             transform: translateY(-2px);
         }
 
-        /* Saved Log Area */
         .diary-log-section {
             margin-top: 30px;
             border-top: 1px dashed var(--color-border);
@@ -369,7 +363,6 @@
             flex-wrap: wrap;
         }
 
-        /* In-Page Share Banner */
         .community-share-panel {
             background: #fdfaf3;
             border: 1.5px solid #ffe082;
@@ -417,7 +410,6 @@
             display: inline-block;
         }
 
-        /* Mobile Sticky Action Bar */
         .floating-action-bar {
             position: fixed;
             bottom: 0;
@@ -445,7 +437,6 @@
             border-radius: 8px;
         }
 
-        /* Frictionless Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -499,7 +490,6 @@
             cursor: pointer;
         }
 
-        /* Toast Notifications */
         #site-toast {
             position: fixed;
             bottom: 80px;
@@ -547,7 +537,6 @@
             }
         }
 
-        /* Streamlined endpoint labels on mobile viewports */
         @media (max-width: 600px) {
             .slider-endpoints .label-text {
                 display: none;
@@ -619,7 +608,9 @@
                 <!-- Interactive Sensory Rater -->
                 <div class="sensory-rater-card" id="rater-app">
                     <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: #ffd700;"></i> Interactive In-Park Sensory Rater</h2>
-                    <p class="sensory-rater-intro">Rate any attraction or show on the go. Your ratings automatically save locally to your phone for offline use, and you can submit your complete trip diary to the community database whenever you're ready.</p>
+                    <p class="sensory-rater-intro">
+                        Select any attraction or show below. The default ratings shown are <strong>crowdsourced community averages</strong> based on scores submitted by fellow families visiting Disneyland Paris. Adjust the sliders to match your child's experience, add your own notes, and save them to your personal Park Diary!
+                    </p>
 
                     <div class="rater-select-group">
                         <label for="attraction-select"><i class="fa-solid fa-map-pin" style="color: var(--color-primary); margin-right: 6px;"></i>Select an Attraction or Show:</label>
@@ -710,7 +701,7 @@
                         <!-- In-Page Community Share Panel -->
                         <div id="community-submit-panel" class="community-share-panel" style="display: none;">
                             <h4><i class="fa-solid fa-users" style="margin-right: 6px;"></i> Share Your Diary with BTMC</h4>
-                            <p>Your real-world ratings help us update our open database to empower other neurodivergent families visiting Disneyland Paris.</p>
+                            <p>Help us continuously update our community averages! Submitting your diary helps other neurodivergent families plan their visits with confidence.</p>
                             <button type="button" class="btn btn-share-all" id="btn-open-share-modal">
                                 <i class="fa-solid fa-paper-plane"></i>
                                 <span>Share Entire Diary</span>
@@ -782,7 +773,7 @@
 
     <script src="script.js"></script>
     <script>
-        /* Form Endpoint & Corrected Token Mapping */
+        /* Form Endpoint & Validated Token Mapping */
         const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
         const ENTRY_OPTIN = "entry.1934084784";
         const ENTRY_CONTACT = "entry.1983797623";
@@ -888,7 +879,7 @@
                     setSliderValue('fear', selected.fearFactor || 3);
                     setSliderValue('noise', selected.noiseLevel || 3);
                     setSliderValue('darkness', selected.darkness || 3);
-                    document.getElementById('rater-notes').value = selected.sensoryNotes ? `[BTMC Guide Note] ${selected.sensoryNotes}` : '';
+                    document.getElementById('rater-notes').value = selected.sensoryNotes ? `[BTMC Community Average] ${selected.sensoryNotes}` : '';
                 }
             });
 
@@ -988,7 +979,6 @@
             showSiteToast('Removed entry from diary.', 'toast-info', 'fa-trash-can');
         }
 
-        /* Sticky Action Bar Logic */
         function initStickyBar() {
             const bar = document.getElementById('sticky-bar');
             const raterCard = document.getElementById('rater-app');
@@ -1003,7 +993,6 @@
             });
         }
 
-        /* Modal & Native Cross-Origin Form Submission */
         function initModalListeners() {
             const modal = document.getElementById('share-modal');
             const openBtns = [document.getElementById('btn-open-share-modal'), document.getElementById('sticky-btn-share')];
@@ -1062,7 +1051,6 @@
                 payloadText += `\n`;
             });
 
-            // True cross-origin submission using an injected hidden iframe + native form submission
             let iframe = document.getElementById('hidden_submit_iframe');
             if (!iframe) {
                 iframe = document.createElement('iframe');
