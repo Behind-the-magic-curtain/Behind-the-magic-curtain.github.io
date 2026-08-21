@@ -168,6 +168,14 @@
         </div>
     </main>
 
+    <!-- Hidden native form submission target -->
+    <iframe name="hidden_privacy_iframe" id="hidden_privacy_iframe" style="display:none;"></iframe>
+    <form id="native_privacy_form" action="https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse" method="POST" target="hidden_privacy_iframe" style="display:none;">
+        <input type="hidden" name="entry.1934084784" id="priv-optin">
+        <input type="hidden" name="entry.1983797623" id="priv-contact">
+        <input type="hidden" name="entry.266837979" id="priv-diary">
+    </form>
+
     <footer class="site-footer">
         <div class="container">
             <div class="footer-copyright"></div>
@@ -194,49 +202,15 @@
                 return;
             }
 
-            const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
-            const ENTRY_OPTIN = "entry.1934084784";
-            const ENTRY_CONTACT = "entry.1983797623";
-            const ENTRY_DIARY = "entry.266837979";
-
             const optInStatus = action === 'delete' ? "Request - Delete All Data" : "Request - Unsubscribe";
             const contactInfo = `User (${email})`;
             const payloadText = action === 'delete' ? "USER_GDPR_PURGE_REQUEST" : "USER_UNSUBSCRIBE_REQUEST";
 
-            // Injected hidden iframe + native form submission
-            let iframe = document.getElementById('hidden_privacy_iframe');
-            if (!iframe) {
-                iframe = document.createElement('iframe');
-                iframe.name = 'hidden_privacy_iframe';
-                iframe.id = 'hidden_privacy_iframe';
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-            }
+            document.getElementById('priv-optin').value = optInStatus;
+            document.getElementById('priv-contact').value = contactInfo;
+            document.getElementById('priv-diary').value = payloadText;
 
-            let form = document.getElementById('dynamic_privacy_form');
-            if (form) form.remove();
-
-            form = document.createElement('form');
-            form.id = 'dynamic_privacy_form';
-            form.action = FORM_RESPONSE_URL;
-            form.method = 'POST';
-            form.target = 'hidden_privacy_iframe';
-            form.style.display = 'none';
-
-            const addField = (n, v) => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = n;
-                input.value = v;
-                form.appendChild(input);
-            };
-
-            addField(ENTRY_OPTIN, optInStatus);
-            addField(ENTRY_CONTACT, contactInfo);
-            addField(ENTRY_DIARY, payloadText);
-
-            document.body.appendChild(form);
-            form.submit();
+            document.getElementById('native_privacy_form').submit();
 
             if (action === 'delete') {
                 triggerGlobalToast('🗑️ All personal data has been permanently deleted. Confirmation email sent.', true);
