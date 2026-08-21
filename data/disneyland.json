@@ -1,0 +1,58 @@
+[
+  {
+    "id": "dlp_peter_pan",
+    "name": "Peter Pan's Flight",
+    "park": "Disneyland Park",
+    "land": "Fantasyland",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 2,
+    "darkness": 4,
+    "sensoryNotes": "Gently glides through dark scenes with glowing UV sets. Very smooth, but completely dark in parts.",
+    "adhdTip": "Line moves slowly and can feel claustrophobic indoors. Use Premier Access or visit during parade times."
+  },
+  {
+    "id": "dlp_pirates",
+    "name": "Pirates of the Caribbean",
+    "park": "Disneyland Park",
+    "land": "Adventureland",
+    "type": "Ride",
+    "minHeight": "None",
+    "thrillLevel": 2,
+    "fearFactor": 3,
+    "noiseLevel": 4,
+    "darkness": 5,
+    "sensoryNotes": "Two small surprise drops in the dark. Loud cannon fire, sword fights, fire effects, and skeleton figures.",
+    "adhdTip": "The queue line is long, dark, and winding. High visual interest keeps kids engaged, but loud ambient screams can startle."
+  },
+  {
+    "id": "dlp_big_thunder",
+    "name": "Big Thunder Mountain",
+    "park": "Disneyland Park",
+    "land": "Frontierland",
+    "type": "Ride",
+    "minHeight": "1.02m",
+    "thrillLevel": 4,
+    "fearFactor": 3,
+    "noiseLevel": 5,
+    "darkness": 3,
+    "sensoryNotes": "Very fast, loud rattling mine train. Pitch black underwater tunnel drop at the end with loud train whistle.",
+    "adhdTip": "Ear defenders strongly recommended. The sensation of speed is fantastic for sensory seekers."
+  },
+  {
+    "id": "dlp_lion_king",
+    "name": "The Lion King: Rhythms of the Pride Lands",
+    "park": "Disneyland Park",
+    "land": "Frontierland Theater",
+    "type": "Stage Show",
+    "minHeight": "None",
+    "thrillLevel": 1,
+    "fearFactor": 1,
+    "noiseLevel": 4,
+    "darkness": 3,
+    "sensoryNotes": "World-class West End quality stage production. Live drums, aerial acrobatics, vibrant lighting, and booming sound.",
+    "adhdTip": "Enclosed air-conditioned theater. Great mid-afternoon sensory reset, though loud percussion throughout."
+  }
+]
