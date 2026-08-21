@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disneyland Paris: Shows, Parades & Seasonal Entertainment Guide | Behind the Magic Curtain</title>
+    <meta name="description" content="Complete family guide to Disneyland Paris stage shows, parades, drone spectaculars, Halloween specials, and Disney Enchanted Christmas entertainment.">
+
+    <style>
+        :root {
+            --primary: #005587;
+            --primary-dark: #003b5c;
+            --accent: #bd2419;
+            --gold: #d97706;
+            --text: #334155;
+            --border: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: var(--text);
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        .page-wrap {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1, h2, h3 { color: var(--primary); margin-bottom: 10px; }
+        
+        .header-container { text-align: center; margin-bottom: 20px; }
+        .header-container img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        
+        /* Magical Family Notice */
+        .magical-notice {
+            background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+            border: 1.5px solid #bae6fd;
+            border-left: 5px solid var(--primary);
+            padding: 18px 22px;
+            margin: 20px 0 25px 0;
+            border-radius: 8px;
+        }
+        .magical-notice h3 {
+            margin: 0 0 6px 0;
+            color: var(--primary-dark);
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .magical-notice p {
+            margin: 0 0 10px 0;
+            font-size: 0.95rem;
+            color: #334155;
+            line-height: 1.5;
+        }
+        .official-link-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            padding: 7px 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 50px;
+            transition: background 0.2s ease;
+        }
+        .official-link-btn:hover { background-color: var(--primary-dark); }
+
+        /* Print Section Card Containers */
+        .print-section {
+            margin-bottom: 35px;
+        }
+
+        .category-title {
+            background: #e0f2fe;
+            color: var(--primary-dark);
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 1.25em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            border-left: 5px solid var(--primary);
+        }
+        .category-title.halloween {
+            background: #fff7ed;
+            color: #9a3412;
+            border-left-color: #ea580c;
+        }
+        .category-title.christmas {
+            background: #f0fdf4;
+            color: #166534;
+            border-left-color: #15803d;
+        }
+
+        .season-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255,255,255,0.85);
+        }
+
+        .show-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .show-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        .show-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 14px;
+            margin-top: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+            accent-color: var(--primary);
+        }
+        .show-content { flex: 1; }
+        .show-name { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin-bottom: 4px; display: block; }
+        .show-desc { font-size: 0.95rem; color: #475569; margin: 0 0 8px 0; line-height: 1.45; }
+        
+        .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .show-badge {
+            display: inline-block;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+        }
+        .show-badge.sensory {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-secondary { background-color: #64748b; }
+        .btn-secondary:hover { background-color: #475569; }
+
+        /* ================= EXACT PRINT & PDF PAGINATION RULES ================= */
+        @media print {
+            @page {
+                size: A4;
+                margin: 1.2cm 1cm;
+            }
+            body { background: #fff; padding: 0; font-size: 10pt; color: #000; }
+            .page-wrap { padding: 0; box-shadow: none; }
+            .action-bar, .magical-notice .official-link-btn { display: none !important; }
+            .magical-notice { border: 1px solid #999; background: #fafafa; padding: 8px 12px; margin-bottom: 15px; }
+            
+            /* Enforce each major category onto its own printable sheet */
+            .print-section {
+                page-break-before: always !important;
+                break-before: page !important;
+                margin-bottom: 0;
+            }
+            .print-section:first-of-type {
+                page-break-before: auto !important;
+                break-before: auto !important;
+            }
+
+            .category-title { 
+                background: transparent !important; 
+                border-bottom: 2px solid #000 !important;
+                border-left: none !important;
+                color: #000 !important;
+                padding: 4px 0 !important; 
+                margin-top: 0 !important;
+                page-break-after: avoid !important; 
+                break-after: avoid !important;
+            }
+            .season-badge { border: 1px solid #000; color: #000; }
+            .show-item { 
+                page-break-inside: avoid !important; 
+                border: 1px solid #bbb !important; 
+                background: transparent !important; 
+                padding: 8px !important; 
+                margin-bottom: 6px !important;
+            }
+            .show-badge { border: 1px solid #ccc; background: transparent !important; color: #000; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrap">
+        
+        <div class="action-bar">
+            <button class="btn" onclick="window.print()">🖨️ Print Shows Guide (or Save as PDF)</button>
+            <a href="dlp-rides-checklist.html" class="btn btn-secondary">🎢 View Rides Checklist</a>
+            <a href="disneyland-paris.html" class="btn btn-secondary">← Back to Main Hub</a>
+        </div>
+
+        <div class="header-container">
+            <img src="images/Parades and shows Header.png" alt="Disneyland Paris Parades & Shows" onerror="this.style.display='none'">
+        </div>
+
+        <!-- Magical Parent & Explorer Notice -->
+        <div class="magical-notice">
+            <h3>✨ A Magical Note for Families & Little Explorers</h3>
+            <p>
+                From soaring Broadway-style vocals to twinkling drone spectacles above Sleeping Beauty Castle, live entertainment is where the true Disney storytelling comes alive. Because stage show seasons, parade times, and outdoor performances change with the seasons and weather, we always recommend checking the official schedule ahead of your trip so your visit aligns with every wish you're dreaming of!
+            </p>
+            <a href="https://www.disneylandparis.com/en-gb/entertainment/" target="_blank" rel="noopener noreferrer" class="official-link-btn">
+                🌐 Check Live Showtimes on Official Disneyland Paris Website →
+            </a>
+        </div>
+
+        <!-- ================= SECTION 1: YEAR-ROUND STAGE PRODUCTIONS ================= -->
+        <section class="print-section">
+            <h2 class="category-title">
+                <span>🎭 Year-Round West End Style Stage Productions</span>
+                <span class="season-badge">All Year</span>
+            </h2>
+            <div class="show-grid">
+                <div class="show-item">
+                    <input type="checkbox" id="show-lion-king">
+                    <div class="show-content">
+                        <label for="show-lion-king" class="show-name">The Lion King: Rhythms of the Pride Lands</label>
+                        <p class="show-desc">World-class indoor theatrical spectacle featuring high-flying acrobats, live West End singers, aerialists, and thunderous African drumming.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Frontierland Theater</span>
+                            <span class="show-badge">Indoor &bull; 30 Mins</span>
+                            <span class="show-badge sensory">Loud Live Drums</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-mickey-magician">
+                    <div class="show-content">
+                        <label for="show-mickey-magician" class="show-name">Mickey and the Magician</label>
+                        <p class="show-desc">An illusion-filled musical masterpiece where Mickey learns magic from Genie (Aladdin), Lumière (Beauty and the Beast), Rafiki, and Elsa.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Animagique Theater (Walt Disney Studios)</span>
+                            <span class="show-badge">Indoor &bull; 30 Mins</span>
+                            <span class="show-badge sensory">Sensory Friendly &bull; Flashing Effects</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-together-pixar">
+                    <div class="show-content">
+                        <label for="show-together-pixar" class="show-name">TOGETHER: a Pixar Musical Adventure</label>
+                        <p class="show-desc">An emotional journey combining a live 8-piece orchestra, cutting-edge stage technology, water/fog effects, and beloved Pixar characters.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Studio Theater (Walt Disney Studios)</span>
+                            <span class="show-badge">Indoor &bull; 30 Mins</span>
+                            <span class="show-badge sensory">Live Strings & Brass</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-stitch-live">
+                    <div class="show-content">
+                        <label for="show-stitch-live" class="show-name">Stitch Live!</label>
+                        <p class="show-desc">An interactive digital comedy show where children chat directly with Stitch via live animation and satellite feed.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Production Courtyard</span>
+                            <span class="show-badge">Indoor &bull; 15 Mins</span>
+                            <span class="show-badge sensory">Interactive &bull; Toddler Friendly</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-dream-factory">
+                    <div class="show-content">
+                        <label for="show-dream-factory" class="show-name">Disney Junior Dream Factory</label>
+                        <p class="show-desc">An energetic, singing and dancing stage production with Mickey, Minnie, Fancy Nancy, Timon, and Vampirina inspiring kids to keep dreaming.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Studio D</span>
+                            <span class="show-badge">Indoor &bull; 20 Mins</span>
+                            <span class="show-badge sensory">Ideal for Ages 2–7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: PARADES & NIGHTTIME SPECTACULARS ================= -->
+        <section class="print-section">
+            <h2 class="category-title">
+                <span>✨ Parades, Drone Shows & Evening Spectaculars</span>
+                <span class="season-badge">Daily</span>
+            </h2>
+            <div class="show-grid">
+                <div class="show-item">
+                    <input type="checkbox" id="parade-stars">
+                    <div class="show-content">
+                        <label for="parade-stars" class="show-name">Disney Stars on Parade</label>
+                        <p class="show-desc">The grand daily parade featuring enormous mechanical floats, beloved princesses, and the giant fire-breathing Maleficent dragon.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Disneyland Park Parade Route</span>
+                            <span class="show-badge">Daytime &bull; 35 Mins</span>
+                            <span class="show-badge sensory">Loud Music & Heat (Dragon Fire)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-electrical-sky">
+                    <div class="show-content">
+                        <label for="show-electrical-sky" class="show-name">Disney Electrical Sky Parade (Nightly Drone Show)</label>
+                        <p class="show-desc">Hundreds of synchronised illuminated drones dancing in the night sky over Sleeping Beauty Castle, paying tribute to the Main Street Electrical Parade.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Sleeping Beauty Castle</span>
+                            <span class="show-badge">Nighttime (Pre-Fireworks)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-tales-magic">
+                    <div class="show-content">
+                        <label for="show-tales-magic" class="show-name">Disney Tales of Magic (Nighttime Fireworks Finale)</label>
+                        <p class="show-desc">The park's flagship nighttime spectacular combining castle projection mapping, lasers, dancing water fountains, and pyrotechnics.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Central Plaza & Castle</span>
+                            <span class="show-badge">Park Closing &bull; 20 Mins</span>
+                            <span class="show-badge sensory">Loud Pyrotechnic Bangs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="show-splashes-colour">
+                    <div class="show-content">
+                        <label for="show-splashes-colour" class="show-name">A Million Splashes of Colour</label>
+                        <p class="show-desc">Vibrant daytime musical show on the Central Plaza stages with Mickey, Mirabel, Asha, and colorful floats.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Central Plaza Stages</span>
+                            <span class="show-badge">Daytime &bull; 20 Mins</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: HALLOWEEN FESTIVAL (OCTOBER) ================= -->
+        <section class="print-section">
+            <h2 class="category-title halloween">
+                <span>🎃 Disney Halloween Festival</span>
+                <span class="season-badge" style="color: #9a3412;">October – Early Nov</span>
+            </h2>
+            <div class="show-grid">
+                <div class="show-item">
+                    <input type="checkbox" id="hal-mickey-parade">
+                    <div class="show-content">
+                        <label for="hal-mickey-parade" class="show-name">Mickey's Halloween Celebration</label>
+                        <p class="show-desc">The upbeat harvest parade featuring Daisy, Donald, and Mickey on his stunning "Illusion Manor" float in Phantom Manor dress.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Disneyland Park Route</span>
+                            <span class="show-badge">Multiple Times Daily</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="hal-sky-parade">
+                    <div class="show-content">
+                        <label for="hal-sky-parade" class="show-name">Disney Electrical Sky Parade (Halloween Drone Edition)</label>
+                        <p class="show-desc">Exclusive October drone choreography painting glowing ghosts, spooky pumpkins, and villainous silhouettes above the castle.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Sleeping Beauty Castle</span>
+                            <span class="show-badge">Nighttime</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="hal-villains-show">
+                    <div class="show-content">
+                        <label for="hal-villains-show" class="show-name">A Nightfall with Disney Villains</label>
+                        <p class="show-desc">A dramatic twilight castle projection sequence where Maleficent, Ursula, Captain Hook, and Jafar take over the castle.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Sleeping Beauty Castle</span>
+                            <span class="show-badge">Dusk &bull; 10 Mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="hal-villains-meet">
+                    <div class="show-content">
+                        <label for="hal-villains-meet" class="show-name">Villainous Masters & Halloween Character Meets</label>
+                        <p class="show-desc">Exclusive seasonal photo meets with Jack Skellington & Sally (Frontierland), Vampire Stitch (Discoveryland), Mother Gothel, Cruella, and Gaston.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Various Locations</span>
+                            <span class="show-badge">Check App for Line Times</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: DISNEY ENCHANTED CHRISTMAS & NEW YEAR ================= -->
+        <section class="print-section">
+            <h2 class="category-title christmas">
+                <span>🎄 Disney Enchanted Christmas & New Year</span>
+                <span class="season-badge" style="color: #166534;">Mid-Nov – Early Jan</span>
+            </h2>
+            <div class="show-grid">
+                <div class="show-item">
+                    <input type="checkbox" id="xmas-dazzling-parade">
+                    <div class="show-content">
+                        <label for="xmas-dazzling-parade" class="show-name">Mickey's Dazzling Christmas Parade!</label>
+                        <p class="show-desc">Spectacular Christmas parade with illuminated holiday floats, toy soldiers, Santa Claus, and falling snow on Main Street U.S.A.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Disneyland Park</span>
+                            <span class="show-badge">Day & Night Versions</span>
+                            <span class="show-badge sensory">Real Snow Effect on Main St</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="xmas-tree-lighting">
+                    <div class="show-content">
+                        <label for="xmas-tree-lighting" class="show-name">Magical Christmas Tree Lighting & Carolers</label>
+                        <p class="show-desc">Mickey, Minnie, and Santa illuminate the 24-meter-tall Town Square Christmas tree accompanied by choral music.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Town Square (Main Street)</span>
+                            <span class="show-badge">Dusk &bull; 15 Mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="xmas-together-musical">
+                    <div class="show-content">
+                        <label for="xmas-together-musical" class="show-name">"Let's Sing Christmas!" Musical Sing-Along</label>
+                        <p class="show-desc">An energetic festive musical in Videopolis with Mickey, Minnie, Donald, and special choral singers.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Videopolis Theater (Discoveryland)</span>
+                            <span class="show-badge">Indoor &bull; 20 Mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="xmas-new-year-spec">
+                    <div class="show-content">
+                        <label for="xmas-new-year-spec" class="show-name">New Year's Eve Grand Countdown Fireworks (Dec 31st)</label>
+                        <p class="show-desc">Exclusive December 31st midnight celebration featuring special seasonal DJ parties, giant fireworks, and castle projections.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Midnight Dec 31st</span>
+                            <span class="show-badge">Both Parks</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: STUNT SHOWS & HERO ENCOUNTERS ================= -->
+        <section class="print-section">
+            <h2 class="category-title">
+                <span>🦸‍♂️ Live Stunt Shows & Hero Encounters</span>
+                <span class="season-badge">Daily Pop-Ups</span>
+            </h2>
+            <div class="show-grid">
+                <div class="show-item">
+                    <input type="checkbox" id="stunt-spidey">
+                    <div class="show-content">
+                        <label for="stunt-spidey" class="show-name">The Amazing Spider-Man Rooftop Stunt Show</label>
+                        <p class="show-desc">Watch Spider-Man leap across the W.E.B. building rooftops with live acrobatics and interactive banter.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Avengers Campus</span>
+                            <span class="show-badge">Outdoor &bull; 10 Mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="stunt-avengers-unite">
+                    <div class="show-content">
+                        <label for="stunt-avengers-unite" class="show-name">Avengers Unite! & Warriors of Wakanda</label>
+                        <p class="show-desc">Live martial arts battles atop the Quinjet platform with Black Widow, Black Panther, General Okoye, and Thor.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Quinjet Platform (Avengers Campus)</span>
+                            <span class="show-badge">Outdoor &bull; 15 Mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="show-item">
+                    <input type="checkbox" id="stunt-guardians-dance">
+                    <div class="show-content">
+                        <label for="stunt-guardians-dance" class="show-name">Guardians of the Galaxy: Dance Challenge!</label>
+                        <p class="show-desc">Join Star-Lord and Gamora for a fun, energetic 80s pop music dance-off where kids get pulled in to dance.</p>
+                        <div class="badge-row">
+                            <span class="show-badge">Production Courtyard</span>
+                            <span class="show-badge">Interactive &bull; 15 Mins</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
