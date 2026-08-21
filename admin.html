@@ -133,10 +133,9 @@
 </head>
 <body>
 
-    <!-- Floating Global Popup Toast Container -->
     <div id="status-toast"></div>
 
-    <!-- PIN Access Gate -->
+    <!-- PIN Gate -->
     <div id="pin-gate">
         <div class="pin-box">
             <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 2.5rem; color: #bd2419; margin-bottom: 12px;"></i>
@@ -183,6 +182,7 @@
                     <button type="button" class="tab-btn active" onclick="switchTab('tab-reviews', this)"><i class="fa-solid fa-star"></i> Reviews</button>
                     <button type="button" class="tab-btn" onclick="switchTab('tab-theatres', this)"><i class="fa-solid fa-building-columns"></i> Theatre Guide</button>
                     <button type="button" class="tab-btn" onclick="switchTab('tab-whatson', this)"><i class="fa-solid fa-calendar-days"></i> What's On</button>
+                    <button type="button" class="tab-btn" onclick="switchTab('tab-disneyland', this)"><i class="fa-solid fa-wand-magic-sparkles"></i> Disneyland Paris</button>
                     <button type="button" class="tab-btn" onclick="switchTab('tab-manage', this); loadManagementDashboard();"><i class="fa-solid fa-list-check"></i> Manage & Order Content</button>
                 </div>
 
@@ -255,7 +255,6 @@
                                 </div>
                             </div>
 
-                            <!-- Review Drag & Drop Zone -->
                             <div class="form-group full-span">
                                 <label>Show Images (Drag & Drop or Browse) — Auto-optimized to WebP *</label>
                                 <div class="drop-zone" onclick="document.getElementById('rev-img-picker').click()">
@@ -430,7 +429,83 @@
                     </form>
                 </div>
 
-                <!-- TAB 4: MANAGE & ORDER -->
+                <!-- TAB 4: DISNEYLAND PARIS -->
+                <div id="tab-disneyland" class="tab-content" style="display: none;">
+                    <form id="form-disneyland" onsubmit="event.preventDefault(); handleDisneylandSubmit();">
+                        <input type="hidden" id="dlp-edit-id" value="">
+                        
+                        <div class="studio-grid">
+                            <div class="form-group">
+                                <label for="dlp-name">Attraction / Show Name *</label>
+                                <input type="text" id="dlp-name" placeholder="e.g. Big Thunder Mountain" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dlp-park">Park *</label>
+                                <select id="dlp-park">
+                                    <option value="Disneyland Park">Disneyland Park</option>
+                                    <option value="Walt Disney Studios">Walt Disney Studios</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dlp-land">Land / Area *</label>
+                                <input type="text" id="dlp-land" placeholder="e.g. Frontierland, Worlds of Pixar" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dlp-type">Category *</label>
+                                <select id="dlp-type">
+                                    <option value="Ride">Ride</option>
+                                    <option value="Show">Show / Parade</option>
+                                    <option value="Walkthrough">Walkthrough</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dlp-height">Minimum Height</label>
+                                <input type="text" id="dlp-height" placeholder="e.g. 1.02m or None">
+                            </div>
+
+                            <div class="form-group full-span" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                                <div>
+                                    <label for="dlp-speed">Thrill & Speed (1–5)</label>
+                                    <input type="number" id="dlp-speed" min="1" max="5" value="3" required>
+                                </div>
+                                <div>
+                                    <label for="dlp-fear">Spookiness / Fear (1–5)</label>
+                                    <input type="number" id="dlp-fear" min="1" max="5" value="3" required>
+                                </div>
+                                <div>
+                                    <label for="dlp-noise">Noise Exposure (1–5)</label>
+                                    <input type="number" id="dlp-noise" min="1" max="5" value="3" required>
+                                </div>
+                                <div>
+                                    <label for="dlp-darkness">Darkness / Strobes (1–5)</label>
+                                    <input type="number" id="dlp-darkness" min="1" max="5" value="3" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label for="dlp-notes">Sensory Notes & Community Baseline</label>
+                                <textarea id="dlp-notes" rows="3" placeholder="Sensory details, pyrotechnics, dark sequences, lighting effects..."></textarea>
+                            </div>
+
+                            <div class="form-group full-span">
+                                <label for="dlp-adhd">ADHD & Queue Tip</label>
+                                <textarea id="dlp-adhd" rows="2" placeholder="Queue advice, best times to ride, decompression notes..."></textarea>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 25px;">
+                            <button type="submit" id="dlp-submit-btn" class="btn btn-primary" style="padding: 14px 34px; font-size: 1.05rem;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Save Disneyland Attraction Baseline
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TAB 5: MANAGE & ORDER -->
                 <div id="tab-manage" class="tab-content" style="display: none;">
                     <h2>Active Reviews (Public Directory Order)</h2>
                     <p style="font-size: 0.95rem; color: #555;">Grab and drag any row with <strong>☰</strong> to rearrange positions. The top 3 automatically appear on the Homepage.</p>
@@ -452,6 +527,14 @@
                     <p style="font-size: 0.95rem; color: #555;">Drag rows with <strong>☰</strong> to set theatre listing order.</p>
                     <div id="manage-theatres-table-container">
                         <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading theatres...</p>
+                    </div>
+
+                    <hr style="margin: 40px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+                    <h2>Disneyland Paris Sensory Database</h2>
+                    <p style="font-size: 0.95rem; color: #555;">View and edit baseline sensory metrics and parent notes for Disneyland Paris attractions and shows.</p>
+                    <div id="manage-disneyland-table-container">
+                        <p style="color: #555;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Disneyland Paris database...</p>
                     </div>
                 </div>
 
