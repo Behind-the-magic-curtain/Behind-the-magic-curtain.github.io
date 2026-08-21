@@ -74,7 +74,6 @@
             flex-grow: 1;
         }
 
-        /* Buttons with High Contrast & Hover States */
         .btn-dlp-checklist {
             width: 100%;
             background-color: #005587;
@@ -107,7 +106,7 @@
             box-shadow: 0 6px 14px rgba(189, 36, 25, 0.35);
         }
 
-        /* Interactive Sensory Rater Card */
+        /* Sensory Rater Box */
         .sensory-rater-card {
             background: #ffffff;
             border-radius: var(--radius-lg);
@@ -375,6 +374,38 @@
             transform: translateY(-2px);
         }
 
+        /* Dynamic On-Brand Toast Container */
+        #site-toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #ffffff;
+            color: #222222;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-left: 5px solid var(--color-primary);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            z-index: 9999;
+            max-width: 420px;
+        }
+        #site-toast.toast-show {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        #site-toast.toast-success { border-left-color: #2e7d32; }
+        #site-toast.toast-info { border-left-color: var(--color-accent); }
+        #site-toast.toast-gold { border-left-color: #ffd700; }
+
         @media (max-width: 850px) {
             .dlp-resource-grid {
                 grid-template-columns: 1fr;
@@ -385,6 +416,12 @@
             }
             #newsletter-inputs {
                 grid-template-columns: 1fr !important;
+            }
+            #site-toast {
+                left: 20px;
+                right: 20px;
+                bottom: 20px;
+                max-width: none;
             }
         }
     </style>
@@ -408,7 +445,6 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
         <section class="dlp-hero-banner">
             <div class="container">
                 <h1>Disneyland Paris: Sensory & Family Guide</h1>
@@ -416,7 +452,6 @@
             </div>
         </section>
 
-        <!-- Printable Hub Resources -->
         <section style="padding: 20px 0 40px 0;">
             <div class="container">
                 <div class="dlp-resource-grid">
@@ -568,12 +603,23 @@
                     <!-- Transparency Disclaimer -->
                     <div class="crowdsource-notice">
                         <i class="fa-solid fa-shield-heart" style="color: var(--color-accent); margin-right: 6px;"></i>
-                        <strong>Community Crowdsourcing Promise:</strong> When you share your Park Diary, all ride and show ratings are aggregated into our community dataset. If you do not tick the Family Club box, zero personal data is recorded.
+                        <strong>Community Crowdsourcing Promise:</strong> When you share your Park Diary, all ratings are aggregated to empower fellow neurodivergent families. If you do not tick the Family Club box, zero personal details are recorded.
                     </div>
                 </div>
             </div>
         </section>
     </main>
+
+    <!-- Hidden Form Submission Bridge (Guarantees Google Sheet Ingestion) -->
+    <iframe name="hidden_form_iframe" id="hidden_form_iframe" style="display:none;"></iframe>
+    <form id="native-google-form" action="https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFONhsgdObg/formResponse" method="POST" target="hidden_form_iframe" style="display:none;">
+        <input type="hidden" name="entry.1934084784" id="gform-optin">
+        <input type="hidden" name="entry.1983797623" id="gform-contact">
+        <input type="hidden" name="entry.266837979" id="gform-diary">
+    </form>
+
+    <!-- Non-Intrusive On-Brand Toast Notification -->
+    <div id="site-toast"><i class="fa-solid fa-circle-check"></i> <span id="site-toast-msg">Saved!</span></div>
 
     <footer class="site-footer">
         <div class="container">
@@ -583,14 +629,6 @@
 
     <script src="script.js"></script>
     <script>
-        /* ==========================================================================
-           GOOGLE FORM DIRECT BACKGROUND INTEGRATION
-           ========================================================================== */
-        const GOOGLE_FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFONhsgdObg/viewform";
-        const ENTRY_OPTIN = "entry.1934084784";
-        const ENTRY_CONTACT = "entry.1983797623";
-        const ENTRY_DIARY = "entry.266837979";
-
         const sliderDefinitions = {
             speed: {
                 1: "Level 1: Gentle walkthrough, stationary show, or slow boat.",
@@ -623,6 +661,22 @@
         };
 
         let attractionDatabase = [];
+        let toastTimeout = null;
+
+        function showSiteToast(msg, theme = 'toast-success', icon = 'fa-circle-check') {
+            const toast = document.getElementById('site-toast');
+            const msgEl = document.getElementById('site-toast-msg');
+            if (!toast) return;
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+
+            toast.className = `${theme} toast-show`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('toast-show');
+            }, 3800);
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             initSensoryRater();
@@ -662,13 +716,11 @@
                 selectEl.appendChild(showGroup);
             }
 
-            // Slider listeners
             ['speed', 'fear', 'noise', 'darkness'].forEach(key => {
                 const slider = document.getElementById(`range-${key}`);
                 slider.addEventListener('input', (e) => updateSliderUI(key, e.target.value));
             });
 
-            // Populate baseline on attraction selection
             selectEl.addEventListener('change', (e) => {
                 const selected = attractionDatabase.find(a => a.id === e.target.value);
                 if (selected) {
@@ -680,7 +732,6 @@
                 }
             });
 
-            // Newsletter toggle listener
             const optinCheckbox = document.getElementById('toggle-newsletter');
             const inputsRow = document.getElementById('newsletter-inputs');
             const subtext = document.getElementById('privacy-subtext');
@@ -688,7 +739,7 @@
             optinCheckbox.addEventListener('change', () => {
                 if (optinCheckbox.checked) {
                     inputsRow.style.display = 'grid';
-                    subtext.textContent = "📬 Your contact details will be added to our mailing list. Your sensory ratings will remain aggregated.";
+                    subtext.textContent = "📬 Your contact details will receive our welcome pack and guides. Sensory scores remain aggregated.";
                 } else {
                     inputsRow.style.display = 'none';
                     subtext.textContent = "🔒 Feedback is shared 100% anonymously when the club box is left unchecked.";
@@ -717,7 +768,7 @@
             const attractionId = selectEl.value;
 
             if (!attractionId) {
-                alert('Please select an attraction or show first!');
+                showSiteToast('Please select an attraction or show first!', 'toast-info', 'fa-map-pin');
                 return;
             }
 
@@ -737,7 +788,7 @@
             localStorage.setItem('btmc_dlp_diary', JSON.stringify(diary));
 
             loadSavedDiary();
-            alert(`✅ Saved "${entry.attraction}" to your Park Diary!`);
+            showSiteToast(`Saved "${entry.attraction.split('(')[0].trim()}" to your Park Diary!`, 'toast-gold', 'fa-bookmark');
         }
 
         function loadSavedDiary() {
@@ -782,12 +833,13 @@
             diary.splice(index, 1);
             localStorage.setItem('btmc_dlp_diary', JSON.stringify(diary));
             loadSavedDiary();
+            showSiteToast('Removed entry from diary.', 'toast-info', 'fa-trash-can');
         }
 
-        async function shareEntireDiaryWithCommunity() {
+        function shareEntireDiaryWithCommunity() {
             const diary = JSON.parse(localStorage.getItem('btmc_dlp_diary') || '[]');
             if (diary.length === 0) {
-                alert('Your park diary is empty. Rate and save some attractions first!');
+                showSiteToast('Your park diary is empty.', 'toast-info', 'fa-circle-exclamation');
                 return;
             }
 
@@ -796,7 +848,7 @@
             const email = document.getElementById('user-email').value.trim();
 
             if (isOptIn && !email) {
-                alert('Please enter your email address to join the mailing list, or untick the box to submit anonymously.');
+                showSiteToast('Please provide your email address to join the club, or untick the box to submit anonymously.', 'toast-info', 'fa-envelope');
                 return;
             }
 
@@ -814,30 +866,22 @@
                 payloadText += `\n`;
             });
 
-            const confirmMsg = isOptIn 
-                ? `Submit your ${diary.length} diary entries and join the BTMC Family Club as ${email}?`
-                : `Submit your ${diary.length} diary entries 100% anonymously to the community database?`;
+            // Populate and submit the native hidden form (bypasses CORS blocks)
+            document.getElementById('gform-optin').value = optInStatus;
+            document.getElementById('gform-contact').value = contactInfo;
+            document.getElementById('gform-diary').value = payloadText.trim();
+            
+            document.getElementById('native-google-form').submit();
 
-            if (!confirm(confirmMsg)) return;
-
-            // Direct silent background post to Google Forms endpoint
-            const SUBMIT_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFONhsgdObg/formResponse";
-
-            const formData = new FormData();
-            formData.append("entry.1934084784", optInStatus);
-            formData.append("entry.1983797623", contactInfo);
-            formData.append("entry.266837979", payloadText.trim());
-
-            try {
-                await fetch(SUBMIT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: formData
-                });
-                alert('🎉 Thank you! Your park diary has been successfully submitted to the BTMC community database.');
-            } catch (err) {
-                console.error('Submission error:', err);
-                alert('There was an issue sending your diary. Please check your internet connection.');
+            // Clear inputs and display smooth confirmation toast
+            if (isOptIn) {
+                showSiteToast(`🎉 Welcome ${name || ''}! Your diary has been shared and a confirmation is on its way to ${email}.`, 'toast-success', 'fa-paper-plane');
+                document.getElementById('toggle-newsletter').checked = false;
+                document.getElementById('newsletter-inputs').style.display = 'none';
+                document.getElementById('user-name').value = '';
+                document.getElementById('user-email').value = '';
+            } else {
+                showSiteToast('❤️ Thank you for supporting the BTMC community! Your anonymous diary has been submitted.', 'toast-success', 'fa-hands-holding-heart');
             }
         }
     </script>
