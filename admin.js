@@ -4,7 +4,7 @@ let reviewImages = [];
 let theatreImages = [];
 let whatsonImages = [];
 let editMode = false;
-let currentCache = { reviews: [], whatson: [], theatres: [] };
+let currentCache = { reviews: [], whatson: [], theatres: [], disneyland: [] };
 let draggedRowIndex = null;
 let toastTimeout = null;
 
@@ -67,7 +67,7 @@ function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).style.display = 'block';
-    btn.classList.add('active');
+    if (btn) btn.classList.add('active');
 }
 
 /* --- 2. Floating Pop-up Toast Notifications --- */
@@ -80,7 +80,6 @@ function showToast(msg, type) {
     toast.className = `${type} show`;
     toast.innerHTML = msg;
 
-    // Auto-dismiss after 3.2 seconds unless it is in loading state
     if (type !== 'status-loading') {
         toastTimeout = setTimeout(() => {
             toast.classList.remove('show');
@@ -308,20 +307,47 @@ function enterEditTheatre(id) {
     }
 }
 
+function enterEditDisneyland(id) {
+    const item = currentCache.disneyland.find(d => d.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `Disneyland: ${item.name}`;
+
+    switchTab('tab-disneyland', document.querySelector('.tab-btn:nth-child(4)'));
+    document.getElementById('dlp-edit-id').value = item.id;
+    document.getElementById('dlp-name').value = item.name || '';
+    document.getElementById('dlp-park').value = item.park || 'Disneyland Park';
+    document.getElementById('dlp-land').value = item.land || '';
+    document.getElementById('dlp-type').value = item.type || 'Ride';
+    document.getElementById('dlp-height').value = item.minHeight || 'None';
+    document.getElementById('dlp-speed').value = item.thrillLevel || 3;
+    document.getElementById('dlp-fear').value = item.fearFactor || 3;
+    document.getElementById('dlp-noise').value = item.noiseLevel || 3;
+    document.getElementById('dlp-darkness').value = item.darkness || 3;
+    document.getElementById('dlp-notes').value = item.sensoryNotes || '';
+    document.getElementById('dlp-adhd').value = item.adhdTip || '';
+    document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Attraction';
+}
+
 function cancelEditMode() {
     editMode = false;
     document.getElementById('edit-banner').style.display = 'none';
     document.getElementById('form-review').reset();
     document.getElementById('form-whatson').reset();
     document.getElementById('form-theatre').reset();
+    document.getElementById('form-disneyland').reset();
     
     document.getElementById('rev-edit-id').value = '';
     document.getElementById('wo-edit-id').value = '';
     document.getElementById('th-edit-id').value = '';
+    document.getElementById('dlp-edit-id').value = '';
 
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Review to Website';
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save What\'s On Show';
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry';
+    document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Disneyland Attraction Baseline';
 
     document.getElementById('wysiwyg-content').innerHTML = '<p>Write your review here...</p>';
     reviewImages = [];
@@ -475,7 +501,43 @@ async function handleWhatsOnSubmit() {
     }
 }
 
-/* --- 7. HTML5 Drag-and-Drop Management Tables --- */
+async function handleDisneylandSubmit() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    const editId = document.getElementById('dlp-edit-id').value;
+    const name = document.getElementById('dlp-name').value.trim();
+
+    showToast('⏳ Saving Disneyland Paris Baseline...', 'status-loading');
+    try {
+        const dlpData = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        const entry = {
+            id: editId || 'dlp_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+            name,
+            park: document.getElementById('dlp-park').value,
+            land: document.getElementById('dlp-land').value.trim(),
+            type: document.getElementById('dlp-type').value,
+            minHeight: document.getElementById('dlp-height').value.trim() || 'None',
+            thrillLevel: parseInt(document.getElementById('dlp-speed').value),
+            fearFactor: parseInt(document.getElementById('dlp-fear').value),
+            noiseLevel: parseInt(document.getElementById('dlp-noise').value),
+            darkness: parseInt(document.getElementById('dlp-darkness').value),
+            sensoryNotes: document.getElementById('dlp-notes').value.trim(),
+            adhdTip: document.getElementById('dlp-adhd').value.trim()
+        };
+
+        const updatedDlp = editId ? dlpData.map(d => d.id === editId ? entry : d) : [...dlpData, entry];
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedDlp, null, 2)))), `Save Disneyland Baseline: ${name}`);
+        showToast(`✅ Successfully updated "${name}" in Disneyland Database!`, 'status-success');
+        cancelEditMode();
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ Error: ${err.message}`, 'status-error');
+    }
+}
+
+/* --- 7. Management Tables --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
@@ -506,6 +568,60 @@ async function loadManagementDashboard() {
     } catch (err) {
         document.getElementById('manage-theatres-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
     }
+
+    // Load Disneyland
+    try {
+        const dlp = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        currentCache.disneyland = dlp;
+        renderDisneylandTable(currentCache.disneyland);
+    } catch (err) {
+        document.getElementById('manage-disneyland-table-container').innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
+    }
+}
+
+function renderDisneylandTable(items) {
+    const container = document.getElementById('manage-disneyland-table-container');
+    if (!container) return;
+
+    if (items.length === 0) {
+        container.innerHTML = `<p style="color:#666;">No Disneyland Paris entries found.</p>`;
+        return;
+    }
+
+    let html = `
+        <table class="crud-table">
+            <thead>
+                <tr>
+                    <th>Attraction / Show</th>
+                    <th>Park & Land</th>
+                    <th>Scores (Speed / Fear / Noise / Dark)</th>
+                    <th style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    items.forEach((item) => {
+        html += `
+            <tr>
+                <td><strong>${item.name}</strong> <span style="font-size:0.8rem; color:#888;">(${item.type || 'Ride'})</span></td>
+                <td>${item.park} - ${item.land}</td>
+                <td>
+                    <span style="font-size:0.85rem; color:#444; font-weight:600;">
+                        🚀 ${item.thrillLevel || 1}/5 &nbsp;|&nbsp; 👻 ${item.fearFactor || 1}/5 &nbsp;|&nbsp; 🔊 ${item.noiseLevel || 1}/5 &nbsp;|&nbsp; 🌑 ${item.darkness || 1}/5
+                    </span>
+                </td>
+                <td>
+                    <button type="button" class="btn-edit" onclick="enterEditDisneyland('${item.id}')">
+                        <i class="fa-solid fa-pen"></i> Edit Baseline
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
 }
 
 function renderDraggableTable(type, containerId, items) {
@@ -704,6 +820,7 @@ function buildFullReviewPageHtml(d) {
                     <li><a href="theatre-guide.html">Theatre Guide</a></li>
                     <li><a href="tips-for-parents.html">Tips for Parents</a></li>
                     <li><a href="reviews.html">Reviews</a></li>
+                    <li><a href="disneyland-paris.html">Disneyland Paris</a></li>
                 </ul>
             </nav>
         </div>
