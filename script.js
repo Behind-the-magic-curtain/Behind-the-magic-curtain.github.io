@@ -1,6 +1,6 @@
 /*
  * BEHIND THE MAGIC CURTAIN - CORE SITE ENGINE
- * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support & Dynamic Email Footer
+ * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support, Global Footer & Mailing List Form
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,29 +28,158 @@ function initNavigation() {
     }
 }
 
-/* --- 2. Global Footer Controller (Domain + Mailto + Copyright) --- */
+/* --- 2. Global Toast Messenger --- */
+let siteToastTimeout = null;
+function triggerGlobalToast(msg, isSuccess = true) {
+    let toast = document.getElementById('global-site-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'global-site-toast';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #ffffff;
+            color: #222222;
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-left: 5px solid ${isSuccess ? '#2e7d32' : '#bd2419'};
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            z-index: 100000;
+            max-width: 420px;
+        `;
+        document.body.appendChild(toast);
+    }
+
+    if (siteToastTimeout) clearTimeout(siteToastTimeout);
+
+    toast.style.borderLeftColor = isSuccess ? '#2e7d32' : '#bd2419';
+    toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}" style="color: ${isSuccess ? '#2e7d32' : '#bd2419'};"></i> <span>${msg}</span>`;
+    
+    toast.style.opacity = '1';
+    toast.style.pointerEvents = 'auto';
+    toast.style.transform = 'translateY(0)';
+
+    siteToastTimeout = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.pointerEvents = 'none';
+        toast.style.transform = 'translateY(20px)';
+    }, 4000);
+}
+
+/* --- 3. Global Footer Controller (Mailing List + Domain + Mailto + Copyright) --- */
 function initGlobalFooter() {
-    const copyrightElements = document.querySelectorAll('.footer-copyright');
+    const footerContainer = document.querySelector('.site-footer .container');
+    if (!footerContainer) return;
+
     const currentYear = new Date().getFullYear();
     const domainUrl = "https://behindthemagiccurtain.co.uk";
     const emailAddress = "Hello@behindthemagiccurtain.co.uk";
 
-    copyrightElements.forEach(el => {
-        el.innerHTML = `
-            <div style="margin-bottom: 10px; font-size: 0.95rem;">
-                <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}
-                </a>
-                <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk
-                </a>
-            </div>
-            <div style="font-size: 0.85rem; color: #888888;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
-        `;
-    });
+    // Build the responsive, on-brand newsletter box + footer links
+    footerContainer.innerHTML = `
+        <div class="footer-newsletter-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 30px 20px; max-width: 640px; margin: 0 auto 35px auto; text-align: center;">
+            <h3 style="color: #ffffff; font-family: var(--font-heading, 'Raleway', sans-serif); font-size: 1.45rem; margin-bottom: 8px;">
+                <i class="fa-solid fa-envelope-open-text" style="color: var(--color-secondary, #ffd700); margin-right: 8px;"></i> Join the BTMC Family Club
+            </h3>
+            <p style="color: #cccccc; font-size: 0.92rem; margin-bottom: 20px; line-height: 1.5;">
+                Get our latest family theatre reviews, sensory insights, and Disneyland tips delivered straight to your inbox.
+            </p>
+            <form id="footer-newsletter-form" onsubmit="event.preventDefault(); handleFooterNewsletterSubmit();" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto;">
+                <input type="text" id="footer-user-name" placeholder="Your Name" style="flex: 1 1 140px; min-width: 130px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
+                <input type="email" id="footer-user-email" placeholder="Email Address *" required style="flex: 1 1 180px; min-width: 170px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 24px; font-size: 0.92rem; border-radius: 50px; cursor: pointer; border: none; font-weight: 700; white-space: nowrap;">
+                    Join Club
+                </button>
+            </form>
+            <p style="font-size: 0.75rem; color: #999999; margin: 12px 0 0 0;">🔒 Zero spam. Unsubscribe anytime with 1 click.</p>
+        </div>
+
+        <div style="margin-bottom: 12px; font-size: 0.95rem;">
+            <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}
+            </a>
+            <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk
+            </a>
+        </div>
+        <div style="font-size: 0.85rem; color: #777777;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
+    `;
 }
 
-/* --- 3. Dynamic JSON Page Renderers --- */
+/* --- 4. Background Newsletter Form Submitter --- */
+function handleFooterNewsletterSubmit() {
+    const nameInput = document.getElementById('footer-user-name');
+    const emailInput = document.getElementById('footer-user-email');
+    
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!email || !email.includes('@')) {
+        triggerGlobalToast('Please enter a valid email address.', false);
+        return;
+    }
+
+    const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
+    const ENTRY_OPTIN = "entry.1934084784";
+    const ENTRY_CONTACT = "entry.1983797623";
+    const ENTRY_DIARY = "entry.266837979";
+
+    const optInStatus = "Yes - Join Club";
+    const contactInfo = `${name || 'Friend'} (${email})`;
+    const payloadText = "General Website Footer Signup";
+
+    // Dynamic hidden iframe + native form submission
+    let iframe = document.getElementById('hidden_footer_submit_iframe');
+    if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.name = 'hidden_footer_submit_iframe';
+        iframe.id = 'hidden_footer_submit_iframe';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+    }
+
+    let form = document.getElementById('dynamic_footer_hidden_form');
+    if (form) form.remove();
+
+    form = document.createElement('form');
+    form.id = 'dynamic_footer_hidden_form';
+    form.action = FORM_RESPONSE_URL;
+    form.method = 'POST';
+    form.target = 'hidden_footer_submit_iframe';
+    form.style.display = 'none';
+
+    const addField = (n, v) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = n;
+        input.value = v;
+        form.appendChild(input);
+    };
+
+    addField(ENTRY_OPTIN, optInStatus);
+    addField(ENTRY_CONTACT, contactInfo);
+    addField(ENTRY_DIARY, payloadText);
+
+    document.body.appendChild(form);
+    form.submit();
+
+    nameInput.value = '';
+    emailInput.value = '';
+
+    triggerGlobalToast(`🎉 Welcome ${name || ''}! Check your inbox for a welcome email.`, true);
+}
+
+/* --- 5. Dynamic JSON Page Renderers --- */
 function initDynamicPages() {
     const isHomePage = document.querySelector('.home-featured .card-grid');
     const isReviewsPage = document.querySelector('#all-reviews-grid');
@@ -165,7 +294,7 @@ async function loadTheatreGuideDirectory() {
     }
 }
 
-/* --- Card Generators --- */
+/* --- Card HTML Builders --- */
 function buildReviewCardHTML(r) {
     const ratingPercent = Math.min(100, Math.max(0, ((parseFloat(r.rating) || 5) / 5) * 100));
     
