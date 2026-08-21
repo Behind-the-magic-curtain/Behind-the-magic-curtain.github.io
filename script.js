@@ -85,7 +85,6 @@ function initGlobalFooter() {
     const domainUrl = "https://behindthemagiccurtain.co.uk";
     const emailAddress = "Hello@behindthemagiccurtain.co.uk";
 
-    // Build the responsive, on-brand newsletter box + footer links
     footerContainer.innerHTML = `
         <div class="footer-newsletter-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 30px 20px; max-width: 640px; margin: 0 auto 35px auto; text-align: center;">
             <h3 style="color: #ffffff; font-family: var(--font-heading, 'Raleway', sans-serif); font-size: 1.45rem; margin-bottom: 8px;">
@@ -101,7 +100,9 @@ function initGlobalFooter() {
                     Join Club
                 </button>
             </form>
-            <p style="font-size: 0.75rem; color: #999999; margin: 12px 0 0 0;">🔒 Zero spam. Unsubscribe anytime with 1 click.</p>
+            <p style="font-size: 0.78rem; color: #999999; margin: 12px 0 0 0;">
+                🔒 Zero spam. <a href="unsubscribe.html" style="color: #bbbbbb; text-decoration: underline;">Unsubscribe or delete your data</a> anytime.
+            </p>
         </div>
 
         <div style="margin-bottom: 12px; font-size: 0.95rem;">
@@ -129,7 +130,7 @@ function handleFooterNewsletterSubmit() {
         return;
     }
 
-    const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
+    const FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLScODeuH12_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse";
     const ENTRY_OPTIN = "entry.1934084784";
     const ENTRY_CONTACT = "entry.1983797623";
     const ENTRY_DIARY = "entry.266837979";
@@ -138,7 +139,6 @@ function handleFooterNewsletterSubmit() {
     const contactInfo = `${name || 'Friend'} (${email})`;
     const payloadText = "General Website Footer Signup";
 
-    // Dynamic hidden iframe + native form submission
     let iframe = document.getElementById('hidden_footer_submit_iframe');
     if (!iframe) {
         iframe = document.createElement('iframe');
