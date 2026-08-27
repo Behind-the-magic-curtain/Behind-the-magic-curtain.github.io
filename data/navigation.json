@@ -40,13 +40,13 @@
       "id": "nav_panto",
       "title": "Panto Guide",
       "url": "pantomime.html",
-      "enabled": true
+      "enabled": false
     },
     {
       "id": "nav_dlp",
       "title": "Disneyland Paris",
       "url": "disneyland-paris.html",
-      "enabled": true
+      "enabled": false
     }
   ]
 }
