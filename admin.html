@@ -24,9 +24,9 @@
         .pin-box { background: #fff; padding: 40px; border-radius: 12px; text-align: center; max-width: 360px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         .pin-input { font-size: 24px; letter-spacing: 8px; text-align: center; padding: 10px; width: 100%; margin: 20px 0; border: 2px solid var(--admin-border); border-radius: 8px; }
         
-        /* Admin Layout */
-        #admin-panel { display: none; width: 100%; height: 100%; display: flex; }
-        .admin-sidebar { width: 260px; background: #1e293b; color: #fff; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 1000; }
+        /* Layout */
+        #admin-panel { width: 100%; height: 100%; display: flex; }
+        .admin-sidebar { width: 260px; background: #1e293b; color: #fff; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 1000; flex-shrink: 0; }
         .admin-sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
         .admin-nav-tabs { list-style: none; padding: 15px 0; overflow-y: auto; flex: 1; }
         .admin-nav-tabs li button { width: 100%; text-align: left; padding: 14px 20px; background: none; border: none; color: #cbd5e1; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 12px; border-left: 4px solid transparent; transition: all 0.2s; }
@@ -44,26 +44,36 @@
         .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--admin-border); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; }
         .form-group input:focus, .form-group textarea:focus { border-color: var(--admin-teal); }
         
-        /* Drop Zones */
+        /* Drop Zones & Image Previews */
         .drop-zone { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
-        .img-preview-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .img-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f1f5f9; border-radius: 6px; }
+        .img-preview-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; margin-bottom: 15px; }
+        .img-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f1f5f9; border-radius: 6px; }
         .img-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
         
-        /* Tables */
-        .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; }
-        .crud-table th, .crud-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 0.9rem; }
+        /* Tables & Drag UI */
+        .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .crud-table th, .crud-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 0.9rem; vertical-align: middle; }
         .crud-table th { background: #f8fafc; font-weight: 700; color: #475569; }
-        .draggable-row { cursor: grab; }
+        .draggable-row { cursor: grab; background: #fff; }
         .draggable-row.dragging { opacity: 0.4; background: #e0f2f1; }
+        .draggable-row.drag-over { border-top: 3px solid var(--admin-teal); }
+        .grab-handle { margin-right: 8px; color: #94a3b8; cursor: grab; }
+        .rank-badge { font-weight: 700; color: #475569; }
+        .badge-featured { background: #e0f2f1; color: #00695c; font-weight: 700; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; }
+        .badge-status { color: #fff; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
         
-        /* Switch & Buttons */
+        /* Buttons */
         .btn-submit { background: var(--admin-red); color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
         .btn-submit:hover { background: #9b1d14; }
         .btn-edit { background: #e0f2f1; color: #00695c; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-right: 6px; }
         .btn-delete { background: #fee2e2; color: #b91c1c; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
-        /* Mobile */
+        /* Toast Notifications */
+        #status-toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 22px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: none; z-index: 30000; }
+        #status-toast.status-success { background: #e8f5e9; color: #2e7d32; border-left: 5px solid #2e7d32; display: block; }
+        #status-toast.status-error { background: #ffebee; color: #c62828; border-left: 5px solid #c62828; display: block; }
+        #status-toast.status-loading { background: #e0f2f1; color: #00695c; border-left: 5px solid #00695c; display: block; }
+
         @media (max-width: 850px) {
             .burger-btn { display: block; }
             .admin-sidebar { position: fixed; height: 100%; left: 0; top: 0; transform: translateX(-100%); }
@@ -85,7 +95,7 @@
     </div>
 
     <!-- Admin Panel -->
-    <div id="admin-panel">
+    <div id="admin-panel" style="display:none;">
         <aside class="admin-sidebar" id="admin-sidebar">
             <div class="admin-sidebar-header">
                 <span style="font-weight:800; font-size:1.1rem; color:#ffd700;">BTMC Studio</span>
@@ -115,8 +125,7 @@
             </header>
 
             <div class="content-area">
-                <!-- Status Toast -->
-                <div id="status-toast" style="display:none; padding:12px 20px; border-radius:8px; margin-bottom:20px; font-weight:600;"></div>
+                <div id="status-toast"></div>
 
                 <!-- 1. Reviews Tab -->
                 <div id="tab-reviews" class="tab-content" style="display:block;">
@@ -133,15 +142,19 @@
                                 <div class="form-group"><label>Rating (0.0 - 5.0)</label><input type="number" id="rev-rating" step="0.1" min="0" max="5" value="5.0"></div>
                                 <div class="form-group"><label>Age Recommendation</label><input type="text" id="rev-age" value="Ages 7+"></div>
                             </div>
-                            <div class="form-row">
+                            <div class="form-row" style="gap:25px; margin-bottom:20px;">
                                 <label><input type="checkbox" id="tag-adhd"> ADHD Guide</label>
                                 <label><input type="checkbox" id="tag-sensory"> Sensory Notes</label>
                                 <label><input type="checkbox" id="tag-mature"> Mature Themes</label>
                                 <label><input type="checkbox" id="rev-published" checked> Published Live</label>
                             </div>
+                            <div class="form-group" style="margin-bottom:12px;">
+                                <label>Image Alt Description</label>
+                                <input type="text" id="rev-image-alt" placeholder="Description for screen readers">
+                            </div>
                             <div class="drop-zone" onclick="document.getElementById('rev-file-input').click()">
                                 <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:var(--admin-teal);"></i>
-                                <p>Drag & Drop WebP/JPG images or click to upload</p>
+                                <p>Drag & Drop WebP/JPG images (First image = Main Poster)</p>
                                 <input type="file" id="rev-file-input" multiple accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'review')">
                             </div>
                             <div id="review-image-list" class="img-preview-list"></div>
@@ -151,7 +164,10 @@
                             <button type="submit" id="rev-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Save Review</button>
                         </form>
                     </div>
-                    <div id="manage-reviews-table-container"></div>
+                    <div class="form-card">
+                        <h3>Manage Reviews Directory (Drag ☰ to Reorder Top 3)</h3>
+                        <div id="manage-reviews-table-container"></div>
+                    </div>
                 </div>
 
                 <!-- 2. What's On Tab -->
@@ -170,6 +186,7 @@
                                 <div class="form-group"><label>Auto-Expiry Date (YYYY-MM-DD)</label><input type="date" id="wo-expiry"></div>
                             </div>
                             <div class="form-row">
+                                <div class="form-group"><label>Running Time</label><input type="text" id="wo-runtime" placeholder="e.g. 2hrs (incl. interval)"></div>
                                 <div class="form-group"><label>Age Rating</label><input type="text" id="wo-age" value="Ages 4+"></div>
                                 <div class="form-group"><label>Category</label><select id="wo-category"><option value="theatre">Standard Theatre</option><option value="panto">Pantomime</option><option value="musical">Musical</option><option value="attraction">Family Event</option></select></div>
                                 <div class="form-group" style="justify-content:center;"><label><input type="checkbox" id="wo-is-touring"> <strong>Touring Production (UK Tour)</strong></label></div>
@@ -188,7 +205,10 @@
                             <button type="submit" id="wo-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Save What's On Show</button>
                         </form>
                     </div>
-                    <div id="manage-whatson-table-container"></div>
+                    <div class="form-card">
+                        <h3>Manage What's On Listings (Drag ☰ to Reorder)</h3>
+                        <div id="manage-whatson-table-container"></div>
+                    </div>
                 </div>
 
                 <!-- 3. Theatres Tab -->
@@ -213,7 +233,10 @@
                             <button type="submit" id="th-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry</button>
                         </form>
                     </div>
-                    <div id="manage-theatres-table-container"></div>
+                    <div class="form-card">
+                        <h3>Manage Theatre Venues (Drag ☰ to Reorder)</h3>
+                        <div id="manage-theatres-table-container"></div>
+                    </div>
                 </div>
 
                 <!-- 4. News Tab -->
@@ -223,7 +246,7 @@
                         <form id="form-news" onsubmit="event.preventDefault(); handleNewsSubmit();">
                             <input type="hidden" id="news-edit-id">
                             <div class="form-row">
-                                <div class="form-group"><label>Headline (Clear & Engaging) *</label><input type="text" id="news-title" required oninput="syncNewsSlug()"></div>
+                                <div class="form-group"><label>Headline *</label><input type="text" id="news-title" required oninput="syncNewsSlug()"></div>
                                 <div class="form-group"><label>Slug (.html)</label><input type="text" id="news-slug" required></div>
                             </div>
                             <div class="form-row">
@@ -233,7 +256,7 @@
                             </div>
                             <div class="drop-zone" onclick="document.getElementById('news-file-input').click()">
                                 <i class="fa-solid fa-newspaper" style="font-size:2rem; color:var(--admin-teal);"></i>
-                                <p>Upload High-Res Featured Image (Min 1200px wide for Google Discover)</p>
+                                <p>Upload High-Res Featured Image</p>
                                 <input type="file" id="news-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'news')">
                             </div>
                             <div id="news-image-list" class="img-preview-list"></div>
@@ -242,7 +265,10 @@
                             <button type="submit" id="news-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story</button>
                         </form>
                     </div>
-                    <div id="manage-news-table-container"></div>
+                    <div class="form-card">
+                        <h3>Manage News Stories (Drag ☰ to Reorder)</h3>
+                        <div id="manage-news-table-container"></div>
+                    </div>
                 </div>
 
                 <!-- 5. Disneyland Paris Tab -->
@@ -255,8 +281,10 @@
                                 <div class="form-group"><label>Attraction Name</label><input type="text" id="dlp-name" required></div>
                                 <div class="form-group"><label>Park</label><select id="dlp-park"><option>Disneyland Park</option><option>Walt Disney Studios Park</option></select></div>
                                 <div class="form-group"><label>Land</label><input type="text" id="dlp-land"></div>
+                                <div class="form-group"><label>Type</label><select id="dlp-type"><option>Ride</option><option>Show</option><option>Experience</option></select></div>
                             </div>
                             <div class="form-row">
+                                <div class="form-group"><label>Minimum Height</label><input type="text" id="dlp-height" placeholder="e.g. 102cm or None"></div>
                                 <div class="form-group"><label>Thrill (1-5)</label><input type="number" id="dlp-speed" min="1" max="5" value="3"></div>
                                 <div class="form-group"><label>Fear (1-5)</label><input type="number" id="dlp-fear" min="1" max="5" value="3"></div>
                                 <div class="form-group"><label>Noise (1-5)</label><input type="number" id="dlp-noise" min="1" max="5" value="3"></div>
@@ -267,7 +295,10 @@
                             <button type="submit" id="dlp-submit-btn" class="btn-submit">Save Disneyland Baseline</button>
                         </form>
                     </div>
-                    <div id="manage-disneyland-table-container"></div>
+                    <div class="form-card">
+                        <h3>Manage Disneyland Paris Attractions</h3>
+                        <div id="manage-disneyland-table-container"></div>
+                    </div>
                 </div>
 
                 <!-- 6. Navigation Toggles Tab -->
@@ -283,10 +314,11 @@
         </div>
     </div>
 
-    <!-- Settings Drawer Modal -->
+    <!-- Settings Modal -->
     <div id="settings-drawer" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:20000; align-items:center; justify-content:center;">
-        <div style="background:#fff; padding:30px; border-radius:12px; max-width:440px; width:90%;">
+        <div style="background:#fff; padding:30px; border-radius:12px; max-width:440px; width:90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
             <h3>GitHub Settings</h3>
+            <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Configure your repository bridge to save live updates.</p>
             <div class="form-group" style="margin:12px 0;"><label>Owner / User</label><input type="text" id="gh-owner"></div>
             <div class="form-group" style="margin-bottom:12px;"><label>Repository Name</label><input type="text" id="gh-repo"></div>
             <div class="form-group" style="margin-bottom:20px;"><label>Personal Access Token</label><input type="password" id="gh-token"></div>
