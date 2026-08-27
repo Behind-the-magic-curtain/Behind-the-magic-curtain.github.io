@@ -878,16 +878,18 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
     if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
 }
 
-function buildFullReviewPageHtml(d) {
+
+
+ function buildFullReviewPageHtml(d) {
     const ratingPercent = (parseFloat(d.rating) / 5) * 100;
     let tags = `<span class="tag tag-age">${d.age}</span>`;
-    if (d.tags?.adhd) tags += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+    if (d.tags?.adhd) tags += `\n<span class="tag tag-adhd">Sensory-Friendly Guide</span>`;
     if (d.tags?.sensory) tags += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
     if (d.tags?.mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
 
     let tipsSection = '';
     if (d.tips && d.tips.length > 0) {
-        tipsSection = `<article>\n<h3>Key Info for Parents</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
+        tipsSection = `<article>\n<h3>Sensory & Parent Insights</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
     }
 
     let gallerySection = '';
@@ -909,15 +911,35 @@ function buildFullReviewPageHtml(d) {
         </div>`;
     }
 
+    const reviewSchema = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Review",
+        "name": d.title,
+        "reviewBody": d.summary,
+        "author": {
+            "@type": "Person",
+            "name": "Katy Rose Meaney"
+        },
+        "itemReviewed": {
+            "@type": "TheaterEvent",
+            "name": d.title
+        },
+        "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": d.rating,
+            "bestRating": "5"
+        }
+    });
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review: ${d.title} | Behind the Magic Curtain</title>
+    <title>${d.title} Review & Sensory Guide | Behind the Magic Curtain</title>
     <meta name="description" content="${d.summary}">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Review: ${d.title} | Behind the Magic Curtain">
+    <meta property="og:title" content="${d.title} Review & Sensory Guide">
     <meta property="og:description" content="${d.summary}">
     <meta property="og:image" content="images/${d.mainImage}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -926,6 +948,9 @@ function buildFullReviewPageHtml(d) {
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <script type="application/ld+json">
+    ${reviewSchema}
+    <\/script>
 </head>
 <body>
     <header class="site-header">
