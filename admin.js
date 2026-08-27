@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.3)
- * Full CRUD, Table Managers, Edit Handlers, WebP Compressor & Drag-and-Drop Reordering
+ * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.7)
+ * Resilient API Bridge, Drag-and-Drop Ordering, WebP Compression & Live Edit Handlers
  */
 
 const MASTER_PIN = "3011";
@@ -515,11 +515,7 @@ async function handleNewsSubmit() {
         updated.forEach((n, idx) => n.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
-
-        const pageHtml = buildFullNewsArticleHtml(entry);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news article page: ${title}`);
-
-        showToast(`🎉 News story published and indexed for Discover!`, 'status-success');
+        showToast(`🎉 News story published!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
@@ -858,7 +854,7 @@ async function fetchJsonFile(owner, repo, token, path) {
     const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
-    if (!res.ok) throw new Error(`Could not load ${path}`);
+    if (!res.ok) throw new Error(`Could not load ${path} (Status: ${res.status})`);
     const data = await res.json();
     return JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
 }
@@ -880,92 +876,6 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
         body: JSON.stringify({ message, content: contentBase64, ...(sha && { sha }) })
     });
     if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
-}
-
-/* --- 8. HTML Page Builders (Reviews & Discover-Optimized News) --- */
-function buildFullNewsArticleHtml(n) {
-    const formattedDate = new Date(n.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    const schemaJson = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        "headline": n.title,
-        "image": [`https://behindthemagiccurtain.co.uk/images/${n.mainImage}`],
-        "datePublished": n.datePublished,
-        "dateModified": n.dateModified,
-        "author": [{
-            "@type": "Person",
-            "name": n.author,
-            "url": "https://behindthemagiccurtain.co.uk"
-        }],
-        "publisher": {
-            "@type": "Organization",
-            "name": "Behind the Magic Curtain",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://behindthemagiccurtain.co.uk/images/logo.png"
-            }
-        },
-        "description": n.summary
-    });
-
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${n.title} | Behind the Magic Curtain News</title>
-    <meta name="description" content="${n.summary}">
-    <meta name="robots" content="max-image-preview:large">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="${n.title}">
-    <meta property="og:description" content="${n.summary}">
-    <meta property="og:image" content="images/${n.mainImage}">
-    <link rel="canonical" href="https://behindthemagiccurtain.co.uk/${n.slug}">
-    
-    <!-- Google Fonts Brand Imports -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script type="application/ld+json">
-    ${schemaJson}
-    <\/script>
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
-            <nav class="main-nav">
-                <button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
-                <ul></ul>
-            </nav>
-        </div>
-    </header>
-    <main>
-        <section class="page-header">
-            <div class="container">
-                <span class="tag" style="background:var(--color-accent); margin-bottom:12px; display:inline-block;">${n.category}</span>
-                <h1>${n.title}</h1>
-                <p style="font-size:0.95rem; color:#666; margin-top:10px;">By <strong>${n.author}</strong> • <time datetime="${n.datePublished}">${formattedDate}</time></p>
-            </div>
-        </section>
-        <section class="page-content">
-            <div class="container content-article">
-                <img src="images/${n.mainImage}" alt="${n.title}" class="review-main-image" loading="lazy">
-                <p class="review-subtitle" style="font-size:1.2rem; font-weight:600; color:#333; margin-bottom:25px;">${n.summary}</p>
-                ${n.bodyHtml}
-                <div style="margin-top:40px; padding-top:20px; border-top:1px solid #e0e0e0;">
-                    <a href="news.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to News Feed</a>
-                </div>
-            </div>
-        </section>
-    </main>
-    <footer class="site-footer"><div class="container"></div></footer>
-    <script src="script.js"><\/script>
-</body>
-</html>`;
 }
 
 function buildFullReviewPageHtml(d) {
