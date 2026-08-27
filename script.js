@@ -1,7 +1,10 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.4)
- * Drop-Down Search Tray, Dynamic Nav, Multi-Page JSON Loaders & Disneyland Sensory Hub
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.5)
+ * Interactive Disneyland Rater Engine, Global Search Tray, Dynamic Nav & Auto-Expiring Directories
  */
+
+let dlpAttractionsCache = [];
+let userCustomRatings = JSON.parse(localStorage.getItem('btmc_user_dlp_ratings') || '{}');
 
 document.addEventListener('DOMContentLoaded', () => {
     initDynamicNavigation();
@@ -10,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDynamicPages();
 });
 
-/* --- 1. Dynamic Nav Controller (Admin Switchboard) --- */
+/* --- 1. Dynamic Nav Controller --- */
 async function initDynamicNavigation() {
     const navUl = document.querySelector('.main-nav ul');
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
@@ -48,7 +51,7 @@ async function initDynamicNavigation() {
     }
 }
 
-/* --- 2. Drop-Down Search Tray Controller --- */
+/* --- 2. Drop-Down Search Tray --- */
 function initGlobalSearchTray() {
     const siteHeader = document.querySelector('.site-header');
     if (!siteHeader) return;
@@ -185,7 +188,7 @@ async function handleGlobalSearchInput(e) {
 
         dlp.forEach(d => {
             if (`${d.name} ${d.land} ${d.sensoryNotes || ''}`.toLowerCase().includes(query)) {
-                matches.push({ type: 'Disneyland Paris', title: d.name, desc: `${d.park} (${d.land}) - ${d.sensoryNotes || ''}`, url: 'disneyland-paris.html', badge: 'DLP Sensory' });
+                matches.push({ type: 'Disneyland Paris', title: d.name, desc: `${d.park} (${d.land}) - ${d.sensoryNotes || ''}`, url: 'disneyland-paris.html#interactive-rater', badge: 'DLP Sensory' });
             }
         });
 
@@ -217,57 +220,40 @@ function initDynamicPages() {
     if (document.querySelector('#theatre-list')) loadTheatreGuideDirectory();
     if (document.querySelector('#news-feed-list')) loadNewsDirectory();
     if (document.querySelector('#panto-list')) loadPantomimeDirectory();
-    if (document.querySelector('#dlp-attractions-grid')) loadDisneylandAttractions();
+    if (document.querySelector('#dlp-rater-list')) initInteractiveDisneylandRater();
 }
 
-/* --- 4. Disneyland Paris Directory Loader & Filter --- */
-async function loadDisneylandAttractions() {
-    const container = document.getElementById('dlp-attractions-grid');
-    const searchInput = document.getElementById('dlp-attraction-search');
-    const filterBtns = document.querySelectorAll('.page-content .filter-btn');
+/* --- 4. Interactive Disneyland Paris Rater Engine --- */
+async function initInteractiveDisneylandRater() {
+    const container = document.getElementById('dlp-rater-list');
+    const searchInput = document.getElementById('dlp-rater-search');
+    const filterBtns = document.querySelectorAll('.rater-controls-bar .filter-btn');
     if (!container) return;
 
     try {
         const res = await fetch('data/disneyland.json');
         if (!res.ok) throw new Error('Could not load Disneyland database');
-        const items = await res.json();
+        dlpAttractionsCache = await res.json();
 
-        let currentType = 'all';
+        updateCustomRatedCount();
+
+        let currentFilter = 'all';
 
         const render = () => {
             const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-            const filtered = items.filter(item => {
-                const matchesType = currentType === 'all' || item.type === currentType;
-                const text = `${item.name} ${item.park} ${item.land} ${item.sensoryNotes || ''} ${item.adhdTip || ''}`.toLowerCase();
-                const matchesQuery = query === '' || text.includes(query);
-                return matchesType && matchesQuery;
+            const filtered = dlpAttractionsCache.filter(item => {
+                const matchesType = currentFilter === 'all' || item.type === currentFilter;
+                const matchesText = `${item.name} ${item.park} ${item.land} ${item.sensoryNotes || ''}`.toLowerCase().includes(query);
+                return matchesType && matchesText;
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#777; margin:30px 0;">No Disneyland attractions match your search.</p>';
+                container.innerHTML = '<p style="text-align:center; color:#777; margin:40px 0;">No matching attractions found.</p>';
                 return;
             }
 
-            container.innerHTML = filtered.map(item => `
-                <article class="dlp-card">
-                    <div class="dlp-card-header">
-                        <h3>${item.name}</h3>
-                        <span class="tag tag-age">${item.minHeight === 'None' ? 'All Heights' : item.minHeight}</span>
-                    </div>
-                    <span class="dlp-loc-badge"><i class="fa-solid fa-map-pin" style="color:var(--color-primary);"></i> ${item.park} (${item.land})</span>
-                    
-                    <div class="score-bar-grid">
-                        <div class="score-item"><span>🚀 Speed:</span> <span class="score-val">${item.thrillLevel || 1}/5</span></div>
-                        <div class="score-item"><span>👻 Fear:</span> <span class="score-val">${item.fearFactor || 1}/5</span></div>
-                        <div class="score-item"><span>🔊 Noise:</span> <span class="score-val">${item.noiseLevel || 1}/5</span></div>
-                        <div class="score-item"><span>🌑 Dark:</span> <span class="score-val">${item.darkness || 1}/5</span></div>
-                    </div>
-                    
-                    <p class="dlp-notes-box">${item.sensoryNotes || ''}</p>
-                    ${item.adhdTip ? `<div class="dlp-adhd-box"><strong>ADHD & Queue Tip:</strong> ${item.adhdTip}</div>` : ''}
-                </article>
-            `).join('');
+            container.innerHTML = filtered.map(item => buildInteractiveRaterCard(item)).join('');
         };
 
         render();
@@ -278,17 +264,192 @@ async function loadDisneylandAttractions() {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                currentType = btn.getAttribute('data-filter');
+                currentFilter = btn.getAttribute('data-filter');
                 render();
             });
         });
 
-    } catch (e) {
-        console.warn('Disneyland load failure:', e);
+    } catch (err) {
+        container.innerHTML = `<p style="text-align:center; color:#bd2419;">Failed to load Disneyland guide: ${err.message}</p>`;
     }
 }
 
-/* --- 5. Theatres Directory --- */
+function buildInteractiveRaterCard(item) {
+    const saved = userCustomRatings[item.id] || {};
+    const speedVal = saved.speed !== undefined ? saved.speed : item.thrillLevel;
+    const fearVal = saved.fear !== undefined ? saved.fear : item.fearFactor;
+    const noiseVal = saved.noise !== undefined ? saved.noise : item.noiseLevel;
+    const darkVal = saved.dark !== undefined ? saved.dark : item.darkness;
+
+    return `
+    <article class="rater-card" id="card-${item.id}">
+        <div class="rater-card-left">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <h3>${item.name}</h3>
+                <span class="tag tag-age">${item.minHeight === 'None' ? 'All Heights' : item.minHeight}</span>
+            </div>
+            <span class="rater-park-tag"><i class="fa-solid fa-map-pin" style="color:var(--color-primary);"></i> ${item.park} • ${item.land}</span>
+            <p class="rater-desc-box">${item.sensoryNotes || ''}</p>
+            ${item.adhdTip ? `<div class="rater-adhd-box"><strong>ADHD Strategy:</strong> ${item.adhdTip}</div>` : ''}
+        </div>
+        <div class="rater-card-right">
+            <div class="metric-row">
+                <span class="metric-label">🚀 Speed / Thrill</span>
+                <div class="pill-picker">
+                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${speedVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'speed', ${val})">${val}</button>`).join('')}
+                </div>
+                <span class="baseline-tag">(Base: ${item.thrillLevel})</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">👻 Fear Factor</span>
+                <div class="pill-picker">
+                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${fearVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'fear', ${val})">${val}</button>`).join('')}
+                </div>
+                <span class="baseline-tag">(Base: ${item.fearFactor})</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">🔊 Noise Level</span>
+                <div class="pill-picker">
+                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${noiseVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'noise', ${val})">${val}</button>`).join('')}
+                </div>
+                <span class="baseline-tag">(Base: ${item.noiseLevel})</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">🌑 Darkness</span>
+                <div class="pill-picker">
+                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${darkVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'dark', ${val})">${val}</button>`).join('')}
+                </div>
+                <span class="baseline-tag">(Base: ${item.darkness})</span>
+            </div>
+        </div>
+    </article>`;
+}
+
+function setRatingPill(id, metric, value) {
+    if (!userCustomRatings[id]) {
+        const original = dlpAttractionsCache.find(a => a.id === id);
+        userCustomRatings[id] = {
+            name: original ? original.name : id,
+            speed: original ? original.thrillLevel : 3,
+            fear: original ? original.fearFactor : 3,
+            noise: original ? original.noiseLevel : 3,
+            dark: original ? original.darkness : 3
+        };
+    }
+    userCustomRatings[id][metric] = value;
+    localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
+
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+        const metricIndex = metric === 'speed' ? 0 : (metric === 'fear' ? 1 : (metric === 'noise' ? 2 : 3));
+        const row = card.querySelectorAll('.metric-row')[metricIndex];
+        if (row) {
+            row.querySelectorAll('.score-pill').forEach((pill, idx) => {
+                pill.classList.toggle('active', (idx + 1) === value);
+            });
+        }
+    }
+    updateCustomRatedCount();
+}
+
+function updateCustomRatedCount() {
+    const count = Object.keys(userCustomRatings).length;
+    const badge = document.getElementById('custom-rated-count');
+    if (badge) {
+        badge.textContent = `${count} Custom Rated`;
+    }
+}
+
+function saveRatingsToDevice() {
+    localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
+    alert('✅ Your personalized Disneyland Paris scores have been saved to this device!');
+}
+
+function openCommunityModal() {
+    const modal = document.getElementById('community-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCommunityModal() {
+    const modal = document.getElementById('community-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function handleCommunitySubmit() {
+    const name = (document.getElementById('dlp-user-name').value || 'BTMC Parent').trim();
+    const email = (document.getElementById('dlp-user-email').value || '').trim();
+    const optIn = document.getElementById('dlp-join-optin').checked;
+
+    const ratedEntries = Object.keys(userCustomRatings).map(id => {
+        const r = userCustomRatings[id];
+        return `${r.name || id} [Speed:${r.speed}, Fear:${r.fear}, Noise:${r.noise}, Dark:${r.dark}]`;
+    });
+
+    if (ratedEntries.length === 0) {
+        alert('Please rate at least 1 attraction before submitting!');
+        return;
+    }
+
+    const payloadText = `=== BTMC DLP COMMUNITY TRIP LOG ===\nSubmitter: ${name}\nRatings:\n` + ratedEntries.join('\n');
+    const optInStatus = optIn && email ? "Yes - Join Club" : "No - Anonymous";
+    const contactInfo = email ? `${name} (${email})` : `Anonymous Parent (${name})`;
+
+    document.getElementById('dlp_gform_optin').value = optInStatus;
+    document.getElementById('dlp_gform_contact').value = contactInfo;
+    document.getElementById('dlp_gform_diary').value = payloadText;
+    document.getElementById('native_dlp_form').submit();
+
+    closeCommunityModal();
+    alert(`🎉 Thank you, ${name}! Your family trip ratings have been submitted to our community database.`);
+}
+
+/* --- 5. What's On Directory --- */
+async function loadWhatsOnDirectory() {
+    const container = document.getElementById('whatson-list');
+    const searchInput = document.getElementById('whatson-search-input');
+    const typeFilter = document.getElementById('whatson-type-filter');
+    if (!container) return;
+
+    try {
+        const res = await fetch('data/whatson.json');
+        if (!res.ok) throw new Error('Could not load What\'s On');
+        const shows = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+
+        const activeShows = shows
+            .filter(s => !s.expiryDate || s.expiryDate >= today)
+            .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+
+        const render = () => {
+            const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const filterType = typeFilter ? typeFilter.value : 'all';
+
+            const filtered = activeShows.filter(s => {
+                const matchesText = `${s.title} ${s.venue} ${s.desc}`.toLowerCase().includes(q);
+                let matchesType = true;
+                if (filterType === 'touring') matchesType = !!s.isTouring;
+                if (filterType === 'west-midlands') matchesType = (s.region || '').toLowerCase().includes('midlands') || (s.venue || '').toLowerCase().includes('birmingham') || (s.venue || '').toLowerCase().includes('wolverhampton');
+                if (filterType === 'london') matchesType = (s.region || '').toLowerCase().includes('london') || (s.venue || '').toLowerCase().includes('london');
+                if (filterType === 'panto') matchesType = (s.category || '').toLowerCase() === 'panto';
+                return matchesText && matchesType;
+            });
+
+            container.innerHTML = filtered.length > 0
+                ? filtered.map(s => buildWhatsOnCardHTML(s)).join('')
+                : '<p style="text-align:center; color:#777; margin:30px 0;">No shows match your search criteria. Check back soon!</p>';
+        };
+
+        render();
+
+        if (searchInput) searchInput.addEventListener('input', render);
+        if (typeFilter) typeFilter.addEventListener('change', render);
+
+    } catch (e) {
+        console.warn('What\'s On fallback:', e);
+    }
+}
+
+/* --- 6. Theatre Directory --- */
 async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
     const searchInput = document.getElementById('theatre-search-input');
@@ -350,52 +511,6 @@ async function loadTheatreGuideDirectory() {
     }
 }
 
-/* --- 6. What's On Directory --- */
-async function loadWhatsOnDirectory() {
-    const container = document.getElementById('whatson-list');
-    const searchInput = document.getElementById('whatson-search-input');
-    const typeFilter = document.getElementById('whatson-type-filter');
-    if (!container) return;
-
-    try {
-        const res = await fetch('data/whatson.json');
-        if (!res.ok) throw new Error('Could not load What\'s On');
-        const shows = await res.json();
-        const today = new Date().toISOString().split('T')[0];
-
-        const activeShows = shows
-            .filter(s => !s.expiryDate || s.expiryDate >= today)
-            .sort((a, b) => (a.rank || 0) - (b.rank || 0));
-
-        const render = () => {
-            const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            const filterType = typeFilter ? typeFilter.value : 'all';
-
-            const filtered = activeShows.filter(s => {
-                const matchesText = `${s.title} ${s.venue} ${s.desc}`.toLowerCase().includes(q);
-                let matchesType = true;
-                if (filterType === 'touring') matchesType = !!s.isTouring;
-                if (filterType === 'west-midlands') matchesType = (s.region || '').toLowerCase().includes('midlands') || (s.venue || '').toLowerCase().includes('birmingham') || (s.venue || '').toLowerCase().includes('wolverhampton');
-                if (filterType === 'london') matchesType = (s.region || '').toLowerCase().includes('london') || (s.venue || '').toLowerCase().includes('london');
-                if (filterType === 'panto') matchesType = (s.category || '').toLowerCase() === 'panto';
-                return matchesText && matchesType;
-            });
-
-            container.innerHTML = filtered.length > 0
-                ? filtered.map(s => buildWhatsOnCardHTML(s)).join('')
-                : '<p style="text-align:center; color:#777; margin:30px 0;">No shows match your search criteria. Check back soon!</p>';
-        };
-
-        render();
-
-        if (searchInput) searchInput.addEventListener('input', render);
-        if (typeFilter) typeFilter.addEventListener('change', render);
-
-    } catch (e) {
-        console.warn('What\'s On fallback:', e);
-    }
-}
-
 /* --- 7. News Directory --- */
 async function loadNewsDirectory() {
     const container = document.getElementById('news-feed-list');
@@ -418,7 +533,7 @@ async function loadNewsDirectory() {
     }
 }
 
-/* --- 8. Seasonal Pantomime Directory --- */
+/* --- 8. Pantomime Directory --- */
 async function loadPantomimeDirectory() {
     const container = document.getElementById('panto-list');
     if (!container) return;
@@ -492,7 +607,7 @@ async function loadReviewsDirectory() {
     } catch (e) {}
 }
 
-/* --- 10. HTML Builders --- */
+/* --- 10. Card Builders --- */
 function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
