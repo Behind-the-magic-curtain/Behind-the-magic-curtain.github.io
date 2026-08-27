@@ -1204,3 +1204,102 @@ section {
         font-size: 0.88rem;
     }
 }
+/* -------------------------------------------------- */
+/* 15. Gated Download & Competition Gateway Modal     */
+/* -------------------------------------------------- */
+
+.btmc-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+}
+
+.btmc-gateway-card {
+    background: var(--color-bg-white);
+    border-radius: var(--radius-lg);
+    max-width: 520px;
+    width: 100%;
+    padding: 32px 24px;
+    box-shadow: var(--shadow-hover);
+    position: relative;
+    text-align: center;
+    border-top: 5px solid var(--color-primary);
+}
+
+.gateway-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #888;
+    cursor: pointer;
+}
+
+.gateway-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 24px 0;
+    text-align: left;
+}
+
+.gateway-step {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--color-border);
+}
+
+.gateway-step.completed {
+    border-color: var(--color-accent);
+    background: #e0f2f1;
+}
+
+.step-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.step-num {
+    background: var(--color-primary);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.gateway-step.completed .step-num {
+    background: var(--color-accent);
+}
+
+.gateway-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 50px;
+    border: 1.5px solid var(--color-border);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    margin-bottom: 12px;
+}
+
+.gateway-input:focus {
+    border-color: var(--color-accent);
+}
