@@ -149,7 +149,7 @@ hr {
 .site-header {
     background-color: var(--color-primary);
     color: var(--color-bg-white);
-    height: var(--header-height);
+    min-height: var(--header-height);
     display: flex;
     align-items: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
@@ -163,31 +163,54 @@ hr {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    max-width: 1400px; /* Expanded from 1040px to give full breathing room */
+    padding: 0 25px;
+    gap: 15px;
+}
+
+.logo {
+    flex-shrink: 0;
 }
 
 .logo a {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: clamp(1.15rem, 1.6vw, 1.45rem);
     color: var(--color-bg-white);
     font-weight: 800;
     letter-spacing: -0.5px;
+    white-space: nowrap; /* Ensures Behind the Magic Curtain NEVER breaks into 2 lines */
+    display: block;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
 }
 
 .main-nav ul {
     list-style: none;
     display: flex;
-    gap: 20px;
+    align-items: center;
+    gap: clamp(8px, 1.2vw, 18px); /* Fluid, tight spacing */
     margin: 0;
     padding: 0;
+    flex-wrap: nowrap; /* Prevents 2nd line wrapping */
+}
+
+.main-nav li {
+    margin: 0;
+    white-space: nowrap; /* Ensures 'What's On' and 'Tips for Parents' stay on 1 line */
 }
 
 .main-nav a {
     font-family: var(--font-subheading);
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: clamp(0.85rem, 0.95vw, 1rem); /* Dynamically scales down to fit screen size */
     color: var(--color-bg-white);
-    padding: 8px 4px;
+    padding: 6px 4px;
     border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    display: inline-block;
 }
 
 .main-nav a:hover,
@@ -837,10 +860,11 @@ section {
 }
 
 /* ---------------------------------- */
-/* 12. Mobile Responsive Rules        */
+/* 12. Mobile & Tablet Responsive Rules */
 /* ---------------------------------- */
 
-@media (max-width: 850px) {
+/* Clean switch to burger navigation before items wrap on mid-sized screens */
+@media (max-width: 1100px) {
     .site-header .container {
         position: relative;
     }
@@ -861,6 +885,7 @@ section {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         padding: 10px 20px 20px 20px;
         gap: 0;
+        align-items: flex-start;
     }
 
     .main-nav.nav-open ul {
@@ -875,6 +900,7 @@ section {
         display: block;
         padding: 14px 0;
         width: 100%;
+        font-size: 1.05rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
@@ -894,7 +920,9 @@ section {
     .nav-open .hamburger::after {
         transform: rotate(-45deg) translate(5px, -6px);
     }
+}
 
+@media (max-width: 850px) {
     /* Stack Complex Layouts */
     .card-grid {
         grid-template-columns: 1fr;
