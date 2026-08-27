@@ -338,7 +338,7 @@
             </div>
         </section>
 
-        <!-- Printable Tools Hub -->
+        <!-- Printable Tools Hub (Gated Action Links) -->
         <div class="container">
             <section class="dlp-tools-banner">
                 <div style="text-align: center; max-width: 680px; margin: 0 auto;">
@@ -350,13 +350,17 @@
                         <i class="fa-solid fa-clipboard-check"></i>
                         <h3>Rides & Sensory Checklist</h3>
                         <p>Traffic-light sensory guide with minimum heights, thrill ratings, and dark ride indicators.</p>
-                        <a href="dlp-rides-checklist.html" class="btn btn-secondary"><i class="fa-solid fa-eye"></i> View & Print Checklist</a>
+                        <button type="button" class="btn btn-secondary" onclick="triggerGatedDownload('dlp-rides-checklist.html', 'Disneyland Rides & Sensory Checklist')">
+                            <i class="fa-solid fa-download"></i> View & Print Checklist
+                        </button>
                     </div>
                     <div class="dlp-tool-card">
                         <i class="fa-solid fa-masks-theater"></i>
                         <h3>Shows & Parades Planner</h3>
                         <p>Seasonal performance schedules, live acoustics advisories, and optimal quiet viewing spots.</p>
-                        <a href="dlp-shows-guide.html" class="btn btn-secondary"><i class="fa-solid fa-eye"></i> View & Print Shows</a>
+                        <button type="button" class="btn btn-secondary" onclick="triggerGatedDownload('dlp-shows-guide.html', 'Disneyland Shows & Parades Planner')">
+                            <i class="fa-solid fa-download"></i> View & Print Shows
+                        </button>
                     </div>
                     <div class="dlp-tool-card">
                         <i class="fa-solid fa-sliders"></i>
@@ -396,7 +400,7 @@
         </section>
     </main>
 
-    <!-- Sticky Bottom Mobile Action Bar (Print Button Removed) -->
+    <!-- Sticky Bottom Mobile Action Bar -->
     <div id="sticky-rater-bar" class="sticky-rater-bar">
         <div class="sticky-bar-info">
             <span class="rated-counter-badge" id="custom-rated-count">0 Custom Rated</span>
