@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.7)
- * Resilient API Bridge, Drag-and-Drop Ordering, WebP Compression & Live Edit Handlers
+ * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.8)
+ * Resilient API Bridge, Drag-and-Drop Ordering, WebP Compression & Sensory Strategy Handlers
  */
 
 const MASTER_PIN = "3011";
@@ -854,9 +854,12 @@ async function fetchJsonFile(owner, repo, token, path) {
     const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
     });
+    if (res.status === 404) return [];
     if (!res.ok) throw new Error(`Could not load ${path} (Status: ${res.status})`);
     const data = await res.json();
-    return JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
+    const binaryString = atob(data.content.replace(/\s/g, ''));
+    const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+    return JSON.parse(new TextDecoder('utf-8').decode(bytes) || '[]');
 }
 
 async function commitGitHubFile(owner, repo, token, path, contentBase64, message) {
@@ -878,18 +881,16 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
     if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
 }
 
-
-
- function buildFullReviewPageHtml(d) {
+function buildFullReviewPageHtml(d) {
     const ratingPercent = (parseFloat(d.rating) / 5) * 100;
     let tags = `<span class="tag tag-age">${d.age}</span>`;
-    if (d.tags?.adhd) tags += `\n<span class="tag tag-adhd">Sensory-Friendly Guide</span>`;
+    if (d.tags?.adhd) tags += `\n<span class="tag tag-adhd">Sensory Strategy</span>`;
     if (d.tags?.sensory) tags += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
     if (d.tags?.mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
 
     let tipsSection = '';
     if (d.tips && d.tips.length > 0) {
-        tipsSection = `<article>\n<h3>Sensory & Parent Insights</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
+        tipsSection = `<article>\n<h3>Sensory Strategies & Parent Insights</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
     }
 
     let gallerySection = '';
@@ -914,11 +915,12 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
     const reviewSchema = JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Review",
-        "name": d.title,
+        "name": `${d.title} Sensory Review`,
         "reviewBody": d.summary,
         "author": {
             "@type": "Person",
-            "name": "Katy Rose Meaney"
+            "name": "Katy Rose Meaney",
+            "jobTitle": "Theatre Critic & Features Writer"
         },
         "itemReviewed": {
             "@type": "TheaterEvent",
@@ -939,7 +941,7 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
     <title>${d.title} Review & Sensory Guide | Behind the Magic Curtain</title>
     <meta name="description" content="${d.summary}">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="${d.title} Review & Sensory Guide">
+    <meta property="og:title" content="${d.title} Review & Sensory Guide | Behind the Magic Curtain">
     <meta property="og:description" content="${d.summary}">
     <meta property="og:image" content="images/${d.mainImage}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
