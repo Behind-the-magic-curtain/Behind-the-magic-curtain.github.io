@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.0)
- * Drag & Drop Tables, News Engine, Dynamic Nav Toggles & WebP Compressor
+ * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.1)
+ * Full CRUD, Table Managers, Edit Handlers & Drag-and-Drop Reordering
  */
 
 const MASTER_PIN = "3011";
@@ -14,6 +14,7 @@ let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneylan
 let draggedRowIndex = null;
 let toastTimeout = null;
 
+/* --- 1. PIN Security & Initialization --- */
 function unlockStudio() {
     const pin = document.getElementById('pin-input').value.trim();
     if (pin === MASTER_PIN) {
@@ -24,6 +25,7 @@ function unlockStudio() {
         loadManagementDashboard();
     } else {
         document.getElementById('pin-error').style.display = 'block';
+        document.getElementById('pin-input').value = '';
     }
 }
 
@@ -78,19 +80,18 @@ function setupDropZones() {
     });
 }
 
-function showToast(msg, isSuccess = true) {
+function showToast(msg, type = 'status-success') {
     const toast = document.getElementById('status-toast');
     if (!toast) return;
     if (toastTimeout) clearTimeout(toastTimeout);
-    toast.style.display = 'block';
-    toast.style.background = isSuccess ? '#e8f5e9' : '#ffebee';
-    toast.style.color = isSuccess ? '#2e7d32' : '#c62828';
-    toast.style.border = `1px solid ${isSuccess ? '#a5d6a7' : '#ef9a9a'}`;
+    toast.className = type;
     toast.innerHTML = msg;
-    toastTimeout = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+    if (type !== 'status-loading') {
+        toastTimeout = setTimeout(() => { toast.className = ''; toast.style.display = 'none'; }, 3500);
+    }
 }
 
-/* --- WebP Compressor --- */
+/* --- 2. WebP Image Compressor --- */
 async function processAndCompressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -167,7 +168,235 @@ function syncNewsSlug() {
     document.getElementById('news-slug').value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '.html';
 }
 
-/* --- What's On Submission with Touring & Region --- */
+/* --- 3. Edit Dispatchers --- */
+function enterEditReview(id) {
+    const item = currentCache.reviews.find(r => r.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `Review: ${item.title}`;
+
+    switchAdminTab('tab-reviews', document.querySelector('.admin-nav-tabs button:nth-child(1)'));
+    document.getElementById('rev-edit-id').value = item.id;
+    document.getElementById('rev-title').value = item.title || '';
+    document.getElementById('rev-slug').value = item.slug || '';
+    document.getElementById('rev-subtitle').value = item.subtitle || '';
+    document.getElementById('rev-rating').value = item.rating || '5.0';
+    document.getElementById('rev-age').value = item.age || 'Ages 7+';
+    document.getElementById('tag-adhd').checked = !!item.tags?.adhd;
+    document.getElementById('tag-sensory').checked = !!item.tags?.sensory;
+    document.getElementById('tag-mature').checked = !!item.tags?.mature;
+    document.getElementById('rev-image-alt').value = item.altText || '';
+    document.getElementById('rev-summary').value = item.summary || '';
+    document.getElementById('wysiwyg-content').innerHTML = item.bodyHtml || '<p></p>';
+    document.getElementById('rev-tips').value = (item.tips || []).join('\n');
+    document.getElementById('rev-published').checked = item.status === 'published';
+    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
+
+    reviewImages = [];
+    if (item.mainImage) reviewImages.push({ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` });
+    if (item.galleryImages && Array.isArray(item.galleryImages)) {
+        item.galleryImages.forEach(gImg => reviewImages.push({ base64: null, name: gImg, preview: `images/${gImg}` }));
+    }
+    renderImagePreviews('review');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function enterEditWhatsOn(id) {
+    const item = currentCache.whatson.find(w => w.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `What's On: ${item.title}`;
+
+    switchAdminTab('tab-whatson', document.querySelectorAll('.admin-nav-tabs button')[1]);
+    document.getElementById('wo-edit-id').value = item.id;
+    document.getElementById('wo-title').value = item.title || '';
+    document.getElementById('wo-venue').value = item.venue || '';
+    document.getElementById('wo-region').value = item.region || '';
+    document.getElementById('wo-dates').value = item.dates || '';
+    document.getElementById('wo-expiry').value = item.expiryDate || '';
+    document.getElementById('wo-runtime').value = item.runtime || '';
+    document.getElementById('wo-age').value = item.age || 'Ages 4+';
+    document.getElementById('wo-category').value = item.category || 'theatre';
+    document.getElementById('wo-is-touring').checked = !!item.isTouring;
+    document.getElementById('wo-desc').value = item.desc || '';
+    document.getElementById('wo-ticket-link').value = item.ticketLink || '';
+    document.getElementById('wo-site-link').value = item.siteLink || '';
+    document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Show';
+
+    if (item.image) {
+        whatsonImages = [{ base64: null, name: item.image, preview: `images/${item.image}` }];
+        renderImagePreviews('whatson');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function enterEditTheatre(id) {
+    const item = currentCache.theatres.find(t => t.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `Theatre: ${item.name}`;
+
+    switchAdminTab('tab-theatres', document.querySelectorAll('.admin-nav-tabs button')[2]);
+    document.getElementById('th-edit-id').value = item.id;
+    document.getElementById('th-name').value = item.name || '';
+    document.getElementById('th-location').value = item.location || '';
+    document.getElementById('th-website').value = item.website || '';
+    document.getElementById('th-access').value = item.accessibility || '';
+    document.getElementById('th-relaxed').value = item.relaxed || '';
+    document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Theatre';
+
+    if (item.image) {
+        theatreImages = [{ base64: null, name: item.image, preview: `images/${item.image}` }];
+        renderImagePreviews('theatre');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function enterEditNews(id) {
+    const item = currentCache.news.find(n => n.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `News: ${item.title}`;
+
+    switchAdminTab('tab-news', document.querySelectorAll('.admin-nav-tabs button')[3]);
+    document.getElementById('news-edit-id').value = item.id;
+    document.getElementById('news-title').value = item.title || '';
+    document.getElementById('news-slug').value = item.slug || '';
+    document.getElementById('news-category').value = item.category || 'Theatre News';
+    document.getElementById('news-author').value = item.author || 'Katy Rose Meaney';
+    document.getElementById('news-summary').value = item.summary || '';
+    document.getElementById('news-body').value = item.bodyHtml || '';
+    document.getElementById('news-published').checked = item.status === 'published';
+    document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story';
+
+    if (item.mainImage) {
+        newsImages = [{ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
+        renderImagePreviews('news');
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function enterEditDisneyland(id) {
+    const item = currentCache.disneyland.find(d => d.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `Disneyland: ${item.name}`;
+
+    switchAdminTab('tab-disneyland', document.querySelectorAll('.admin-nav-tabs button')[4]);
+    document.getElementById('dlp-edit-id').value = item.id;
+    document.getElementById('dlp-name').value = item.name || '';
+    document.getElementById('dlp-park').value = item.park || 'Disneyland Park';
+    document.getElementById('dlp-land').value = item.land || '';
+    document.getElementById('dlp-type').value = item.type || 'Ride';
+    document.getElementById('dlp-height').value = item.minHeight || 'None';
+    document.getElementById('dlp-speed').value = item.thrillLevel || 3;
+    document.getElementById('dlp-fear').value = item.fearFactor || 3;
+    document.getElementById('dlp-noise').value = item.noiseLevel || 3;
+    document.getElementById('dlp-darkness').value = item.darkness || 3;
+    document.getElementById('dlp-notes').value = item.sensoryNotes || '';
+    document.getElementById('dlp-adhd').value = item.adhdTip || '';
+    document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Baseline';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function cancelEditMode() {
+    editMode = false;
+    document.getElementById('edit-banner').style.display = 'none';
+    document.querySelectorAll('form').forEach(f => f.reset());
+
+    document.getElementById('rev-edit-id').value = '';
+    document.getElementById('wo-edit-id').value = '';
+    document.getElementById('th-edit-id').value = '';
+    document.getElementById('news-edit-id').value = '';
+    document.getElementById('dlp-edit-id').value = '';
+
+    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Review';
+    document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save What\'s On Show';
+    document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry';
+    document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story';
+    document.getElementById('dlp-submit-btn').innerHTML = 'Save Disneyland Baseline';
+
+    document.getElementById('wysiwyg-content').innerHTML = '';
+    reviewImages = [];
+    theatreImages = [];
+    whatsonImages = [];
+    newsImages = [];
+    renderImagePreviews('review');
+    renderImagePreviews('theatre');
+    renderImagePreviews('whatson');
+    renderImagePreviews('news');
+}
+
+/* --- 4. Submissions --- */
+async function handleReviewSubmit() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    const title = document.getElementById('rev-title').value.trim();
+    const slug = document.getElementById('rev-slug').value.trim();
+    const editId = document.getElementById('rev-edit-id').value;
+    const isPublished = document.getElementById('rev-published').checked;
+
+    showToast('⏳ Uploading and saving review...', 'status-loading');
+
+    try {
+        for (let item of reviewImages) {
+            if (item.base64) {
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, item.base64, `Upload image: ${item.name}`);
+            }
+        }
+
+        const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
+        const galleryList = reviewImages.slice(1).map(img => img.name);
+
+        const reviewEntry = {
+            id: editId || 'rev_' + Date.now(),
+            title,
+            slug,
+            subtitle: document.getElementById('rev-subtitle').value.trim(),
+            rating: parseFloat(document.getElementById('rev-rating').value) || 5.0,
+            age: document.getElementById('rev-age').value,
+            tags: {
+                adhd: document.getElementById('tag-adhd').checked,
+                sensory: document.getElementById('tag-sensory').checked,
+                mature: document.getElementById('tag-mature').checked
+            },
+            mainImage: reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.webp' : 'placeholder.webp'),
+            galleryImages: galleryList,
+            altText: document.getElementById('rev-image-alt').value.trim(),
+            summary: document.getElementById('rev-summary').value.trim(),
+            bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
+            tips: document.getElementById('rev-tips').value.split('\n').filter(t => t.trim()),
+            rank: editId ? (reviews.find(r => r.id === editId)?.rank || 1) : 1,
+            status: isPublished ? 'published' : 'draft'
+        };
+
+        const updatedReviews = editId ? reviews.map(r => r.id === editId ? reviewEntry : r) : [reviewEntry, ...reviews];
+        updatedReviews.forEach((r, idx) => r.rank = idx + 1);
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews (${title})`);
+
+        const pageHtml = buildFullReviewPageHtml(reviewEntry);
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish page: ${title}`);
+
+        showToast(`🎉 Successfully saved "${title}"!`, 'status-success');
+        cancelEditMode();
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ Error: ${err.message}`, 'status-error');
+    }
+}
+
 async function handleWhatsOnSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -175,9 +404,10 @@ async function handleWhatsOnSubmit() {
     const editId = document.getElementById('wo-edit-id').value;
     const title = document.getElementById('wo-title').value.trim();
 
+    showToast('⏳ Saving What\'s On show...', 'status-loading');
     try {
         if (whatsonImages.length > 0 && whatsonImages[0].base64) {
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${whatsonImages[0].name}`, whatsonImages[0].base64, `Upload What's On image: ${whatsonImages[0].name}`);
+            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${whatsonImages[0].name}`, whatsonImages[0].base64, `Upload show image: ${whatsonImages[0].name}`);
         }
 
         const shows = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
@@ -188,6 +418,7 @@ async function handleWhatsOnSubmit() {
             region: document.getElementById('wo-region').value.trim() || 'West Midlands',
             dates: document.getElementById('wo-dates').value.trim(),
             expiryDate: document.getElementById('wo-expiry').value,
+            runtime: document.getElementById('wo-runtime').value.trim(),
             age: document.getElementById('wo-age').value,
             category: document.getElementById('wo-category').value,
             isTouring: document.getElementById('wo-is-touring').checked,
@@ -202,15 +433,51 @@ async function handleWhatsOnSubmit() {
         updated.forEach((w, idx) => w.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/whatson.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save What's On: ${title}`);
-        showToast(`✅ Successfully saved "${title}"!`);
+        showToast(`✅ Successfully saved "${title}"!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
-        showToast(`❌ Error: ${err.message}`, false);
+        showToast(`❌ Error: ${err.message}`, 'status-error');
     }
 }
 
-/* --- News Engine with Schema.org & Discover Optimization --- */
+async function handleTheatreSubmit() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    const editId = document.getElementById('th-edit-id').value;
+    const name = document.getElementById('th-name').value.trim();
+
+    showToast('⏳ Saving Theatre Guide...', 'status-loading');
+    try {
+        if (theatreImages.length > 0 && theatreImages[0].base64) {
+            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${theatreImages[0].name}`, theatreImages[0].base64, `Upload theatre photo: ${theatreImages[0].name}`);
+        }
+
+        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        const entry = {
+            id: editId || 'th_' + Date.now(),
+            name,
+            location: document.getElementById('th-location').value.trim(),
+            image: theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.webp' : 'theatre-default.webp'),
+            website: document.getElementById('th-website').value.trim(),
+            accessibility: document.getElementById('th-access').value.trim(),
+            relaxed: document.getElementById('th-relaxed').value.trim(),
+            rank: editId ? (theatres.find(t => t.id === editId)?.rank || 1) : theatres.length + 1
+        };
+
+        const updatedTheatres = editId ? theatres.map(t => t.id === editId ? entry : t) : [...theatres, entry];
+        updatedTheatres.forEach((t, idx) => t.rank = idx + 1);
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/theatres.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedTheatres, null, 2)))), `Save theatre: ${name}`);
+        showToast(`✅ Successfully saved "${name}"!`, 'status-success');
+        cancelEditMode();
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ Error: ${err.message}`, 'status-error');
+    }
+}
+
 async function handleNewsSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -220,6 +487,7 @@ async function handleNewsSubmit() {
     const slug = document.getElementById('news-slug').value.trim();
     const nowIso = new Date().toISOString();
 
+    showToast('⏳ Publishing News Story...', 'status-loading');
     try {
         if (newsImages.length > 0 && newsImages[0].base64) {
             await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${newsImages[0].name}`, newsImages[0].base64, `Upload news image: ${newsImages[0].name}`);
@@ -247,98 +515,266 @@ async function handleNewsSubmit() {
         updated.forEach((n, idx) => n.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
-
-        const pageHtml = buildFullNewsArticleHtml(entry);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news article page: ${title}`);
-
-        showToast(`🎉 News story published and indexed for Discover!`);
+        showToast(`🎉 News story published!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
-        showToast(`❌ News error: ${err.message}`, false);
+        showToast(`❌ News error: ${err.message}`, 'status-error');
     }
 }
 
-function buildFullNewsArticleHtml(n) {
-    const formattedDate = new Date(n.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-    const schemaJson = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        "headline": n.title,
-        "image": [`https://behindthemagiccurtain.co.uk/images/${n.mainImage}`],
-        "datePublished": n.datePublished,
-        "dateModified": n.dateModified,
-        "author": [{
-            "@type": "Person",
-            "name": n.author,
-            "url": "https://behindthemagiccurtain.co.uk"
-        }],
-        "publisher": {
-            "@type": "Organization",
-            "name": "Behind the Magic Curtain",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "https://behindthemagiccurtain.co.uk/images/logo.png"
-            }
-        },
-        "description": n.summary
-    });
+async function handleDisneylandSubmit() {
+    const creds = getCredentials();
+    if (!creds) return;
 
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${n.title} | Behind the Magic Curtain News</title>
-    <meta name="description" content="${n.summary}">
-    <meta name="robots" content="max-image-preview:large">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="${n.title}">
-    <meta property="og:description" content="${n.summary}">
-    <meta property="og:image" content="images/${n.mainImage}">
-    <link rel="canonical" href="https://behindthemagiccurtain.co.uk/${n.slug}">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script type="application/ld+json">
-    ${schemaJson}
-    <\/script>
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
-            <nav class="main-nav">
-                <button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
-                <ul></ul>
-            </nav>
-        </div>
-    </header>
-    <main>
-        <section class="page-header">
-            <div class="container">
-                <span class="tag" style="background:var(--color-accent); margin-bottom:12px; display:inline-block;">${n.category}</span>
-                <h1>${n.title}</h1>
-                <p style="font-size:0.95rem; color:#666; margin-top:10px;">By <strong>${n.author}</strong> • <time datetime="${n.datePublished}">${formattedDate}</time></p>
-            </div>
-        </section>
-        <section class="page-content">
-            <div class="container content-article">
-                <img src="images/${n.mainImage}" alt="${n.title}" class="review-main-image" loading="lazy">
-                <p class="review-subtitle" style="font-size:1.2rem; font-weight:600; color:#333; margin-bottom:25px;">${n.summary}</p>
-                ${n.bodyHtml}
-                <div style="margin-top:40px; padding-top:20px; border-top:1px solid #e0e0e0;">
-                    <a href="news.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to News Feed</a>
-                </div>
-            </div>
-        </section>
-    </main>
-    <footer class="site-footer"><div class="container"></div></footer>
-    <script src="script.js"><\/script>
-</body>
-</html>`;
+    const editId = document.getElementById('dlp-edit-id').value;
+    const name = document.getElementById('dlp-name').value.trim();
+
+    showToast('⏳ Saving Disneyland Baseline...', 'status-loading');
+    try {
+        const dlpData = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        const entry = {
+            id: editId || 'dlp_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+            name,
+            park: document.getElementById('dlp-park').value,
+            land: document.getElementById('dlp-land').value.trim(),
+            type: document.getElementById('dlp-type').value,
+            minHeight: document.getElementById('dlp-height').value.trim() || 'None',
+            thrillLevel: parseInt(document.getElementById('dlp-speed').value),
+            fearFactor: parseInt(document.getElementById('dlp-fear').value),
+            noiseLevel: parseInt(document.getElementById('dlp-noise').value),
+            darkness: parseInt(document.getElementById('dlp-darkness').value),
+            sensoryNotes: document.getElementById('dlp-notes').value.trim(),
+            adhdTip: document.getElementById('dlp-adhd').value.trim()
+        };
+
+        const updatedDlp = editId ? dlpData.map(d => d.id === editId ? entry : d) : [...dlpData, entry];
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedDlp, null, 2)))), `Save Disneyland Baseline: ${name}`);
+        showToast(`✅ Updated "${name}" in Disneyland Database!`, 'status-success');
+        cancelEditMode();
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ Error: ${err.message}`, 'status-error');
+    }
 }
 
-/* --- Nav Switchboard --- */
+/* --- 5. Dashboard Table Managers --- */
+async function loadManagementDashboard() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    try {
+        const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
+        currentCache.reviews = reviews.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
+    } catch (err) {
+        const c = document.getElementById('manage-reviews-table-container');
+        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
+    }
+
+    try {
+        const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
+        currentCache.whatson = whatson.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
+    } catch (err) {
+        const c = document.getElementById('manage-whatson-table-container');
+        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
+    }
+
+    try {
+        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        currentCache.theatres = theatres.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
+    } catch (err) {
+        const c = document.getElementById('manage-theatres-table-container');
+        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
+    }
+
+    try {
+        const news = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
+        currentCache.news = news.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('news', 'manage-news-table-container', currentCache.news);
+    } catch (err) {
+        const c = document.getElementById('manage-news-table-container');
+        if (c) c.innerHTML = `<p style="color:#666;">No news data found.</p>`;
+    }
+
+    try {
+        const dlp = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        currentCache.disneyland = dlp;
+        renderDisneylandTable(currentCache.disneyland);
+    } catch (err) {
+        const c = document.getElementById('manage-disneyland-table-container');
+        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
+    }
+
+    loadNavToggles();
+}
+
+function renderDisneylandTable(items) {
+    const container = document.getElementById('manage-disneyland-table-container');
+    if (!container) return;
+
+    if (items.length === 0) {
+        container.innerHTML = `<p style="color:#666;">No Disneyland Paris entries found.</p>`;
+        return;
+    }
+
+    let html = `
+        <table class="crud-table">
+            <thead>
+                <tr>
+                    <th>Attraction / Show</th>
+                    <th>Park & Land</th>
+                    <th>Scores (Speed / Fear / Noise / Dark)</th>
+                    <th style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    items.forEach((item) => {
+        html += `
+            <tr>
+                <td><strong>${item.name}</strong> <span style="font-size:0.8rem; color:#888;">(${item.type || 'Ride'})</span></td>
+                <td>${item.park} - ${item.land}</td>
+                <td>
+                    <span style="font-size:0.85rem; color:#444; font-weight:600;">
+                        🚀 ${item.thrillLevel || 1}/5 &nbsp;|&nbsp; 👻 ${item.fearFactor || 1}/5 &nbsp;|&nbsp; 🔊 ${item.noiseLevel || 1}/5 &nbsp;|&nbsp; 🌑 ${item.darkness || 1}/5
+                    </span>
+                </td>
+                <td>
+                    <button type="button" class="btn-edit" onclick="enterEditDisneyland('${item.id}')">
+                        <i class="fa-solid fa-pen"></i> Edit Baseline
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function renderDraggableTable(type, containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (items.length === 0) {
+        container.innerHTML = `<p style="color:#666; padding:15px 0;">No ${type} entries found.</p>`;
+        return;
+    }
+
+    let tableHtml = `
+        <table class="crud-table" id="table-${type}">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Rank</th>
+                    <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
+                    ${type === 'reviews' ? '<th style="width: 160px;">Position / Slot</th>' : ''}
+                    ${type === 'whatson' ? '<th>Venue</th><th>End Date</th>' : ''}
+                    ${type === 'theatres' ? '<th>City / Location</th>' : ''}
+                    ${type === 'news' ? '<th>Category</th><th>Date</th>' : ''}
+                    ${type === 'reviews' || type === 'news' ? '<th style="width: 110px;">Status</th>' : ''}
+                    <th style="width: 180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    items.forEach((item, index) => {
+        tableHtml += `
+            <tr class="draggable-row" draggable="true" data-type="${type}" data-index="${index}">
+                <td>
+                    <span class="grab-handle"><i class="fa-solid fa-bars"></i></span>
+                    <span class="rank-badge">#${index + 1}</span>
+                </td>
+                <td><strong>${item.title || item.name}</strong></td>
+                ${type === 'reviews' ? `<td>${index < 3 ? `<span class="badge-featured">Homepage #${index+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory only</span>'}</td>` : ''}
+                ${type === 'whatson' ? `<td>${item.venue}</td><td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>` : ''}
+                ${type === 'theatres' ? `<td>${item.location}</td>` : ''}
+                ${type === 'news' ? `<td>${item.category || 'News'}</td><td>${(item.datePublished || '').substring(0, 10)}</td>` : ''}
+                ${type === 'reviews' || type === 'news' ? `<td><span class="badge-status" style="background:${item.status==='published'?'#2e7d32':'#757575'}">${item.status}</span></td>` : ''}
+                <td>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="btn-edit" onclick="${type === 'reviews' ? `enterEditReview('${item.id}')` : (type === 'whatson' ? `enterEditWhatsOn('${item.id}')` : (type === 'theatres' ? `enterEditTheatre('${item.id}')` : `enterEditNews('${item.id}')`))}"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button type="button" class="btn-delete" onclick="deleteItem('${type}', '${item.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    container.innerHTML = tableHtml;
+
+    attachDragEventListeners(type);
+}
+
+function attachDragEventListeners(type) {
+    const table = document.getElementById(`table-${type}`);
+    if (!table) return;
+
+    const rows = table.querySelectorAll('.draggable-row');
+    rows.forEach(row => {
+        row.addEventListener('dragstart', (e) => {
+            draggedRowIndex = parseInt(row.getAttribute('data-index'));
+            row.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        row.addEventListener('dragend', () => {
+            row.classList.remove('dragging');
+            table.querySelectorAll('.draggable-row').forEach(r => r.classList.remove('drag-over'));
+        });
+
+        row.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            row.classList.add('drag-over');
+        });
+
+        row.addEventListener('dragleave', () => {
+            row.classList.remove('drag-over');
+        });
+
+        row.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            row.classList.remove('drag-over');
+            const targetIndex = parseInt(row.getAttribute('data-index'));
+
+            if (draggedRowIndex !== null && draggedRowIndex !== targetIndex) {
+                const list = currentCache[type];
+                const [movedItem] = list.splice(draggedRowIndex, 1);
+                list.splice(targetIndex, 0, movedItem);
+
+                list.forEach((item, idx) => item.rank = idx + 1);
+                
+                showToast(`⏳ Saving new ${type} order...`, 'status-loading');
+                const creds = getCredentials();
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `data/${type}.json`, btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), `Re-order ${type}`);
+                showToast(`✅ ${type} order updated!`, 'status-success');
+                loadManagementDashboard();
+            }
+        });
+    });
+}
+
+async function deleteItem(type, id) {
+    if (!confirm('Are you sure you want to delete this entry?')) return;
+    const creds = getCredentials();
+    const file = `data/${type}.json`;
+    let data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
+    data = data.filter(item => item.id !== id);
+    data.forEach((item, idx) => item.rank = idx + 1);
+    
+    await commitGitHubFile(creds.owner, creds.repo, creds.token, file, btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), `Delete from ${type}`);
+    showToast('✅ Entry deleted successfully!', 'status-success');
+    loadManagementDashboard();
+}
+
+/* --- 6. Navigation Switchboard --- */
 async function loadNavToggles() {
     const creds = getCredentials();
     if (!creds) return;
@@ -346,6 +782,7 @@ async function loadNavToggles() {
         const navData = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/navigation.json');
         currentCache.nav = navData.items || [];
         const container = document.getElementById('nav-toggle-list');
+        if (!container) return;
         container.innerHTML = currentCache.nav.map((item, idx) => `
             <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
                 <div>
@@ -374,20 +811,20 @@ async function saveNavToggles() {
 
     try {
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/navigation.json', btoa(unescape(encodeURIComponent(JSON.stringify({ items: currentCache.nav }, null, 2)))), 'Update Header Navigation Toggles');
-        showToast('✅ Navigation switchboard updated live!');
+        showToast('✅ Navigation switchboard updated live!', 'status-success');
     } catch (e) {
-        showToast('❌ Failed to update navigation', false);
+        showToast('❌ Failed to update navigation', 'status-error');
     }
 }
 
-/* --- Settings, Fetch & Commit Bridges --- */
+/* --- 7. Settings & GitHub REST Bridge --- */
 function getCredentials() {
     const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
     const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
     const token = (localStorage.getItem('btmc_gh_token') || '').trim();
     if (!owner || !repo || !token) {
         toggleSettingsModal();
-        showToast('⚠️ Configure GitHub token settings first.', false);
+        showToast('⚠️ Configure GitHub token settings first.', 'status-error');
         return null;
     }
     return { owner, repo, token };
@@ -397,8 +834,9 @@ function saveSettings() {
     localStorage.setItem('btmc_gh_owner', document.getElementById('gh-owner').value.trim());
     localStorage.setItem('btmc_gh_repo', document.getElementById('gh-repo').value.trim());
     localStorage.setItem('btmc_gh_token', document.getElementById('gh-token').value.trim());
-    showToast('✅ Configuration saved!');
+    showToast('✅ GitHub configuration saved!', 'status-success');
     toggleSettingsModal();
+    loadManagementDashboard();
 }
 
 function loadSettings() {
@@ -437,15 +875,89 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
         body: JSON.stringify({ message, content: contentBase64, ...(sha && { sha }) })
     });
-    if (!res.ok) throw new Error(`GitHub commit error: ${res.statusText}`);
+    if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
 }
 
-async function loadManagementDashboard() {
-    loadNavToggles();
-}
+function buildFullReviewPageHtml(d) {
+    const ratingPercent = (parseFloat(d.rating) / 5) * 100;
+    let tags = `<span class="tag tag-age">${d.age}</span>`;
+    if (d.tags?.adhd) tags += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+    if (d.tags?.sensory) tags += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
+    if (d.tags?.mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
 
-function cancelEditMode() {
-    editMode = false;
-    document.getElementById('edit-banner').style.display = 'none';
-    document.querySelectorAll('form').forEach(f => f.reset());
+    let tipsSection = '';
+    if (d.tips && d.tips.length > 0) {
+        tipsSection = `<article>\n<h3>Key Info for Parents</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
+    }
+
+    let gallerySection = '';
+    if (d.galleryImages && Array.isArray(d.galleryImages) && d.galleryImages.length > 0) {
+        gallerySection = `
+        <div class="review-gallery">
+            <h2>Production Gallery</h2>
+            <div class="swiper review-swiper">
+                <div class="swiper-wrapper">
+                    ${d.galleryImages.map(imgName => `
+                    <div class="swiper-slide">
+                        <img src="images/${imgName}" alt="Production scene from ${d.title}" loading="lazy">
+                    </div>`).join('\n')}
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev" aria-label="Previous slide"></div>
+                <div class="swiper-button-next" aria-label="Next slide"></div>
+            </div>
+        </div>`;
+    }
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review: ${d.title} | Behind the Magic Curtain</title>
+    <meta name="description" content="${d.summary}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Review: ${d.title} | Behind the Magic Curtain">
+    <meta property="og:description" content="${d.summary}">
+    <meta property="og:image" content="images/${d.mainImage}">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
+            <nav class="main-nav"><button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
+                <ul></ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="review-header page-header">
+            <div class="container">
+                <h1>${d.title}</h1>
+                <p class="review-subtitle">${d.subtitle}</p>
+                <div class="star-rating" role="img" aria-label="Rated ${d.rating} out of 5 stars">
+                    <div class="stars-empty"><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>
+                    <div class="stars-full" style="width: ${ratingPercent}%;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+                <div class="card-tags">${tags}</div>
+            </div>
+        </section>
+        <section class="page-content">
+            <div class="container content-article">
+                <img src="images/${d.mainImage}" alt="${d.altText}" class="review-main-image" loading="lazy">
+                <h2>Our Family Verdict</h2>
+                ${d.bodyHtml}
+                ${gallerySection}
+                ${tipsSection}
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer"><div class="container"></div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"><\/script>
+    <script src="script.js"><\/script>
+</body>
+</html>`;
 }
