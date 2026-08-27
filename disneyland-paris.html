@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Disneyland Paris Sensory & ADHD Guide | Behind the Magic Curtain</title>
-    <meta name="description" content="Interactive parent sensory rater, ADHD queue strategies, printable ride checklists, and sensory guides for every attraction at Disneyland Paris.">
+    <meta name="description" content="Interactive parent sensory rater, ADHD queue strategies, printable checklists, and sensory guides for every attraction at Disneyland Paris.">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Disneyland Paris Sensory & ADHD Guide | Behind the Magic Curtain">
-    <meta property="og:description" content="Rate attractions, compare family sensory needs, and download free printable Disneyland Paris planners.">
+    <meta property="og:description" content="Rate attractions, customize sensory profiles, and download free printable Disneyland Paris planners.">
     <meta property="og:image" content="images/dlp-castle.webp">
     
-    <!-- Google Brand Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
@@ -37,7 +36,6 @@
             margin: 0 auto;
         }
 
-        /* Printable Tools Download Hub */
         .dlp-tools-banner {
             background: #ffffff;
             border: 2px dashed var(--color-accent, #00838f);
@@ -86,7 +84,6 @@
             flex-grow: 1;
         }
 
-        /* Interactive Filter Bar */
         .rater-controls-bar {
             display: flex;
             gap: 15px;
@@ -123,12 +120,11 @@
             flex-wrap: wrap;
         }
 
-        /* Interactive Attraction Rater Cards */
         .rater-container {
             display: flex;
             flex-direction: column;
             gap: 24px;
-            margin-bottom: 100px;
+            margin-bottom: 110px;
         }
         .rater-card {
             background: #ffffff;
@@ -137,7 +133,7 @@
             padding: 24px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             display: grid;
-            grid-template-columns: 1.2fr 1.8fr;
+            grid-template-columns: 1.15fr 1.85fr;
             gap: 25px;
             transition: border-color 0.25s, box-shadow 0.25s;
         }
@@ -175,7 +171,7 @@
             line-height: 1.45;
         }
 
-        /* Interactive Rating Dial Sliders */
+        /* Mobile-Friendly Full-Width Sliders */
         .rater-card-right {
             display: flex;
             flex-direction: column;
@@ -184,58 +180,60 @@
             padding: 18px 20px;
             border-radius: 10px;
             border: 1px solid #edf2f7;
+            gap: 14px;
         }
-        .metric-row {
-            display: grid;
-            grid-template-columns: 110px 1fr 60px;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-        .metric-row:last-child {
-            margin-bottom: 0;
-        }
-        .metric-label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #334155;
+        .slider-group {
             display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .pill-picker {
-            display: flex;
+            flex-direction: column;
             gap: 4px;
         }
-        .score-pill {
-            flex: 1;
-            height: 28px;
-            border: 1px solid #cbd5e1;
-            background: #ffffff;
-            border-radius: 4px;
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #334155;
+        }
+        .slider-val-badge {
+            background: var(--color-primary);
+            color: #ffffff;
             font-size: 0.78rem;
             font-weight: 700;
-            color: #64748b;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .custom-range-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #cbd5e1;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
         }
-        .score-pill:hover {
-            border-color: var(--color-primary);
-            color: var(--color-primary);
-        }
-        .score-pill.active {
+        .custom-range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
             background: var(--color-primary);
-            border-color: var(--color-primary);
-            color: #ffffff;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            cursor: pointer;
+            transition: transform 0.15s ease;
         }
-        .baseline-tag {
-            font-size: 0.75rem;
+        .custom-range-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        .slider-legend {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
             color: #64748b;
-            text-align: right;
-            white-space: nowrap;
+            font-weight: 600;
         }
 
         /* Sticky Bottom Quick-Bar */
@@ -263,17 +261,16 @@
             background: var(--color-secondary);
             color: #111;
             font-weight: 800;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
         }
         .sticky-bar-actions {
             display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 12px;
         }
 
-        /* Community Submission Modal */
+        /* Community Modal */
         .dlp-modal-backdrop {
             position: fixed;
             inset: 0;
@@ -300,23 +297,16 @@
                 grid-template-columns: 1fr;
                 gap: 16px;
             }
-            .metric-row {
-                grid-template-columns: 90px 1fr 45px;
-                gap: 8px;
-            }
             .sticky-rater-bar {
-                flex-direction: column;
-                gap: 10px;
                 padding: 12px 16px;
             }
             .sticky-bar-actions {
-                width: 100%;
-                justify-content: space-between;
+                flex: 1;
+                justify-content: flex-end;
             }
             .sticky-bar-actions .btn {
-                flex: 1;
-                padding: 8px 10px;
-                font-size: 0.82rem;
+                padding: 8px 14px;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -341,7 +331,6 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
         <section class="dlp-hero">
             <div class="container">
                 <h1>Disneyland Paris Sensory Guide</h1>
@@ -349,7 +338,7 @@
             </div>
         </section>
 
-        <!-- Download & Printable Tools Hub -->
+        <!-- Printable Tools Hub -->
         <div class="container">
             <section class="dlp-tools-banner">
                 <div style="text-align: center; max-width: 680px; margin: 0 auto;">
@@ -384,24 +373,22 @@
             <div class="container">
                 <div style="text-align: center; max-width: 760px; margin: 0 auto 30px auto;">
                     <h2>Interactive Family Attraction Rater</h2>
-                    <p>Adjust the scores (1–5) to match your family's personal sensory experience. Your ratings save directly to your browser and can be shared or exported anytime.</p>
+                    <p>Use the sliders (1–5) to customize scores for your family's sensory profile. <strong>Scale: 1 = Gentle / Low Sensory &bull; 5 = Intense / Loud / Dark.</strong></p>
                 </div>
 
-                <!-- Controls & Filters -->
                 <div class="rater-controls-bar">
                     <div class="rater-search-wrap">
                         <i class="fa-solid fa-magnifying-glass" style="color:var(--color-primary);"></i>
                         <input type="search" id="dlp-rater-search" placeholder="Search ride, coaster, parade, or land...">
                     </div>
                     <div class="rater-filter-group">
-                        <button type="button" class="filter-btn active" data-filter="all">All (44)</button>
+                        <button type="button" class="filter-btn active" data-filter="all">All Attractions</button>
                         <button type="button" class="filter-btn" data-filter="Ride">Rides & Coasters</button>
                         <button type="button" class="filter-btn" data-filter="Show">Shows & Parades</button>
                         <button type="button" class="filter-btn" data-filter="Experience">Walkthroughs & Meets</button>
                     </div>
                 </div>
 
-                <!-- Dynamic Attractions Injection Target -->
                 <div id="dlp-rater-list" class="rater-container">
                     <p style="text-align: center; color: #777; padding: 40px 0;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Disneyland Paris sensory database...</p>
                 </div>
@@ -409,20 +396,18 @@
         </section>
     </main>
 
-    <!-- Sticky Bottom Mobile Action Bar -->
+    <!-- Sticky Bottom Mobile Action Bar (Print Button Removed) -->
     <div id="sticky-rater-bar" class="sticky-rater-bar">
         <div class="sticky-bar-info">
             <span class="rated-counter-badge" id="custom-rated-count">0 Custom Rated</span>
-            <span style="font-size:0.88rem; color:#cbd5e1;" class="d-none-mobile">Saved automatically to this device</span>
         </div>
         <div class="sticky-bar-actions">
             <button type="button" onclick="saveRatingsToDevice()" class="btn btn-secondary" style="color:#fff; border-color:rgba(255,255,255,0.4);"><i class="fa-solid fa-floppy-disk"></i> Save</button>
-            <button type="button" onclick="window.print()" class="btn btn-secondary" style="color:#fff; border-color:rgba(255,255,255,0.4);"><i class="fa-solid fa-print"></i> Print Log</button>
             <button type="button" onclick="openCommunityModal()" class="btn btn-primary" style="background:var(--color-secondary); color:#111;"><i class="fa-solid fa-cloud-arrow-up"></i> Submit Ratings</button>
         </div>
     </div>
 
-    <!-- Crowdsource Submission Modal -->
+    <!-- Community Modal -->
     <div id="community-modal" class="dlp-modal-backdrop">
         <div class="dlp-modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
