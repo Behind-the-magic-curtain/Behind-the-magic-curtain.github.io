@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.2)
- * Smooth Drop-Down Search Tray, Dynamic Nav Switchboard, Multi-Filters & Footer Ingestion
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.4)
+ * Drop-Down Search Tray, Dynamic Nav, Multi-Page JSON Loaders & Disneyland Sensory Hub
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initDynamicPages();
 });
 
-/* --- 1. Dynamic Nav Controller (Admin Toggleable) --- */
+/* --- 1. Dynamic Nav Controller (Admin Switchboard) --- */
 async function initDynamicNavigation() {
     const navUl = document.querySelector('.main-nav ul');
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
@@ -35,11 +35,8 @@ async function initDynamicNavigation() {
     if (navToggle && mainNav) {
         navToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Close search bar if opening mobile menu
             const tray = document.getElementById('btmc-search-tray');
-            if (tray && tray.classList.contains('active')) {
-                toggleSearchTray(false);
-            }
+            if (tray && tray.classList.contains('active')) toggleSearchTray(false);
             mainNav.classList.toggle('nav-open');
         });
 
@@ -56,7 +53,6 @@ function initGlobalSearchTray() {
     const siteHeader = document.querySelector('.site-header');
     if (!siteHeader) return;
 
-    // Inject Trigger Button into Header if not in HTML
     let searchBtn = document.getElementById('btn-global-search-trigger');
     if (!searchBtn) {
         const navContainer = siteHeader.querySelector('.container');
@@ -70,7 +66,6 @@ function initGlobalSearchTray() {
         }
     }
 
-    // Build the Drop-Down Search Tray directly beneath the header
     if (!document.getElementById('btmc-search-tray')) {
         const trayHtml = `
             <div id="btmc-search-tray" class="search-dropdown-tray">
@@ -91,15 +86,12 @@ function initGlobalSearchTray() {
         searchBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const tray = document.getElementById('btmc-search-tray');
-            const isOpen = tray.classList.contains('active');
-            toggleSearchTray(!isOpen);
+            toggleSearchTray(!tray.classList.contains('active'));
         });
 
         document.getElementById('close-search-tray-btn').addEventListener('click', () => toggleSearchTray(false));
-
         document.getElementById('global-search-input').addEventListener('input', debounceSearch(handleGlobalSearchInput, 250));
 
-        // Click outside or press Esc to close
         document.addEventListener('click', (e) => {
             const tray = document.getElementById('btmc-search-tray');
             if (tray && tray.classList.contains('active') && !tray.contains(e.target) && !searchBtn.contains(e.target)) {
@@ -123,9 +115,7 @@ function toggleSearchTray(open) {
     if (!tray) return;
 
     if (open) {
-        if (mainNav && mainNav.classList.contains('nav-open')) {
-            mainNav.classList.remove('nav-open');
-        }
+        if (mainNav && mainNav.classList.contains('nav-open')) mainNav.classList.remove('nav-open');
         tray.classList.add('active');
         if (triggerBtn) triggerBtn.classList.add('active');
         setTimeout(() => input.focus(), 150);
@@ -215,7 +205,7 @@ async function handleGlobalSearchInput(e) {
         `).join('');
 
     } catch (err) {
-        resultsContainer.innerHTML = `<p class="search-msg" style="color:var(--color-primary);">Search encountered an error. Please try again.</p>`;
+        resultsContainer.innerHTML = `<p class="search-msg" style="color:var(--color-primary);">Search error. Please try again.</p>`;
     }
 }
 
@@ -227,9 +217,78 @@ function initDynamicPages() {
     if (document.querySelector('#theatre-list')) loadTheatreGuideDirectory();
     if (document.querySelector('#news-feed-list')) loadNewsDirectory();
     if (document.querySelector('#panto-list')) loadPantomimeDirectory();
+    if (document.querySelector('#dlp-attractions-grid')) loadDisneylandAttractions();
 }
 
-/* --- 4. Theatres Guide with Search & Location Grouping --- */
+/* --- 4. Disneyland Paris Directory Loader & Filter --- */
+async function loadDisneylandAttractions() {
+    const container = document.getElementById('dlp-attractions-grid');
+    const searchInput = document.getElementById('dlp-attraction-search');
+    const filterBtns = document.querySelectorAll('.page-content .filter-btn');
+    if (!container) return;
+
+    try {
+        const res = await fetch('data/disneyland.json');
+        if (!res.ok) throw new Error('Could not load Disneyland database');
+        const items = await res.json();
+
+        let currentType = 'all';
+
+        const render = () => {
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+            const filtered = items.filter(item => {
+                const matchesType = currentType === 'all' || item.type === currentType;
+                const text = `${item.name} ${item.park} ${item.land} ${item.sensoryNotes || ''} ${item.adhdTip || ''}`.toLowerCase();
+                const matchesQuery = query === '' || text.includes(query);
+                return matchesType && matchesQuery;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#777; margin:30px 0;">No Disneyland attractions match your search.</p>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => `
+                <article class="dlp-card">
+                    <div class="dlp-card-header">
+                        <h3>${item.name}</h3>
+                        <span class="tag tag-age">${item.minHeight === 'None' ? 'All Heights' : item.minHeight}</span>
+                    </div>
+                    <span class="dlp-loc-badge"><i class="fa-solid fa-map-pin" style="color:var(--color-primary);"></i> ${item.park} (${item.land})</span>
+                    
+                    <div class="score-bar-grid">
+                        <div class="score-item"><span>🚀 Speed:</span> <span class="score-val">${item.thrillLevel || 1}/5</span></div>
+                        <div class="score-item"><span>👻 Fear:</span> <span class="score-val">${item.fearFactor || 1}/5</span></div>
+                        <div class="score-item"><span>🔊 Noise:</span> <span class="score-val">${item.noiseLevel || 1}/5</span></div>
+                        <div class="score-item"><span>🌑 Dark:</span> <span class="score-val">${item.darkness || 1}/5</span></div>
+                    </div>
+                    
+                    <p class="dlp-notes-box">${item.sensoryNotes || ''}</p>
+                    ${item.adhdTip ? `<div class="dlp-adhd-box"><strong>ADHD & Queue Tip:</strong> ${item.adhdTip}</div>` : ''}
+                </article>
+            `).join('');
+        };
+
+        render();
+
+        if (searchInput) searchInput.addEventListener('input', render);
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentType = btn.getAttribute('data-filter');
+                render();
+            });
+        });
+
+    } catch (e) {
+        console.warn('Disneyland load failure:', e);
+    }
+}
+
+/* --- 5. Theatres Directory --- */
 async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
     const searchInput = document.getElementById('theatre-search-input');
@@ -291,7 +350,7 @@ async function loadTheatreGuideDirectory() {
     }
 }
 
-/* --- 5. What's On with Search, Touring Badge & Filtering --- */
+/* --- 6. What's On Directory --- */
 async function loadWhatsOnDirectory() {
     const container = document.getElementById('whatson-list');
     const searchInput = document.getElementById('whatson-search-input');
@@ -337,7 +396,7 @@ async function loadWhatsOnDirectory() {
     }
 }
 
-/* --- 6. News Feed Renderer --- */
+/* --- 7. News Directory --- */
 async function loadNewsDirectory() {
     const container = document.getElementById('news-feed-list');
     if (!container) return;
@@ -359,7 +418,7 @@ async function loadNewsDirectory() {
     }
 }
 
-/* --- 7. Seasonal Pantomime Feed Renderer --- */
+/* --- 8. Seasonal Pantomime Directory --- */
 async function loadPantomimeDirectory() {
     const container = document.getElementById('panto-list');
     if (!container) return;
@@ -388,7 +447,52 @@ async function loadPantomimeDirectory() {
     }
 }
 
-/* --- 8. HTML Builders --- */
+/* --- 9. Reviews Directory --- */
+async function loadFeaturedReviews() {
+    const container = document.querySelector('.home-featured .card-grid');
+    if (!container) return;
+    try {
+        const res = await fetch('data/reviews.json');
+        if (!res.ok) return;
+        const reviews = await res.json();
+        const featured = reviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0)).slice(0, 3);
+        container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
+    } catch (e) {}
+}
+
+async function loadReviewsDirectory() {
+    const container = document.getElementById('all-reviews-grid');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    if (!container) return;
+    try {
+        const res = await fetch('data/reviews.json');
+        if (!res.ok) return;
+        let allReviews = await res.json();
+        allReviews = allReviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0));
+
+        const render = (filter = 'all') => {
+            const filtered = allReviews.filter(r => {
+                if (filter === 'all') return true;
+                if (filter === 'adhd') return r.tags && r.tags.adhd;
+                if (filter === 'sensory') return r.tags && r.tags.sensory;
+                if (filter === 'under5') return ['Ages 0+', 'Ages 1+', 'Ages 2+', 'Ages 3+', 'Ages 4+'].includes(r.age);
+                if (filter === '5plus') return ['Ages 5+', 'Ages 6+', 'Ages 7+', 'Ages 8+'].includes(r.age);
+                return true;
+            });
+            container.innerHTML = filtered.length > 0 ? filtered.map(r => buildReviewCardHTML(r)).join('') : '<p style="text-align: center; color: var(--color-text-light);">No reviews match this filter.</p>';
+        };
+        render('all');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render(btn.getAttribute('data-filter'));
+            });
+        });
+    } catch (e) {}
+}
+
+/* --- 10. HTML Builders --- */
 function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
@@ -477,50 +581,7 @@ function buildReviewCardHTML(r) {
     </article>`;
 }
 
-async function loadFeaturedReviews() {
-    const container = document.querySelector('.home-featured .card-grid');
-    if (!container) return;
-    try {
-        const res = await fetch('data/reviews.json');
-        if (!res.ok) return;
-        const reviews = await res.json();
-        const featured = reviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0)).slice(0, 3);
-        container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
-    } catch (e) {}
-}
-
-async function loadReviewsDirectory() {
-    const container = document.getElementById('all-reviews-grid');
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    if (!container) return;
-    try {
-        const res = await fetch('data/reviews.json');
-        if (!res.ok) return;
-        let allReviews = await res.json();
-        allReviews = allReviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0));
-
-        const render = (filter = 'all') => {
-            const filtered = allReviews.filter(r => {
-                if (filter === 'all') return true;
-                if (filter === 'adhd') return r.tags && r.tags.adhd;
-                if (filter === 'sensory') return r.tags && r.tags.sensory;
-                if (filter === 'under5') return ['Ages 0+', 'Ages 1+', 'Ages 2+', 'Ages 3+', 'Ages 4+'].includes(r.age);
-                if (filter === '5plus') return ['Ages 5+', 'Ages 6+', 'Ages 7+', 'Ages 8+'].includes(r.age);
-                return true;
-            });
-            container.innerHTML = filtered.length > 0 ? filtered.map(r => buildReviewCardHTML(r)).join('') : '<p style="text-align: center; color: var(--color-text-light);">No reviews match this filter.</p>';
-        };
-        render('all');
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                render(btn.getAttribute('data-filter'));
-            });
-        });
-    } catch (e) {}
-}
-
+/* --- 11. Global Footer --- */
 function initGlobalFooter() {
     const footerContainer = document.querySelector('.site-footer .container');
     if (!footerContainer) return;
