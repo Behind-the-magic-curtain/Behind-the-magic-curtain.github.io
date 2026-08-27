@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.5)
- * Interactive Disneyland Rater Engine, Global Search Tray, Dynamic Nav & Auto-Expiring Directories
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.6)
+ * Touch-Friendly Sliders, Dynamic Nav, Dropdown Search & Auto-Expiring Directories
  */
 
 let dlpAttractionsCache = [];
@@ -293,39 +293,63 @@ function buildInteractiveRaterCard(item) {
             ${item.adhdTip ? `<div class="rater-adhd-box"><strong>ADHD Strategy:</strong> ${item.adhdTip}</div>` : ''}
         </div>
         <div class="rater-card-right">
-            <div class="metric-row">
-                <span class="metric-label">🚀 Speed / Thrill</span>
-                <div class="pill-picker">
-                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${speedVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'speed', ${val})">${val}</button>`).join('')}
+            <!-- Speed Slider -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span>🚀 Speed / Motion</span>
+                    <span class="slider-val-badge" id="val-${item.id}-speed">${speedVal} / 5 (Base: ${item.thrillLevel})</span>
                 </div>
-                <span class="baseline-tag">(Base: ${item.thrillLevel})</span>
+                <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${speedVal}" oninput="updateSliderRating('${item.id}', 'speed', this.value, ${item.thrillLevel})">
+                <div class="slider-legend">
+                    <span>1: Gentle / Static</span>
+                    <span>5: Intense Thrill</span>
+                </div>
             </div>
-            <div class="metric-row">
-                <span class="metric-label">👻 Fear Factor</span>
-                <div class="pill-picker">
-                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${fearVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'fear', ${val})">${val}</button>`).join('')}
+
+            <!-- Fear Slider -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span>👻 Fear / Spookiness</span>
+                    <span class="slider-val-badge" id="val-${item.id}-fear">${fearVal} / 5 (Base: ${item.fearFactor})</span>
                 </div>
-                <span class="baseline-tag">(Base: ${item.fearFactor})</span>
+                <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${fearVal}" oninput="updateSliderRating('${item.id}', 'fear', this.value, ${item.fearFactor})">
+                <div class="slider-legend">
+                    <span>1: Cheerful</span>
+                    <span>5: Scary / Jumps</span>
+                </div>
             </div>
-            <div class="metric-row">
-                <span class="metric-label">🔊 Noise Level</span>
-                <div class="pill-picker">
-                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${noiseVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'noise', ${val})">${val}</button>`).join('')}
+
+            <!-- Noise Slider -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span>🔊 Noise Level</span>
+                    <span class="slider-val-badge" id="val-${item.id}-noise">${noiseVal} / 5 (Base: ${item.noiseLevel})</span>
                 </div>
-                <span class="baseline-tag">(Base: ${item.noiseLevel})</span>
+                <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${noiseVal}" oninput="updateSliderRating('${item.id}', 'noise', this.value, ${item.noiseLevel})">
+                <div class="slider-legend">
+                    <span>1: Quiet / Soft</span>
+                    <span>5: Loud / Pyros</span>
+                </div>
             </div>
-            <div class="metric-row">
-                <span class="metric-label">🌑 Darkness</span>
-                <div class="pill-picker">
-                    ${[1,2,3,4,5].map(val => `<button type="button" class="score-pill ${darkVal === val ? 'active' : ''}" onclick="setRatingPill('${item.id}', 'dark', ${val})">${val}</button>`).join('')}
+
+            <!-- Darkness Slider -->
+            <div class="slider-group">
+                <div class="slider-header">
+                    <span>🌑 Darkness</span>
+                    <span class="slider-val-badge" id="val-${item.id}-dark">${darkVal} / 5 (Base: ${item.darkness})</span>
                 </div>
-                <span class="baseline-tag">(Base: ${item.darkness})</span>
+                <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${darkVal}" oninput="updateSliderRating('${item.id}', 'dark', this.value, ${item.darkness})">
+                <div class="slider-legend">
+                    <span>1: Daylight</span>
+                    <span>5: Total Darkness</span>
+                </div>
             </div>
         </div>
     </article>`;
 }
 
-function setRatingPill(id, metric, value) {
+function updateSliderRating(id, metric, value, baseVal) {
+    const intVal = parseInt(value);
     if (!userCustomRatings[id]) {
         const original = dlpAttractionsCache.find(a => a.id === id);
         userCustomRatings[id] = {
@@ -336,18 +360,12 @@ function setRatingPill(id, metric, value) {
             dark: original ? original.darkness : 3
         };
     }
-    userCustomRatings[id][metric] = value;
+    userCustomRatings[id][metric] = intVal;
     localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
 
-    const card = document.getElementById(`card-${id}`);
-    if (card) {
-        const metricIndex = metric === 'speed' ? 0 : (metric === 'fear' ? 1 : (metric === 'noise' ? 2 : 3));
-        const row = card.querySelectorAll('.metric-row')[metricIndex];
-        if (row) {
-            row.querySelectorAll('.score-pill').forEach((pill, idx) => {
-                pill.classList.toggle('active', (idx + 1) === value);
-            });
-        }
+    const badge = document.getElementById(`val-${id}-${metric}`);
+    if (badge) {
+        badge.textContent = `${intVal} / 5 (Base: ${baseVal})`;
     }
     updateCustomRatedCount();
 }
@@ -607,7 +625,7 @@ async function loadReviewsDirectory() {
     } catch (e) {}
 }
 
-/* --- 10. Card Builders --- */
+/* --- 10. HTML Builders --- */
 function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
