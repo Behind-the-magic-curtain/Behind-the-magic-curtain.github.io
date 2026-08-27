@@ -28,20 +28,6 @@
     "rank": 2
   },
   {
-    "id": "wo_elf",
-    "title": "Elf The Musical",
-    "venue": "Wolverhampton Grand Theatre",
-    "dates": "Booking 11th-16th November 2025",
-    "expiryDate": "2025-12-31",
-    "runtime": "2hrs 25mins (Incl. Interval)",
-    "age": "Ages 0+",
-    "image": "elf-the-musical.jpg",
-    "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
-    "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
-    "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 3
-  },
-  {
     "id": "wo_1787865902228",
     "title": "Treasure Island",
     "venue": "Wolverhampton Grand Theatre, Wolverhampton",
@@ -56,6 +42,20 @@
     "desc": "Ahoy, Wolverhampton! A brand-new swashbuckling panto adventure for the 2026/27 festive season.\n\nFresh from clinching Best Panto in the UK at the UK Pantomime Awards, Wolverhampton Grand is premiering a never-before-seen pantomime adventure starring firm audience favourites Tam Ryan and Ian Adams. Expect high-seas slapstick, dazzling sets, and accessible festive fun for all ages.\n\nWolverhampton Grand provides dedicated relaxed and sensory-adapted performances featuring softened stage effects, lowered sound volume, and access to quiet breakout areas.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/treasure-island/#book",
     "siteLink": "https://www.grandtheatre.co.uk/whats-on/treasure-island",
+    "rank": 3
+  },
+  {
+    "id": "wo_elf",
+    "title": "Elf The Musical",
+    "venue": "Wolverhampton Grand Theatre",
+    "dates": "Booking 11th-16th November 2025",
+    "expiryDate": "2025-12-31",
+    "runtime": "2hrs 25mins (Incl. Interval)",
+    "age": "Ages 0+",
+    "image": "elf-the-musical.jpg",
+    "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
+    "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
+    "siteLink": "https://elfthemusicaluk.com/",
     "rank": 4
   }
 ]
