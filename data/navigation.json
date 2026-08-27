@@ -1,0 +1,12 @@
+{
+  "items": [
+    { "id": "nav_home", "title": "Home", "url": "index.html", "enabled": true },
+    { "id": "nav_whatson", "title": "What's On", "url": "whats-on.html", "enabled": true },
+    { "id": "nav_theatres", "title": "Theatre Guide", "url": "theatre-guide.html", "enabled": true },
+    { "id": "nav_tips", "title": "Tips for Parents", "url": "tips-for-parents.html", "enabled": true },
+    { "id": "nav_reviews", "title": "Reviews", "url": "reviews.html", "enabled": true },
+    { "id": "nav_news", "title": "News", "url": "news.html", "enabled": true },
+    { "id": "nav_panto", "title": "Panto Guide", "url": "pantomime.html", "enabled": false },
+    { "id": "nav_dlp", "title": "Disneyland Paris", "url": "disneyland-paris.html", "enabled": true }
+  ]
+}
