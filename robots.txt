@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
-Disallow: /admin.html
 
+# Block Admin Studio & Private Assets from Search Engine Indexing
+Disallow: /admin.html
+Disallow: /data/
+
+# Sitemap Location
 Sitemap: https://behindthemagiccurtain.co.uk/sitemap.xml
