@@ -1,6 +1,7 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.6)
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.7)
  * Touch-Friendly Sliders, Dynamic Nav, Dropdown Search & Auto-Expiring Directories
+ * Optimized for Neurodivergent Family Days Out & Sensory Theatre Guides
  */
 
 let dlpAttractionsCache = [];
@@ -76,7 +77,7 @@ function initGlobalSearchTray() {
                     <div class="search-tray-inner">
                         <div class="search-input-wrap">
                             <i class="fa-solid fa-magnifying-glass search-field-icon"></i>
-                            <input type="search" id="global-search-input" placeholder="Search shows, venues, reviews, sensory guides..." autocomplete="off">
+                            <input type="search" id="global-search-input" placeholder="Search shows, relaxed venues, sensory guides..." autocomplete="off">
                             <button type="button" id="close-search-tray-btn" class="search-close-btn" aria-label="Close search">&times;</button>
                         </div>
                         <div id="global-search-results" class="search-results-dropdown" style="display:none;"></div>
@@ -175,7 +176,7 @@ async function handleGlobalSearchInput(e) {
         });
 
         theatres.forEach(t => {
-            if (`${t.name} ${t.location} ${t.accessibility}`.toLowerCase().includes(query)) {
+            if (`${t.name} ${t.location} ${t.accessibility} ${t.relaxed || ''}`.toLowerCase().includes(query)) {
                 matches.push({ type: 'Theatre Guide', title: t.name, desc: `${t.location} - ${t.accessibility.substring(0, 80)}...`, url: 'theatre-guide.html', badge: 'Venue' });
             }
         });
@@ -187,7 +188,7 @@ async function handleGlobalSearchInput(e) {
         });
 
         dlp.forEach(d => {
-            if (`${d.name} ${d.land} ${d.sensoryNotes || ''}`.toLowerCase().includes(query)) {
+            if (`${d.name} ${d.land} ${d.sensoryNotes || ''} ${d.adhdTip || ''}`.toLowerCase().includes(query)) {
                 matches.push({ type: 'Disneyland Paris', title: d.name, desc: `${d.park} (${d.land}) - ${d.sensoryNotes || ''}`, url: 'disneyland-paris.html#interactive-rater', badge: 'DLP Sensory' });
             }
         });
@@ -244,7 +245,7 @@ async function initInteractiveDisneylandRater() {
 
             const filtered = dlpAttractionsCache.filter(item => {
                 const matchesType = currentFilter === 'all' || item.type === currentFilter;
-                const matchesText = `${item.name} ${item.park} ${item.land} ${item.sensoryNotes || ''}`.toLowerCase().includes(query);
+                const matchesText = `${item.name} ${item.park} ${item.land} ${item.sensoryNotes || ''} ${item.adhdTip || ''}`.toLowerCase().includes(query);
                 return matchesType && matchesText;
             });
 
@@ -290,7 +291,7 @@ function buildInteractiveRaterCard(item) {
             </div>
             <span class="rater-park-tag"><i class="fa-solid fa-map-pin" style="color:var(--color-primary);"></i> ${item.park} • ${item.land}</span>
             <p class="rater-desc-box">${item.sensoryNotes || ''}</p>
-            ${item.adhdTip ? `<div class="rater-adhd-box"><strong>ADHD Strategy:</strong> ${item.adhdTip}</div>` : ''}
+            ${item.adhdTip ? `<div class="rater-adhd-box"><strong>Sensory Strategy:</strong> ${item.adhdTip}</div>` : ''}
         </div>
         <div class="rater-card-right">
             <!-- Speed Slider -->
@@ -490,7 +491,7 @@ async function loadTheatreGuideDirectory() {
             const loc = locationSelect ? locationSelect.value : 'all';
 
             const filtered = theatres.filter(t => {
-                const matchesText = `${t.name} ${t.location} ${t.accessibility}`.toLowerCase().includes(q);
+                const matchesText = `${t.name} ${t.location} ${t.accessibility} ${t.relaxed || ''}`.toLowerCase().includes(q);
                 const matchesLoc = loc === 'all' || t.location === loc;
                 return matchesText && matchesLoc;
             });
@@ -683,7 +684,7 @@ function buildTheatreCardHTML(t) {
             <span class="theatre-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${t.location}</span>
             <div class="theatre-meta">
                 <p><strong>Accessibility:</strong> ${t.accessibility}</p>
-                <p><strong>Relaxed Performances:</strong> ${t.relaxed}</p>
+                <p><strong>Relaxed Performances & Sensory Rooms:</strong> ${t.relaxed}</p>
             </div>
             ${t.website ? `<a href="${t.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Theatre Website</a>` : ''}
         </div>
@@ -693,7 +694,7 @@ function buildTheatreCardHTML(t) {
 function buildReviewCardHTML(r) {
     const ratingPercent = Math.min(100, Math.max(0, ((parseFloat(r.rating) || 5) / 5) * 100));
     let tagsHTML = `<span class="tag tag-age">${r.age || 'All Ages'}</span>`;
-    if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+    if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">Sensory-Friendly Guide</span>`;
     if (r.tags?.sensory) tagsHTML += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
 
     return `
@@ -727,7 +728,7 @@ function initGlobalFooter() {
             <h3 style="color: #ffffff; font-family: var(--font-heading, 'Raleway', sans-serif); font-size: 1.45rem; margin-bottom: 8px;">
                 <i class="fa-solid fa-envelope-open-text" style="color: var(--color-secondary, #ffd700); margin-right: 8px;"></i> Join the BTMC Family Club
             </h3>
-            <p style="color: #cccccc; font-size: 0.92rem; margin-bottom: 20px; line-height: 1.5;">Get our latest family theatre reviews, sensory insights, and Disneyland tips delivered straight to your inbox.</p>
+            <p style="color: #cccccc; font-size: 0.92rem; margin-bottom: 20px; line-height: 1.5;">Get our latest neurodivergent family theatre reviews, sensory insights, and Disneyland Paris guides delivered straight to your inbox.</p>
             <form id="footer-newsletter-form" onsubmit="event.preventDefault(); handleFooterNewsletterSubmit();" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto;">
                 <input type="text" id="footer-user-name" placeholder="Your Name" style="flex: 1 1 140px; min-width: 130px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
                 <input type="email" id="footer-user-email" placeholder="Email Address *" required style="flex: 1 1 180px; min-width: 170px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
