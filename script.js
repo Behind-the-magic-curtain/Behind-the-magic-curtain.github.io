@@ -1,11 +1,11 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.7)
- * Touch-Friendly Sliders, Dynamic Nav, Dropdown Search & Auto-Expiring Directories
- * Optimized for Neurodivergent Family Days Out & Sensory Theatre Guides
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.9)
+ * On-Brand Floating Toasts, Internal Global Search & Sensory Strategy Engine
  */
 
 let dlpAttractionsCache = [];
 let userCustomRatings = JSON.parse(localStorage.getItem('btmc_user_dlp_ratings') || '{}');
+let btmcToastTimer = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initDynamicNavigation();
@@ -14,7 +14,30 @@ document.addEventListener('DOMContentLoaded', () => {
     initDynamicPages();
 });
 
-/* --- 1. Dynamic Nav Controller --- */
+/* --- 1. On-Brand Toast System (Replaces window.alert) --- */
+function showBtmcToast(message, type = 'toast-success', duration = 4000) {
+    let toast = document.getElementById('btmc-global-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'btmc-global-toast';
+        document.body.appendChild(toast);
+    }
+
+    if (btmcToastTimer) clearTimeout(btmcToastTimer);
+
+    let icon = '<i class="fa-solid fa-circle-check" style="color:var(--color-secondary);"></i>';
+    if (type === 'toast-error') icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+    if (type === 'toast-info') icon = '<i class="fa-solid fa-circle-info" style="color:var(--color-secondary);"></i>';
+
+    toast.className = `show ${type}`;
+    toast.innerHTML = `${icon} <span>${message}</span>`;
+
+    btmcToastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
+
+/* --- 2. Dynamic Nav Controller --- */
 async function initDynamicNavigation() {
     const navUl = document.querySelector('.main-nav ul');
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
@@ -52,7 +75,7 @@ async function initDynamicNavigation() {
     }
 }
 
-/* --- 2. Drop-Down Search Tray --- */
+/* --- 3. Internal Search Engine Tray --- */
 function initGlobalSearchTray() {
     const siteHeader = document.querySelector('.site-header');
     if (!siteHeader) return;
@@ -158,7 +181,7 @@ async function handleGlobalSearchInput(e) {
             fetch('data/whatson.json').then(r => r.ok ? r.json() : []).catch(() => []),
             fetch('data/theatres.json').then(r => r.ok ? r.json() : []).catch(() => []),
             fetch('data/news.json').then(r => r.ok ? r.json() : []).catch(() => []),
-            fetch('data/disneyland.json').then(r => r.ok ? r.json() : []).catch(() => [])
+            fetch('data/disneyland.json').then(r => r.ok ? r.json() : [])
         ]);
 
         let matches = [];
@@ -169,15 +192,16 @@ async function handleGlobalSearchInput(e) {
             }
         });
 
+        // Retains internal site traffic
         whatson.forEach(w => {
             if (`${w.title} ${w.venue} ${w.desc}`.toLowerCase().includes(query)) {
-                matches.push({ type: "What's On", title: w.title, desc: `${w.venue} • ${w.dates}`, url: w.ticketLink || 'whats-on.html', badge: 'Live Show' });
+                matches.push({ type: "What's On", title: w.title, desc: `${w.venue} • ${w.dates}`, url: `whats-on.html?q=${encodeURIComponent(w.title)}`, badge: 'Live Show' });
             }
         });
 
         theatres.forEach(t => {
             if (`${t.name} ${t.location} ${t.accessibility} ${t.relaxed || ''}`.toLowerCase().includes(query)) {
-                matches.push({ type: 'Theatre Guide', title: t.name, desc: `${t.location} - ${t.accessibility.substring(0, 80)}...`, url: 'theatre-guide.html', badge: 'Venue' });
+                matches.push({ type: 'Theatre Guide', title: t.name, desc: `${t.location} - ${t.accessibility.substring(0, 80)}...`, url: `theatre-guide.html?q=${encodeURIComponent(t.name)}`, badge: 'Venue' });
             }
         });
 
@@ -189,7 +213,7 @@ async function handleGlobalSearchInput(e) {
 
         dlp.forEach(d => {
             if (`${d.name} ${d.land} ${d.sensoryNotes || ''} ${d.adhdTip || ''}`.toLowerCase().includes(query)) {
-                matches.push({ type: 'Disneyland Paris', title: d.name, desc: `${d.park} (${d.land}) - ${d.sensoryNotes || ''}`, url: 'disneyland-paris.html#interactive-rater', badge: 'DLP Sensory' });
+                matches.push({ type: 'Disneyland Paris', title: d.name, desc: `${d.park} (${d.land}) - ${d.sensoryNotes || ''}`, url: `disneyland-paris.html?q=${encodeURIComponent(d.name)}#interactive-rater`, badge: 'DLP Sensory' });
             }
         });
 
@@ -213,7 +237,7 @@ async function handleGlobalSearchInput(e) {
     }
 }
 
-/* --- 3. Dynamic Page Switcher --- */
+/* --- 4. Dynamic Page Switcher --- */
 function initDynamicPages() {
     if (document.querySelector('.home-featured .card-grid')) loadFeaturedReviews();
     if (document.querySelector('#all-reviews-grid')) loadReviewsDirectory();
@@ -224,7 +248,7 @@ function initDynamicPages() {
     if (document.querySelector('#dlp-rater-list')) initInteractiveDisneylandRater();
 }
 
-/* --- 4. Interactive Disneyland Paris Rater Engine --- */
+/* --- 5. Interactive Disneyland Paris Rater Engine --- */
 async function initInteractiveDisneylandRater() {
     const container = document.getElementById('dlp-rater-list');
     const searchInput = document.getElementById('dlp-rater-search');
@@ -237,6 +261,10 @@ async function initInteractiveDisneylandRater() {
         dlpAttractionsCache = await res.json();
 
         updateCustomRatedCount();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get('q');
+        if (queryParam && searchInput) searchInput.value = queryParam;
 
         let currentFilter = 'all';
 
@@ -294,56 +322,37 @@ function buildInteractiveRaterCard(item) {
             ${item.adhdTip ? `<div class="rater-adhd-box"><strong>Sensory Strategy:</strong> ${item.adhdTip}</div>` : ''}
         </div>
         <div class="rater-card-right">
-            <!-- Speed Slider -->
             <div class="slider-group">
                 <div class="slider-header">
                     <span>🚀 Speed / Motion</span>
                     <span class="slider-val-badge" id="val-${item.id}-speed">${speedVal} / 5 (Base: ${item.thrillLevel})</span>
                 </div>
                 <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${speedVal}" oninput="updateSliderRating('${item.id}', 'speed', this.value, ${item.thrillLevel})">
-                <div class="slider-legend">
-                    <span>1: Gentle / Static</span>
-                    <span>5: Intense Thrill</span>
-                </div>
+                <div class="slider-legend"><span>1: Gentle / Static</span><span>5: Intense Thrill</span></div>
             </div>
-
-            <!-- Fear Slider -->
             <div class="slider-group">
                 <div class="slider-header">
                     <span>👻 Fear / Spookiness</span>
                     <span class="slider-val-badge" id="val-${item.id}-fear">${fearVal} / 5 (Base: ${item.fearFactor})</span>
                 </div>
                 <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${fearVal}" oninput="updateSliderRating('${item.id}', 'fear', this.value, ${item.fearFactor})">
-                <div class="slider-legend">
-                    <span>1: Cheerful</span>
-                    <span>5: Scary / Jumps</span>
-                </div>
+                <div class="slider-legend"><span>1: Cheerful</span><span>5: Scary / Jumps</span></div>
             </div>
-
-            <!-- Noise Slider -->
             <div class="slider-group">
                 <div class="slider-header">
                     <span>🔊 Noise Level</span>
                     <span class="slider-val-badge" id="val-${item.id}-noise">${noiseVal} / 5 (Base: ${item.noiseLevel})</span>
                 </div>
                 <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${noiseVal}" oninput="updateSliderRating('${item.id}', 'noise', this.value, ${item.noiseLevel})">
-                <div class="slider-legend">
-                    <span>1: Quiet / Soft</span>
-                    <span>5: Loud / Pyros</span>
-                </div>
+                <div class="slider-legend"><span>1: Quiet / Soft</span><span>5: Loud / Pyros</span></div>
             </div>
-
-            <!-- Darkness Slider -->
             <div class="slider-group">
                 <div class="slider-header">
                     <span>🌑 Darkness</span>
                     <span class="slider-val-badge" id="val-${item.id}-dark">${darkVal} / 5 (Base: ${item.darkness})</span>
                 </div>
                 <input type="range" class="custom-range-slider" min="1" max="5" step="1" value="${darkVal}" oninput="updateSliderRating('${item.id}', 'dark', this.value, ${item.darkness})">
-                <div class="slider-legend">
-                    <span>1: Daylight</span>
-                    <span>5: Total Darkness</span>
-                </div>
+                <div class="slider-legend"><span>1: Daylight</span><span>5: Total Darkness</span></div>
             </div>
         </div>
     </article>`;
@@ -365,23 +374,19 @@ function updateSliderRating(id, metric, value, baseVal) {
     localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
 
     const badge = document.getElementById(`val-${id}-${metric}`);
-    if (badge) {
-        badge.textContent = `${intVal} / 5 (Base: ${baseVal})`;
-    }
+    if (badge) badge.textContent = `${intVal} / 5 (Base: ${baseVal})`;
     updateCustomRatedCount();
 }
 
 function updateCustomRatedCount() {
     const count = Object.keys(userCustomRatings).length;
     const badge = document.getElementById('custom-rated-count');
-    if (badge) {
-        badge.textContent = `${count} Custom Rated`;
-    }
+    if (badge) badge.textContent = `${count} Custom Rated`;
 }
 
 function saveRatingsToDevice() {
     localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
-    alert('✅ Your personalized Disneyland Paris scores have been saved to this device!');
+    showBtmcToast('Your personalized Disneyland Paris scores have been saved to this device!');
 }
 
 function openCommunityModal() {
@@ -405,7 +410,7 @@ function handleCommunitySubmit() {
     });
 
     if (ratedEntries.length === 0) {
-        alert('Please rate at least 1 attraction before submitting!');
+        showBtmcToast('Please rate at least 1 attraction before submitting!', 'toast-error');
         return;
     }
 
@@ -419,10 +424,10 @@ function handleCommunitySubmit() {
     document.getElementById('native_dlp_form').submit();
 
     closeCommunityModal();
-    alert(`🎉 Thank you, ${name}! Your family trip ratings have been submitted to our community database.`);
+    showBtmcToast(`Thank you, ${name}! Your family trip ratings have been submitted to our community database.`);
 }
 
-/* --- 5. What's On Directory --- */
+/* --- 6. What's On Directory --- */
 async function loadWhatsOnDirectory() {
     const container = document.getElementById('whatson-list');
     const searchInput = document.getElementById('whatson-search-input');
@@ -438,6 +443,10 @@ async function loadWhatsOnDirectory() {
         const activeShows = shows
             .filter(s => !s.expiryDate || s.expiryDate >= today)
             .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get('q');
+        if (queryParam && searchInput) searchInput.value = queryParam;
 
         const render = () => {
             const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -468,7 +477,7 @@ async function loadWhatsOnDirectory() {
     }
 }
 
-/* --- 6. Theatre Directory --- */
+/* --- 7. Theatre Directory --- */
 async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
     const searchInput = document.getElementById('theatre-search-input');
@@ -485,6 +494,10 @@ async function loadTheatreGuideDirectory() {
             const locations = [...new Set(theatres.map(t => t.location).filter(Boolean))].sort();
             locationSelect.innerHTML = '<option value="all">All Locations</option>' + locations.map(l => `<option value="${l}">${l}</option>`).join('');
         }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const queryParam = urlParams.get('q');
+        if (queryParam && searchInput) searchInput.value = queryParam;
 
         const render = () => {
             const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -530,7 +543,7 @@ async function loadTheatreGuideDirectory() {
     }
 }
 
-/* --- 7. News Directory --- */
+/* --- 8. News Directory --- */
 async function loadNewsDirectory() {
     const container = document.getElementById('news-feed-list');
     if (!container) return;
@@ -552,7 +565,7 @@ async function loadNewsDirectory() {
     }
 }
 
-/* --- 8. Pantomime Directory --- */
+/* --- 9. Pantomime Directory --- */
 async function loadPantomimeDirectory() {
     const container = document.getElementById('panto-list');
     if (!container) return;
@@ -581,7 +594,7 @@ async function loadPantomimeDirectory() {
     }
 }
 
-/* --- 9. Reviews Directory --- */
+/* --- 10. Reviews Directory --- */
 async function loadFeaturedReviews() {
     const container = document.querySelector('.home-featured .card-grid');
     if (!container) return;
@@ -626,7 +639,7 @@ async function loadReviewsDirectory() {
     } catch (e) {}
 }
 
-/* --- 10. HTML Builders --- */
+/* --- 11. HTML Builders --- */
 function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
@@ -694,7 +707,7 @@ function buildTheatreCardHTML(t) {
 function buildReviewCardHTML(r) {
     const ratingPercent = Math.min(100, Math.max(0, ((parseFloat(r.rating) || 5) / 5) * 100));
     let tagsHTML = `<span class="tag tag-age">${r.age || 'All Ages'}</span>`;
-    if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">Sensory-Friendly Guide</span>`;
+    if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">Sensory Strategy</span>`;
     if (r.tags?.sensory) tagsHTML += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
 
     return `
@@ -715,7 +728,7 @@ function buildReviewCardHTML(r) {
     </article>`;
 }
 
-/* --- 11. Global Footer --- */
+/* --- 12. Global Footer --- */
 function initGlobalFooter() {
     const footerContainer = document.querySelector('.site-footer .container');
     if (!footerContainer) return;
@@ -764,5 +777,5 @@ function handleFooterNewsletterSubmit() {
 
     nameInput.value = '';
     emailInput.value = '';
-    alert(`🎉 Welcome ${name || ''}! Check your inbox for a welcome email.`);
+    showBtmcToast(`Welcome ${name || ''}! Check your inbox for a welcome email.`);
 }
