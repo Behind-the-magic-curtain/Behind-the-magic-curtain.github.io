@@ -1,44 +1,42 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE SITE ENGINE
- * Handles Mobile Nav, Dynamic JSON Renderers, WebP Support, Global Footer & Mailing List Form
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.0)
+ * Dynamic Navigation, Global Omni-Search, Live Filters & Auto-Expiring Directories
  */
 
-/* --- GOOGLE ANALYTICS 4 CENTRAL AUTO-LOADER --- */
-(function initGA() {
-    const GA_ID = 'G-CPHCSFHVJK'; // Your BTMC Measurement ID
-    
-    // Skip tracking during local file testing
-    if (window.location.hostname === 'localhost' || !GA_ID.startsWith('G-')) return;
-
-    const gaScript = document.createElement('script');
-    gaScript.async = true;
-    gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
-    document.head.appendChild(gaScript);
-
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    window.gtag = gtag;
-    gtag('js', new Date());
-    gtag('config', GA_ID);
-})();
-
 document.addEventListener('DOMContentLoaded', () => {
-    initNavigation();
+    initDynamicNavigation();
+    initGlobalSearch();
     initGlobalFooter();
     initDynamicPages();
 });
 
-/* --- 1. Mobile Navigation --- */
-function initNavigation() {
+/* --- 1. Dynamic Nav Controller (Admin Toggleable) --- */
+async function initDynamicNavigation() {
+    const navUl = document.querySelector('.main-nav ul');
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+
+    try {
+        const res = await fetch('data/navigation.json');
+        if (res.ok) {
+            const navData = await res.json();
+            if (navUl && navData.items) {
+                navUl.innerHTML = navData.items
+                    .filter(item => item.enabled)
+                    .map(item => `<li><a href="${item.url}" class="${currentPath === item.url ? 'active' : ''}">${item.title}</a></li>`)
+                    .join('');
+            }
+        }
+    } catch (e) {
+        console.warn('Navigation fallback to hardcoded markup:', e);
+    }
+
     const navToggle = document.querySelector('.nav-toggle');
     const mainNav = document.querySelector('.main-nav');
-
     if (navToggle && mainNav) {
         navToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             mainNav.classList.toggle('nav-open');
         });
-
         document.addEventListener('click', (e) => {
             if (mainNav.classList.contains('nav-open') && !mainNav.contains(e.target) && !navToggle.contains(e.target)) {
                 mainNav.classList.remove('nav-open');
@@ -47,222 +45,219 @@ function initNavigation() {
     }
 }
 
-/* --- 2. Global Toast Messenger --- */
-let siteToastTimeout = null;
-function triggerGlobalToast(msg, isSuccess = true) {
-    let toast = document.getElementById('global-site-toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'global-site-toast';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #ffffff;
-            color: #222222;
-            padding: 16px 24px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-left: 5px solid ${isSuccess ? '#2e7d32' : '#bd2419'};
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(20px);
-            transition: opacity 0.35s ease, transform 0.35s ease;
-            z-index: 100000;
-            max-width: 420px;
-        `;
-        document.body.appendChild(toast);
+/* --- 2. Global Omni-Search Overlay --- */
+function initGlobalSearch() {
+    let searchBtn = document.getElementById('btn-global-search-trigger');
+    if (!searchBtn) {
+        const navContainer = document.querySelector('.site-header .container');
+        if (navContainer) {
+            const searchTrigger = document.createElement('button');
+            searchTrigger.id = 'btn-global-search-trigger';
+            searchTrigger.setAttribute('aria-label', 'Open Global Search');
+            searchTrigger.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+            searchTrigger.style.cssText = 'background:transparent; border:none; color:#ffffff; font-size:1.25rem; cursor:pointer; padding:8px 12px; margin-left:auto; display:inline-flex; align-items:center;';
+            navContainer.appendChild(searchTrigger);
+            searchTrigger.addEventListener('click', openGlobalSearchModal);
+        }
     }
 
-    if (siteToastTimeout) clearTimeout(siteToastTimeout);
+    const modalHTML = `
+    <div id="btmc-search-modal" class="search-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; backdrop-filter:blur(4px); align-items:flex-start; justify-content:center; padding:60px 20px;">
+        <div class="search-modal-box" style="background:#ffffff; width:100%; max-width:680px; border-radius:14px; box-shadow:0 15px 40px rgba(0,0,0,0.3); overflow:hidden; display:flex; flex-direction:column; max-height:80vh;">
+            <div style="padding:16px 20px; border-bottom:1px solid #e0e0e0; display:flex; align-items:center; gap:12px; background:#f8fafb;">
+                <i class="fa-solid fa-magnifying-glass" style="color:var(--color-primary, #bd2419); font-size:1.2rem;"></i>
+                <input type="search" id="global-search-input" placeholder="Search shows, venues, reviews, sensory guides..." style="width:100%; border:none; outline:none; font-size:1.05rem; font-family:var(--font-body, 'Poppins', sans-serif); background:transparent;">
+                <button type="button" id="close-search-modal-btn" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer; padding:4px 8px;">&times;</button>
+            </div>
+            <div id="global-search-results" style="padding:20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
+                <p style="text-align:center; color:#888; font-size:0.95rem; margin:20px 0;">Type at least 2 characters to search across all guides and reviews...</p>
+            </div>
+        </div>
+    </div>`;
 
-    toast.style.borderLeftColor = isSuccess ? '#2e7d32' : '#bd2419';
-    toast.innerHTML = `<i class="fa-solid ${isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation'}" style="color: ${isSuccess ? '#2e7d32' : '#bd2419'};"></i> <span>${msg}</span>`;
-    
-    toast.style.opacity = '1';
-    toast.style.pointerEvents = 'auto';
-    toast.style.transform = 'translateY(0)';
-
-    siteToastTimeout = setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.pointerEvents = 'none';
-        toast.style.transform = 'translateY(20px)';
-    }, 4000);
+    if (!document.getElementById('btmc-search-modal')) {
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        document.getElementById('close-search-modal-btn').addEventListener('click', closeGlobalSearchModal);
+        document.getElementById('btmc-search-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'btmc-search-modal') closeGlobalSearchModal();
+        });
+        document.getElementById('global-search-input').addEventListener('input', debounceSearch(handleGlobalSearchInput, 250));
+    }
 }
 
-/* --- 3. Global Footer Controller (Mailing List + Domain + Mailto + Copyright) --- */
-function initGlobalFooter() {
-    const footerContainer = document.querySelector('.site-footer .container');
-    if (!footerContainer) return;
-
-    const currentYear = new Date().getFullYear();
-    const domainUrl = "https://behindthemagiccurtain.co.uk";
-    const emailAddress = "Hello@behindthemagiccurtain.co.uk";
-
-    footerContainer.innerHTML = `
-        <div class="footer-newsletter-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 30px 20px; max-width: 640px; margin: 0 auto 35px auto; text-align: center;">
-            <h3 style="color: #ffffff; font-family: var(--font-heading, 'Raleway', sans-serif); font-size: 1.45rem; margin-bottom: 8px;">
-                <i class="fa-solid fa-envelope-open-text" style="color: var(--color-secondary, #ffd700); margin-right: 8px;"></i> Join the BTMC Family Club
-            </h3>
-            <p style="color: #cccccc; font-size: 0.92rem; margin-bottom: 20px; line-height: 1.5;">
-                Get our latest family theatre reviews, sensory insights, and Disneyland tips delivered straight to your inbox.
-            </p>
-            <form id="footer-newsletter-form" onsubmit="event.preventDefault(); handleFooterNewsletterSubmit();" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto;">
-                <input type="text" id="footer-user-name" placeholder="Your Name" style="flex: 1 1 140px; min-width: 130px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
-                <input type="email" id="footer-user-email" placeholder="Email Address *" required style="flex: 1 1 180px; min-width: 170px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
-                <button type="submit" class="btn btn-primary" style="padding: 12px 24px; font-size: 0.92rem; border-radius: 50px; cursor: pointer; border: none; font-weight: 700; white-space: nowrap;">
-                    Join Club
-                </button>
-            </form>
-            <p style="font-size: 0.78rem; color: #999999; margin: 12px 0 0 0;">
-                🔒 Zero spam. <a href="unsubscribe.html" style="color: #bbbbbb; text-decoration: underline;">Unsubscribe or delete your data</a> anytime.
-            </p>
-        </div>
-
-        <!-- Hidden Native Form Bridge for Footer Submission -->
-        <iframe name="footer_submit_target_iframe" id="footer_submit_target_iframe" style="display:none;"></iframe>
-        <form id="native_footer_form" action="https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse" method="POST" target="footer_submit_target_iframe" style="display:none;">
-            <input type="hidden" name="entry.1934084784" id="footer_gform_optin">
-            <input type="hidden" name="entry.1983797623" id="footer_gform_contact">
-            <input type="hidden" name="entry.266837979" id="footer_gform_diary">
-        </form>
-
-        <div style="margin-bottom: 12px; font-size: 0.95rem;">
-            <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}
-            </a>
-            <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk
-            </a>
-        </div>
-        <div style="font-size: 0.85rem; color: #777777;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
-    `;
+function openGlobalSearchModal() {
+    const modal = document.getElementById('btmc-search-modal');
+    modal.style.display = 'flex';
+    document.getElementById('global-search-input').focus();
 }
 
-/* --- 4. Background Newsletter Form Submitter --- */
-function handleFooterNewsletterSubmit() {
-    const nameInput = document.getElementById('footer-user-name');
-    const emailInput = document.getElementById('footer-user-email');
-    
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim().toLowerCase();
+function closeGlobalSearchModal() {
+    document.getElementById('btmc-search-modal').style.display = 'none';
+    document.getElementById('global-search-input').value = '';
+    document.getElementById('global-search-results').innerHTML = '<p style="text-align:center; color:#888; font-size:0.95rem; margin:20px 0;">Type at least 2 characters to search...</p>';
+}
 
-    if (!email || !email.includes('@')) {
-        triggerGlobalToast('Please enter a valid email address.', false);
+function debounceSearch(fn, delay) {
+    let timer = null;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+async function handleGlobalSearchInput(e) {
+    const query = e.target.value.trim().toLowerCase();
+    const resultsContainer = document.getElementById('global-search-results');
+    if (query.length < 2) {
+        resultsContainer.innerHTML = '<p style="text-align:center; color:#888; font-size:0.95rem; margin:20px 0;">Type at least 2 characters to search...</p>';
         return;
     }
 
-    const optInStatus = "Yes - Join Club";
-    const contactInfo = `${name || 'Friend'} (${email})`;
-    const payloadText = "General Website Footer Signup";
-
-    const optinField = document.getElementById('footer_gform_optin');
-    const contactField = document.getElementById('footer_gform_contact');
-    const diaryField = document.getElementById('footer_gform_diary');
-    const nativeForm = document.getElementById('native_footer_form');
-
-    if (optinField && contactField && diaryField && nativeForm) {
-        optinField.value = optInStatus;
-        contactField.value = contactInfo;
-        diaryField.value = payloadText;
-        nativeForm.submit();
-    }
-
-    nameInput.value = '';
-    emailInput.value = '';
-
-    triggerGlobalToast(`🎉 Welcome ${name || ''}! Check your inbox for a welcome email.`, true);
-}
-
-/* --- 5. Dynamic JSON Page Renderers --- */
-function initDynamicPages() {
-    const isHomePage = document.querySelector('.home-featured .card-grid');
-    const isReviewsPage = document.querySelector('#all-reviews-grid');
-    const isWhatsOnPage = document.querySelector('#whatson-list');
-    const isTheatrePage = document.querySelector('#theatre-list');
-
-    if (isHomePage) loadFeaturedReviews();
-    if (isReviewsPage) loadReviewsDirectory();
-    if (isWhatsOnPage) loadWhatsOnDirectory();
-    if (isTheatrePage) loadTheatreGuideDirectory();
-}
-
-async function loadFeaturedReviews() {
-    const container = document.querySelector('.home-featured .card-grid');
-    if (!container) return;
+    resultsContainer.innerHTML = '<p style="text-align:center; color:#666;"><i class="fa-solid fa-spinner fa-spin"></i> Searching...</p>';
 
     try {
-        const res = await fetch('data/reviews.json');
-        if (!res.ok) throw new Error('Could not load reviews data');
-        const reviews = await res.json();
+        const [reviews, whatson, theatres, news, dlp] = await Promise.all([
+            fetch('data/reviews.json').then(r => r.ok ? r.json() : []).catch(() => []),
+            fetch('data/whatson.json').then(r => r.ok ? r.json() : []).catch(() => []),
+            fetch('data/theatres.json').then(r => r.ok ? r.json() : []).catch(() => []),
+            fetch('data/news.json').then(r => r.ok ? r.json() : []).catch(() => []),
+            fetch('data/disneyland.json').then(r => r.ok ? r.json() : []).catch(() => [])
+        ]);
 
-        const featured = reviews
-            .filter(r => r.status === 'published')
-            .sort((a, b) => (a.rank || 0) - (b.rank || 0))
-            .slice(0, 3);
+        let matches = [];
 
-        container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
+        reviews.forEach(r => {
+            if (`${r.title} ${r.summary} ${r.subtitle || ''}`.toLowerCase().includes(query)) {
+                matches.push({ type: 'Review', title: r.title, desc: r.summary, url: r.slug, badge: `${r.rating}★ Review` });
+            }
+        });
+
+        whatson.forEach(w => {
+            if (`${w.title} ${w.venue} ${w.desc}`.toLowerCase().includes(query)) {
+                matches.push({ type: "What's On", title: w.title, desc: `${w.venue} • ${w.dates}`, url: w.ticketLink || 'whats-on.html', badge: 'Live Show' });
+            }
+        });
+
+        theatres.forEach(t => {
+            if (`${t.name} ${t.location} ${t.accessibility}`.toLowerCase().includes(query)) {
+                matches.push({ type: 'Theatre Guide', title: t.name, desc: `${t.location} - ${t.accessibility.substring(0, 80)}...`, url: 'theatre-guide.html', badge: 'Venue' });
+            }
+        });
+
+        news.forEach(n => {
+            if (`${n.title} ${n.summary} ${n.category || ''}`.toLowerCase().includes(query)) {
+                matches.push({ type: 'News', title: n.title, desc: n.summary, url: n.slug, badge: n.category || 'News' });
+            }
+        });
+
+        dlp.forEach(d => {
+            if (`${d.name} ${d.land} ${d.sensoryNotes || ''}`.toLowerCase().includes(query)) {
+                matches.push({ type: 'Disneyland Paris', title: d.name, desc: `${d.park} (${d.land}) - ${d.sensoryNotes || ''}`, url: 'disneyland-paris.html', badge: 'DLP Sensory' });
+            }
+        });
+
+        if (matches.length === 0) {
+            resultsContainer.innerHTML = `<p style="text-align:center; color:#888; margin:25px 0;">No results found for "<strong>${query}</strong>".</p>`;
+            return;
+        }
+
+        resultsContainer.innerHTML = matches.slice(0, 12).map(m => `
+            <a href="${m.url}" style="display:block; padding:12px 14px; border-radius:8px; background:#fbfbfb; border:1px solid #e9ecef; text-decoration:none; transition:background 0.2s;" onmouseover="this.style.background='#f0f8f8'" onmouseout="this.style.background='#fbfbfb'">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-weight:700; color:var(--color-primary, #bd2419); font-size:1rem;">${m.title}</span>
+                    <span style="font-size:0.75rem; font-weight:700; background:#e0f2f1; color:#00695c; padding:2px 8px; border-radius:12px;">${m.badge}</span>
+                </div>
+                <p style="font-size:0.85rem; color:#555; margin:0; line-height:1.4;">${m.desc}</p>
+            </a>
+        `).join('');
+
     } catch (err) {
-        console.warn('Dynamic load fallback:', err);
+        resultsContainer.innerHTML = `<p style="color:#bd2419;">Search error. Please try again.</p>`;
     }
 }
 
-async function loadReviewsDirectory() {
-    const container = document.getElementById('all-reviews-grid');
-    const filterButtons = document.querySelectorAll('.filter-btn');
+/* --- 3. Dynamic Page Switcher --- */
+function initDynamicPages() {
+    if (document.querySelector('.home-featured .card-grid')) loadFeaturedReviews();
+    if (document.querySelector('#all-reviews-grid')) loadReviewsDirectory();
+    if (document.querySelector('#whatson-list')) loadWhatsOnDirectory();
+    if (document.querySelector('#theatre-list')) loadTheatreGuideDirectory();
+    if (document.querySelector('#news-feed-list')) loadNewsDirectory();
+    if (document.querySelector('#panto-list')) loadPantomimeDirectory();
+}
+
+/* --- 4. Theatres Guide with Search & Location Grouping --- */
+async function loadTheatreGuideDirectory() {
+    const container = document.getElementById('theatre-list');
+    const searchInput = document.getElementById('theatre-search-input');
+    const locationSelect = document.getElementById('theatre-location-filter');
     if (!container) return;
 
     try {
-        const res = await fetch('data/reviews.json');
-        if (!res.ok) throw new Error('Could not load reviews data');
-        let allReviews = await res.json();
+        const res = await fetch('data/theatres.json');
+        if (!res.ok) throw new Error('Could not load Theatres');
+        const theatres = await res.json();
+        theatres.sort((a, b) => (a.rank || 0) - (b.rank || 0));
 
-        allReviews = allReviews
-            .filter(r => r.status === 'published')
-            .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+        if (locationSelect) {
+            const locations = [...new Set(theatres.map(t => t.location).filter(Boolean))].sort();
+            locationSelect.innerHTML = '<option value="all">All Locations</option>' + locations.map(l => `<option value="${l}">${l}</option>`).join('');
+        }
 
-        const render = (filter = 'all') => {
-            const filtered = allReviews.filter(r => {
-                if (filter === 'all') return true;
-                if (filter === 'adhd') return r.tags && r.tags.adhd;
-                if (filter === 'sensory') return r.tags && r.tags.sensory;
-                if (filter === 'under5') return ['Ages 0+', 'Ages 1+', 'Ages 2+', 'Ages 3+', 'Ages 4+'].includes(r.age);
-                if (filter === '5plus') return ['Ages 5+', 'Ages 6+', 'Ages 7+', 'Ages 8+'].includes(r.age);
-                if (filter === 'older') return ['Ages 9+', 'Ages 10+', 'Ages 11+', 'Ages 12+', 'Ages 13+', 'Grown ups'].includes(r.age);
-                return true;
+        const render = () => {
+            const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const loc = locationSelect ? locationSelect.value : 'all';
+
+            const filtered = theatres.filter(t => {
+                const matchesText = `${t.name} ${t.location} ${t.accessibility}`.toLowerCase().includes(q);
+                const matchesLoc = loc === 'all' || t.location === loc;
+                return matchesText && matchesLoc;
             });
 
-            container.innerHTML = filtered.length > 0
-                ? filtered.map(r => buildReviewCardHTML(r)).join('')
-                : '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-light);">No reviews match this filter category.</p>';
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#777; margin:30px 0;">No matching theatre venues found.</p>';
+                return;
+            }
+
+            const groups = {};
+            filtered.forEach(t => {
+                const region = t.location || 'Other Venues';
+                if (!groups[region]) groups[region] = [];
+                groups[region].push(t);
+            });
+
+            container.innerHTML = Object.keys(groups).map(region => `
+                <div class="theatre-region-group" style="margin-bottom: 45px;">
+                    <h2 style="font-size:1.6rem; color:var(--color-primary); border-bottom:2px solid #e0e0e0; padding-bottom:8px; margin-bottom:20px;">
+                        <i class="fa-solid fa-location-dot"></i> ${region}
+                    </h2>
+                    <div class="theatre-region-cards">
+                        ${groups[region].map(t => buildTheatreCardHTML(t)).join('')}
+                    </div>
+                </div>
+            `).join('');
         };
 
-        render('all');
+        render();
 
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                render(btn.getAttribute('data-filter'));
-            });
-        });
-    } catch (err) {
-        console.warn('Reviews directory fallback:', err);
+        if (searchInput) searchInput.addEventListener('input', render);
+        if (locationSelect) locationSelect.addEventListener('change', render);
+
+    } catch (e) {
+        console.warn('Theatre load failure:', e);
     }
 }
 
+/* --- 5. What's On with Search, Touring Badge & Filtering --- */
 async function loadWhatsOnDirectory() {
     const container = document.getElementById('whatson-list');
+    const searchInput = document.getElementById('whatson-search-input');
+    const typeFilter = document.getElementById('whatson-type-filter');
     if (!container) return;
 
     try {
         const res = await fetch('data/whatson.json');
-        if (!res.ok) throw new Error('Could not load What\'s On data');
+        if (!res.ok) throw new Error('Could not load What\'s On');
         const shows = await res.json();
         const today = new Date().toISOString().split('T')[0];
 
@@ -270,63 +265,87 @@ async function loadWhatsOnDirectory() {
             .filter(s => !s.expiryDate || s.expiryDate >= today)
             .sort((a, b) => (a.rank || 0) - (b.rank || 0));
 
-        container.innerHTML = activeShows.length > 0
-            ? activeShows.map(s => buildWhatsOnCardHTML(s)).join('')
-            : '<p style="text-align: center; color: var(--color-text-light);">No active listings scheduled right now. Check back soon!</p>';
-    } catch (err) {
-        console.warn('What\'s On fallback:', err);
+        const render = () => {
+            const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const filterType = typeFilter ? typeFilter.value : 'all';
+
+            const filtered = activeShows.filter(s => {
+                const matchesText = `${s.title} ${s.venue} ${s.desc}`.toLowerCase().includes(q);
+                let matchesType = true;
+                if (filterType === 'touring') matchesType = !!s.isTouring;
+                if (filterType === 'west-midlands') matchesType = (s.region || '').toLowerCase().includes('midlands') || (s.venue || '').toLowerCase().includes('birmingham') || (s.venue || '').toLowerCase().includes('wolverhampton');
+                if (filterType === 'london') matchesType = (s.region || '').toLowerCase().includes('london') || (s.venue || '').toLowerCase().includes('london');
+                if (filterType === 'panto') matchesType = (s.category || '').toLowerCase() === 'panto';
+                return matchesText && matchesType;
+            });
+
+            container.innerHTML = filtered.length > 0
+                ? filtered.map(s => buildWhatsOnCardHTML(s)).join('')
+                : '<p style="text-align:center; color:#777; margin:30px 0;">No shows match your search criteria. Check back soon!</p>';
+        };
+
+        render();
+
+        if (searchInput) searchInput.addEventListener('input', render);
+        if (typeFilter) typeFilter.addEventListener('change', render);
+
+    } catch (e) {
+        console.warn('What\'s On fallback:', e);
     }
 }
 
-async function loadTheatreGuideDirectory() {
-    const container = document.getElementById('theatre-list');
+/* --- 6. News Feed Renderer --- */
+async function loadNewsDirectory() {
+    const container = document.getElementById('news-feed-list');
     if (!container) return;
 
     try {
-        const res = await fetch('data/theatres.json');
-        if (!res.ok) throw new Error('Could not load Theatre Guide data');
-        const theatres = await res.json();
+        const res = await fetch('data/news.json');
+        if (!res.ok) throw new Error('Could not load News');
+        const news = await res.json();
 
-        const sortedTheatres = theatres.sort((a, b) => (a.rank || 0) - (b.rank || 0));
-        container.innerHTML = sortedTheatres.map(t => buildTheatreCardHTML(t)).join('');
-    } catch (err) {
-        console.warn('Theatre guide fallback:', err);
+        const published = news
+            .filter(n => n.status === 'published')
+            .sort((a, b) => new Date(b.datePublished) - new Date(a.datePublished));
+
+        container.innerHTML = published.length > 0
+            ? published.map(n => buildNewsCardHTML(n)).join('')
+            : '<p style="text-align:center; color:#777; margin:30px 0;">No news stories published yet. Check back soon!</p>';
+    } catch (e) {
+        console.warn('News load failure:', e);
     }
 }
 
-/* --- Card HTML Builders --- */
-function buildReviewCardHTML(r) {
-    const ratingPercent = Math.min(100, Math.max(0, ((parseFloat(r.rating) || 5) / 5) * 100));
-    
-    let tagsHTML = `<span class="tag tag-age">${r.age || 'All Ages'}</span>`;
-    if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
-    if (r.tags?.sensory) tagsHTML += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
-    if (r.tags?.mature) tagsHTML += `\n<span class="tag tag-mature">Mature themes</span>`;
+/* --- 7. Seasonal Pantomime Feed Renderer --- */
+async function loadPantomimeDirectory() {
+    const container = document.getElementById('panto-list');
+    if (!container) return;
 
-    return `
-    <article class="card">
-        <img src="images/${r.mainImage}" alt="${r.altText || r.title}" loading="lazy" decoding="async">
-        <div class="card-content">
-            <div class="card-star-rating" role="img" aria-label="Rated ${r.rating} out of 5 stars">
-                <div class="star-rating" style="display: inline-block;">
-                    <div class="stars-empty">
-                        <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                    </div>
-                    <div class="stars-full" style="width: ${ratingPercent}%;">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                    </div>
-                </div>
-            </div>
-            <h3>${r.title}</h3>
-            <div class="card-tags">
-                ${tagsHTML}
-            </div>
-            <p>${r.summary}</p>
-            <a href="${r.slug}" class="btn btn-secondary">Read Full Review</a>
-        </div>
-    </article>`;
+    try {
+        const [showsRes, reviewsRes] = await Promise.all([
+            fetch('data/whatson.json').then(r => r.ok ? r.json() : []),
+            fetch('data/reviews.json').then(r => r.ok ? r.json() : [])
+        ]);
+
+        const today = new Date().toISOString().split('T')[0];
+        const pantoShows = showsRes.filter(s => (s.category === 'panto' || s.title.toLowerCase().includes('panto')) && (!s.expiryDate || s.expiryDate >= today));
+        const pantoReviews = reviewsRes.filter(r => (r.category === 'panto' || r.title.toLowerCase().includes('panto')) && r.status === 'published');
+
+        let html = '';
+        if (pantoShows.length > 0) {
+            html += `<h2 style="margin-bottom:20px;">Upcoming Pantomimes Booking Now</h2><div style="margin-bottom:40px;">${pantoShows.map(s => buildWhatsOnCardHTML(s)).join('')}</div>`;
+        }
+        if (pantoReviews.length > 0) {
+            html += `<h2 style="margin-bottom:20px;">Pantomime Reviews & Family Verdicts</h2><div class="card-grid">${pantoReviews.map(r => buildReviewCardHTML(r)).join('')}</div>`;
+        }
+
+        container.innerHTML = html || '<p style="text-align:center; color:#777; margin:30px 0;">Seasonal pantomime listings will return for the festive season!</p>';
+    } catch (e) {
+        console.warn('Panto load failure:', e);
+    }
 }
 
+/* --- 8. HTML Builders --- */
 function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
@@ -334,8 +353,14 @@ function buildWhatsOnCardHTML(s) {
             <img src="images/${s.image}" alt="${s.title}" loading="lazy" decoding="async">
         </div>
         <div class="listing-content">
-            <h3>${s.title}</h3>
-            <div class="card-tags"><span class="tag tag-age">${s.age}</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                <h3 style="margin:0;">${s.title}</h3>
+                ${s.isTouring ? '<span class="tag tag-touring"><i class="fa-solid fa-route"></i> UK Tour</span>' : ''}
+            </div>
+            <div class="card-tags" style="margin:8px 0 12px 0;">
+                <span class="tag tag-age">${s.age}</span>
+                ${s.category === 'panto' ? '<span class="tag tag-mature" style="background:#d81b60;">Pantomime</span>' : ''}
+            </div>
             <ul class="listing-info">
                 <li><i class="fa-solid fa-location-dot"></i> <span>${s.venue}</span></li>
                 <li><i class="fa-solid fa-calendar-days"></i> <span>${s.dates}</span></li>
@@ -346,6 +371,23 @@ function buildWhatsOnCardHTML(s) {
                 ${s.ticketLink ? `<a href="${s.ticketLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>` : ''}
                 ${s.siteLink ? `<a href="${s.siteLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>` : ''}
             </div>
+        </div>
+    </article>`;
+}
+
+function buildNewsCardHTML(n) {
+    const formattedDate = new Date(n.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    return `
+    <article class="card news-card">
+        <img src="images/${n.mainImage}" alt="${n.altText || n.title}" loading="lazy" decoding="async">
+        <div class="card-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span class="tag" style="background:var(--color-accent);">${n.category || 'News'}</span>
+                <time datetime="${n.datePublished}" style="font-size:0.8rem; color:#777;"><i class="fa-regular fa-clock"></i> ${formattedDate}</time>
+            </div>
+            <h3>${n.title}</h3>
+            <p>${n.summary}</p>
+            <a href="${n.slug}" class="btn btn-secondary">Read Full Story</a>
         </div>
     </article>`;
 }
@@ -366,4 +408,123 @@ function buildTheatreCardHTML(t) {
             ${t.website ? `<a href="${t.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Theatre Website</a>` : ''}
         </div>
     </article>`;
+}
+
+function buildReviewCardHTML(r) {
+    const ratingPercent = Math.min(100, Math.max(0, ((parseFloat(r.rating) || 5) / 5) * 100));
+    let tagsHTML = `<span class="tag tag-age">${r.age || 'All Ages'}</span>`;
+    if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">ADHD-Friendly Guide</span>`;
+    if (r.tags?.sensory) tagsHTML += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
+
+    return `
+    <article class="card">
+        <img src="images/${r.mainImage}" alt="${r.altText || r.title}" loading="lazy" decoding="async">
+        <div class="card-content">
+            <div class="card-star-rating" role="img" aria-label="Rated ${r.rating} out of 5 stars">
+                <div class="star-rating" style="display: inline-block;">
+                    <div class="stars-empty"><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></div>
+                    <div class="stars-full" style="width: ${ratingPercent}%;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+            </div>
+            <h3>${r.title}</h3>
+            <div class="card-tags">${tagsHTML}</div>
+            <p>${r.summary}</p>
+            <a href="${r.slug}" class="btn btn-secondary">Read Full Review</a>
+        </div>
+    </article>`;
+}
+
+async function loadFeaturedReviews() {
+    const container = document.querySelector('.home-featured .card-grid');
+    if (!container) return;
+    try {
+        const res = await fetch('data/reviews.json');
+        if (!res.ok) return;
+        const reviews = await res.json();
+        const featured = reviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0)).slice(0, 3);
+        container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
+    } catch (e) {}
+}
+
+async function loadReviewsDirectory() {
+    const container = document.getElementById('all-reviews-grid');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    if (!container) return;
+    try {
+        const res = await fetch('data/reviews.json');
+        if (!res.ok) return;
+        let allReviews = await res.json();
+        allReviews = allReviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0));
+
+        const render = (filter = 'all') => {
+            const filtered = allReviews.filter(r => {
+                if (filter === 'all') return true;
+                if (filter === 'adhd') return r.tags && r.tags.adhd;
+                if (filter === 'sensory') return r.tags && r.tags.sensory;
+                if (filter === 'under5') return ['Ages 0+', 'Ages 1+', 'Ages 2+', 'Ages 3+', 'Ages 4+'].includes(r.age);
+                if (filter === '5plus') return ['Ages 5+', 'Ages 6+', 'Ages 7+', 'Ages 8+'].includes(r.age);
+                return true;
+            });
+            container.innerHTML = filtered.length > 0 ? filtered.map(r => buildReviewCardHTML(r)).join('') : '<p style="text-align: center; color: var(--color-text-light);">No reviews match this filter.</p>';
+        };
+        render('all');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render(btn.getAttribute('data-filter'));
+            });
+        });
+    } catch (e) {}
+}
+
+function initGlobalFooter() {
+    const footerContainer = document.querySelector('.site-footer .container');
+    if (!footerContainer) return;
+    const currentYear = new Date().getFullYear();
+    const domainUrl = "https://behindthemagiccurtain.co.uk";
+    const emailAddress = "Hello@behindthemagiccurtain.co.uk";
+
+    footerContainer.innerHTML = `
+        <div class="footer-newsletter-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 30px 20px; max-width: 640px; margin: 0 auto 35px auto; text-align: center;">
+            <h3 style="color: #ffffff; font-family: var(--font-heading, 'Raleway', sans-serif); font-size: 1.45rem; margin-bottom: 8px;">
+                <i class="fa-solid fa-envelope-open-text" style="color: var(--color-secondary, #ffd700); margin-right: 8px;"></i> Join the BTMC Family Club
+            </h3>
+            <p style="color: #cccccc; font-size: 0.92rem; margin-bottom: 20px; line-height: 1.5;">Get our latest family theatre reviews, sensory insights, and Disneyland tips delivered straight to your inbox.</p>
+            <form id="footer-newsletter-form" onsubmit="event.preventDefault(); handleFooterNewsletterSubmit();" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto;">
+                <input type="text" id="footer-user-name" placeholder="Your Name" style="flex: 1 1 140px; min-width: 130px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
+                <input type="email" id="footer-user-email" placeholder="Email Address *" required style="flex: 1 1 180px; min-width: 170px; padding: 12px 14px; border-radius: 50px; border: 1.5px solid rgba(255, 255, 255, 0.2); background: #ffffff; color: #222222; font-size: 0.9rem; font-family: var(--font-body, 'Poppins', sans-serif); outline: none;">
+                <button type="submit" class="btn btn-primary" style="padding: 12px 24px; font-size: 0.92rem; border-radius: 50px; cursor: pointer; border: none; font-weight: 700; white-space: nowrap;">Join Club</button>
+            </form>
+            <p style="font-size: 0.78rem; color: #999999; margin: 12px 0 0 0;">🔒 Zero spam. <a href="unsubscribe.html" style="color: #bbbbbb; text-decoration: underline;">Unsubscribe or delete your data</a> anytime.</p>
+        </div>
+        <iframe name="footer_submit_target_iframe" id="footer_submit_target_iframe" style="display:none;"></iframe>
+        <form id="native_footer_form" action="https://docs.google.com/forms/d/e/1FAIpQLScODeuHl2_gKBfoitmXdtpmIavjbk3pKyVq3ctHFOnhsgdObg/formResponse" method="POST" target="footer_submit_target_iframe" style="display:none;">
+            <input type="hidden" name="entry.1934084784" id="footer_gform_optin">
+            <input type="hidden" name="entry.1983797623" id="footer_gform_contact">
+            <input type="hidden" name="entry.266837979" id="footer_gform_diary">
+        </form>
+        <div style="margin-bottom: 12px; font-size: 0.95rem;">
+            <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}</a>
+            <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk</a>
+        </div>
+        <div style="font-size: 0.85rem; color: #777777;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
+    `;
+}
+
+function handleFooterNewsletterSubmit() {
+    const nameInput = document.getElementById('footer-user-name');
+    const emailInput = document.getElementById('footer-user-email');
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
+    if (!email || !email.includes('@')) return;
+
+    document.getElementById('footer_gform_optin').value = "Yes - Join Club";
+    document.getElementById('footer_gform_contact').value = `${name || 'Friend'} (${email})`;
+    document.getElementById('footer_gform_diary').value = "General Website Footer Signup";
+    document.getElementById('native_footer_form').submit();
+
+    nameInput.value = '';
+    emailInput.value = '';
+    alert(`🎉 Welcome ${name || ''}! Check your inbox for a welcome email.`);
 }
