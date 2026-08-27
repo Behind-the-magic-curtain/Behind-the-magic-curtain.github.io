@@ -1,11 +1,11 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.0)
- * Dynamic Navigation, Global Omni-Search, Live Filters & Auto-Expiring Directories
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.2)
+ * Smooth Drop-Down Search Tray, Dynamic Nav Switchboard, Multi-Filters & Footer Ingestion
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     initDynamicNavigation();
-    initGlobalSearch();
+    initGlobalSearchTray();
     initGlobalFooter();
     initDynamicPages();
 });
@@ -27,7 +27,7 @@ async function initDynamicNavigation() {
             }
         }
     } catch (e) {
-        console.warn('Navigation fallback to hardcoded markup:', e);
+        console.warn('Navigation fallback:', e);
     }
 
     const navToggle = document.querySelector('.nav-toggle');
@@ -35,8 +35,14 @@ async function initDynamicNavigation() {
     if (navToggle && mainNav) {
         navToggle.addEventListener('click', (e) => {
             e.stopPropagation();
+            // Close search bar if opening mobile menu
+            const tray = document.getElementById('btmc-search-tray');
+            if (tray && tray.classList.contains('active')) {
+                toggleSearchTray(false);
+            }
             mainNav.classList.toggle('nav-open');
         });
+
         document.addEventListener('click', (e) => {
             if (mainNav.classList.contains('nav-open') && !mainNav.contains(e.target) && !navToggle.contains(e.target)) {
                 mainNav.classList.remove('nav-open');
@@ -45,56 +51,91 @@ async function initDynamicNavigation() {
     }
 }
 
-/* --- 2. Global Omni-Search Overlay --- */
-function initGlobalSearch() {
+/* --- 2. Drop-Down Search Tray Controller --- */
+function initGlobalSearchTray() {
+    const siteHeader = document.querySelector('.site-header');
+    if (!siteHeader) return;
+
+    // Inject Trigger Button into Header if not in HTML
     let searchBtn = document.getElementById('btn-global-search-trigger');
     if (!searchBtn) {
-        const navContainer = document.querySelector('.site-header .container');
+        const navContainer = siteHeader.querySelector('.container');
         if (navContainer) {
-            const searchTrigger = document.createElement('button');
-            searchTrigger.id = 'btn-global-search-trigger';
-            searchTrigger.setAttribute('aria-label', 'Open Global Search');
-            searchTrigger.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
-            searchTrigger.style.cssText = 'background:transparent; border:none; color:#ffffff; font-size:1.25rem; cursor:pointer; padding:8px 12px; margin-left:auto; display:inline-flex; align-items:center;';
-            navContainer.appendChild(searchTrigger);
-            searchTrigger.addEventListener('click', openGlobalSearchModal);
+            searchBtn = document.createElement('button');
+            searchBtn.id = 'btn-global-search-trigger';
+            searchBtn.className = 'header-search-btn';
+            searchBtn.setAttribute('aria-label', 'Toggle Search Tray');
+            searchBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+            navContainer.appendChild(searchBtn);
         }
     }
 
-    const modalHTML = `
-    <div id="btmc-search-modal" class="search-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; backdrop-filter:blur(4px); align-items:flex-start; justify-content:center; padding:60px 20px;">
-        <div class="search-modal-box" style="background:#ffffff; width:100%; max-width:680px; border-radius:14px; box-shadow:0 15px 40px rgba(0,0,0,0.3); overflow:hidden; display:flex; flex-direction:column; max-height:80vh;">
-            <div style="padding:16px 20px; border-bottom:1px solid #e0e0e0; display:flex; align-items:center; gap:12px; background:#f8fafb;">
-                <i class="fa-solid fa-magnifying-glass" style="color:var(--color-primary, #bd2419); font-size:1.2rem;"></i>
-                <input type="search" id="global-search-input" placeholder="Search shows, venues, reviews, sensory guides..." style="width:100%; border:none; outline:none; font-size:1.05rem; font-family:var(--font-body, 'Poppins', sans-serif); background:transparent;">
-                <button type="button" id="close-search-modal-btn" style="background:none; border:none; font-size:1.3rem; color:#888; cursor:pointer; padding:4px 8px;">&times;</button>
+    // Build the Drop-Down Search Tray directly beneath the header
+    if (!document.getElementById('btmc-search-tray')) {
+        const trayHtml = `
+            <div id="btmc-search-tray" class="search-dropdown-tray">
+                <div class="container">
+                    <div class="search-tray-inner">
+                        <div class="search-input-wrap">
+                            <i class="fa-solid fa-magnifying-glass search-field-icon"></i>
+                            <input type="search" id="global-search-input" placeholder="Search shows, venues, reviews, sensory guides..." autocomplete="off">
+                            <button type="button" id="close-search-tray-btn" class="search-close-btn" aria-label="Close search">&times;</button>
+                        </div>
+                        <div id="global-search-results" class="search-results-dropdown" style="display:none;"></div>
+                    </div>
+                </div>
             </div>
-            <div id="global-search-results" style="padding:20px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
-                <p style="text-align:center; color:#888; font-size:0.95rem; margin:20px 0;">Type at least 2 characters to search across all guides and reviews...</p>
-            </div>
-        </div>
-    </div>`;
+        `;
+        siteHeader.insertAdjacentHTML('afterend', trayHtml);
 
-    if (!document.getElementById('btmc-search-modal')) {
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
-        document.getElementById('close-search-modal-btn').addEventListener('click', closeGlobalSearchModal);
-        document.getElementById('btmc-search-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'btmc-search-modal') closeGlobalSearchModal();
+        searchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const tray = document.getElementById('btmc-search-tray');
+            const isOpen = tray.classList.contains('active');
+            toggleSearchTray(!isOpen);
         });
+
+        document.getElementById('close-search-tray-btn').addEventListener('click', () => toggleSearchTray(false));
+
         document.getElementById('global-search-input').addEventListener('input', debounceSearch(handleGlobalSearchInput, 250));
+
+        // Click outside or press Esc to close
+        document.addEventListener('click', (e) => {
+            const tray = document.getElementById('btmc-search-tray');
+            if (tray && tray.classList.contains('active') && !tray.contains(e.target) && !searchBtn.contains(e.target)) {
+                toggleSearchTray(false);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleSearchTray(false);
+        });
     }
 }
 
-function openGlobalSearchModal() {
-    const modal = document.getElementById('btmc-search-modal');
-    modal.style.display = 'flex';
-    document.getElementById('global-search-input').focus();
-}
+function toggleSearchTray(open) {
+    const tray = document.getElementById('btmc-search-tray');
+    const input = document.getElementById('global-search-input');
+    const results = document.getElementById('global-search-results');
+    const triggerBtn = document.getElementById('btn-global-search-trigger');
+    const mainNav = document.querySelector('.main-nav');
 
-function closeGlobalSearchModal() {
-    document.getElementById('btmc-search-modal').style.display = 'none';
-    document.getElementById('global-search-input').value = '';
-    document.getElementById('global-search-results').innerHTML = '<p style="text-align:center; color:#888; font-size:0.95rem; margin:20px 0;">Type at least 2 characters to search...</p>';
+    if (!tray) return;
+
+    if (open) {
+        if (mainNav && mainNav.classList.contains('nav-open')) {
+            mainNav.classList.remove('nav-open');
+        }
+        tray.classList.add('active');
+        if (triggerBtn) triggerBtn.classList.add('active');
+        setTimeout(() => input.focus(), 150);
+    } else {
+        tray.classList.remove('active');
+        if (triggerBtn) triggerBtn.classList.remove('active');
+        input.value = '';
+        results.style.display = 'none';
+        results.innerHTML = '';
+    }
 }
 
 function debounceSearch(fn, delay) {
@@ -109,11 +150,13 @@ async function handleGlobalSearchInput(e) {
     const query = e.target.value.trim().toLowerCase();
     const resultsContainer = document.getElementById('global-search-results');
     if (query.length < 2) {
-        resultsContainer.innerHTML = '<p style="text-align:center; color:#888; font-size:0.95rem; margin:20px 0;">Type at least 2 characters to search...</p>';
+        resultsContainer.style.display = 'none';
+        resultsContainer.innerHTML = '';
         return;
     }
 
-    resultsContainer.innerHTML = '<p style="text-align:center; color:#666;"><i class="fa-solid fa-spinner fa-spin"></i> Searching...</p>';
+    resultsContainer.style.display = 'flex';
+    resultsContainer.innerHTML = '<p class="search-msg"><i class="fa-solid fa-spinner fa-spin"></i> Searching...</p>';
 
     try {
         const [reviews, whatson, theatres, news, dlp] = await Promise.all([
@@ -157,22 +200,22 @@ async function handleGlobalSearchInput(e) {
         });
 
         if (matches.length === 0) {
-            resultsContainer.innerHTML = `<p style="text-align:center; color:#888; margin:25px 0;">No results found for "<strong>${query}</strong>".</p>`;
+            resultsContainer.innerHTML = `<p class="search-msg">No results found for "<strong>${query}</strong>".</p>`;
             return;
         }
 
-        resultsContainer.innerHTML = matches.slice(0, 12).map(m => `
-            <a href="${m.url}" style="display:block; padding:12px 14px; border-radius:8px; background:#fbfbfb; border:1px solid #e9ecef; text-decoration:none; transition:background 0.2s;" onmouseover="this.style.background='#f0f8f8'" onmouseout="this.style.background='#fbfbfb'">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <span style="font-weight:700; color:var(--color-primary, #bd2419); font-size:1rem;">${m.title}</span>
-                    <span style="font-size:0.75rem; font-weight:700; background:#e0f2f1; color:#00695c; padding:2px 8px; border-radius:12px;">${m.badge}</span>
+        resultsContainer.innerHTML = matches.slice(0, 8).map(m => `
+            <a href="${m.url}" class="search-result-card">
+                <div class="result-header">
+                    <span class="result-title">${m.title}</span>
+                    <span class="result-badge">${m.badge}</span>
                 </div>
-                <p style="font-size:0.85rem; color:#555; margin:0; line-height:1.4;">${m.desc}</p>
+                <p class="result-desc">${m.desc}</p>
             </a>
         `).join('');
 
     } catch (err) {
-        resultsContainer.innerHTML = `<p style="color:#bd2419;">Search error. Please try again.</p>`;
+        resultsContainer.innerHTML = `<p class="search-msg" style="color:var(--color-primary);">Search encountered an error. Please try again.</p>`;
     }
 }
 
