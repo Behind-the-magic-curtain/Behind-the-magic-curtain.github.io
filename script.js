@@ -779,3 +779,95 @@ function handleFooterNewsletterSubmit() {
     emailInput.value = '';
     showBtmcToast(`Welcome ${name || ''}! Check your inbox for a welcome email.`);
 }
+/* --- 13. Gated Social & Download Engine --- */
+let gatewayTargetUrl = '';
+let socialFollowClicked = false;
+
+function triggerGatedDownload(targetDownloadUrl, resourceTitle = "Disneyland Paris Planner") {
+    gatewayTargetUrl = targetDownloadUrl;
+    
+    // Bypass if already unlocked previously
+    if (localStorage.getItem('btmc_lead_unlocked') === 'true') {
+        window.open(targetDownloadUrl, '_blank');
+        return;
+    }
+
+    let modal = document.getElementById('btmc-gateway-modal');
+    if (!modal) {
+        const modalHtml = `
+            <div id="btmc-gateway-modal" class="btmc-modal-overlay" style="display:none;">
+                <div class="btmc-gateway-card">
+                    <button class="gateway-close-btn" onclick="closeGatewayModal()">&times;</button>
+                    <h2 id="gateway-title" style="font-size:1.6rem; color:var(--color-primary); margin-bottom:8px;">Unlock Your Free Guide</h2>
+                    <p style="font-size:0.9rem; color:var(--color-text-light);">Complete 2 quick steps to unlock instant access:</p>
+                    
+                    <div class="gateway-steps">
+                        <div class="gateway-step" id="step-social-row">
+                            <div class="step-info">
+                                <span class="step-num" id="step-1-icon">1</span>
+                                <div>
+                                    <strong style="display:block; font-size:0.95rem;">Follow us on Instagram / Facebook</strong>
+                                    <span style="font-size:0.8rem; color:#666;">Support our family theatre & sensory guides</span>
+                                </div>
+                            </div>
+                            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding:6px 14px; font-size:0.85rem;" onclick="markSocialStepDone()">Follow</a>
+                        </div>
+                    </div>
+
+                    <form id="gateway-email-form" onsubmit="event.preventDefault(); handleGatewaySubmit();">
+                        <input type="text" id="gateway-name" class="gateway-input" placeholder="Your Name" required>
+                        <input type="email" id="gateway-email" class="gateway-input" placeholder="Your Email Address" required>
+                        <button type="submit" id="gateway-submit-btn" class="btn btn-primary" style="width:100%; justify-content:center;">
+                            <i class="fa-solid fa-unlock"></i> Unlock & Download Now
+                        </button>
+                    </form>
+                    <p style="font-size:0.75rem; color:#888; margin-top:12px;">🔒 We respect your privacy. Zero spam. Unsubscribe anytime.</p>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        modal = document.getElementById('btmc-gateway-modal');
+    }
+
+    document.getElementById('gateway-title').textContent = `Unlock: ${resourceTitle}`;
+    modal.style.display = 'flex';
+}
+
+function closeGatewayModal() {
+    const modal = document.getElementById('btmc-gateway-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function markSocialStepDone() {
+    socialFollowClicked = true;
+    const row = document.getElementById('step-social-row');
+    const icon = document.getElementById('step-1-icon');
+    if (row) row.classList.add('completed');
+    if (icon) icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+}
+
+function handleGatewaySubmit() {
+    const name = document.getElementById('gateway-name').value.trim();
+    const email = document.getElementById('gateway-email').value.trim().toLowerCase();
+
+    if (!email || !email.includes('@')) {
+        showBtmcToast('Please enter a valid email address.', 'toast-error');
+        return;
+    }
+
+    // Submit silently to Google Sheets via your existing footer form backend
+    document.getElementById('footer_gform_optin').value = "Yes - Join Club";
+    document.getElementById('footer_gform_contact').value = `${name || 'Parent'} (${email})`;
+    document.getElementById('footer_gform_diary').value = `Lead Magnet Download: ${gatewayTargetUrl}`;
+    document.getElementById('native_footer_form').submit();
+
+    // Cache authorization so user only does this once
+    localStorage.setItem('btmc_lead_unlocked', 'true');
+    closeGatewayModal();
+
+    // Download/open target document
+    showBtmcToast(`Thank you, ${name || 'friend'}! Your guide is opening.`);
+    if (gatewayTargetUrl) {
+        window.open(gatewayTargetUrl, '_blank');
+    }
+}
