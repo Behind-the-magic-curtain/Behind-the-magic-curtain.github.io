@@ -45,16 +45,25 @@
       "sensory": true,
       "mature": false
     },
-    "mainImage": "madagascar-review.jpg",
+    "mainImage": "madagascar-review.webp",
+    "galleryImages": [
+      "madagascar-2.webp",
+      "madagascar-4.webp",
+      "madagascar-5.webp",
+      "madagascar-6.webp",
+      "madagascar-7.webp",
+      "madagascar-8.webp"
+    ],
     "altText": "Madagascar the musical cast on stage",
     "summary": "It’s crack-a-lackin' entertainment for all the family! This high-energy show is the perfect length for a younger audience.",
-    "bodyHtml": "<p>Natural food chains don’t matter when you live in luxury at New York’s Central Park Zoo. Best friends Alex the Lion and Marty the Zebra have everything they need...</p><p>The musical production showcases a fantastic mix of theatrical puppetry, mixed in with the main characters in full costumes.</p>",
+    "bodyHtml": "<p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">Natural food chains don’t matter when you live in luxury at New York’s Central Park Zoo. Best friends Alex the Lion and Marty the Zebra have everything they need, handed to them on an all-inclusive plate – except for adventure.</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">Inspired by a team of escapee penguins, Marty’s thirst for freedom leads the gang on a wild journey - but Alex is so hungry their friendship is at risk of being torn apart!</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">Based on the 2005 DreamWorks animation, Alex and Marty and their mates Melman the Giraffe and Gloria the Hippo, burst out of the zoo for a night exploring the Big Apple. They end up on the adventure of a lifetime, when they find themselves ship wrecked on the African island of Madagascar, where the natives are a little cuckoo in the head!</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">On stage in Wolverhampton, a cheeky monkey opens the show, reminding the audience to turn off their phones – or risk having poo flung at them.</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">The show moves quickly through the movie plot, but doesn’t miss out any of the essential moments. The musical production showcases a fantastic mix of theatrical puppetry, mixed in with the main characters in full costumes.</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">Even as adults, it’s easy to watch the performance through the animals, as the puppets come to life and the actors working them are seamless in the background. A small cast of just 11 actors, bring a range of wild animals and characters to life and the pesky penguins make a regular appearance throughout the show, bringing continued chaos and laughter.</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">The scenery was great, changing from the cages of the zoo to the wild forests. For me, the film scene when the animals are talking in their transfer boxes, came to life perfectly on a blacked out stage.</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">In the second act, the lemurs and their leader, King Julien XIII really get the party started. A clear favourite is King Julien, played by CBBC and Strictly Come Dancing star, Karim Zeroual.</p><p style=\"margin: 0px 0px 1.4em; color: rgb(85, 85, 85); font-size: 16px;\">It is a lively and high energy production, with an upbeat score throughout, ensuring the audience were ready to Move It, Move It by the finale, which saw everybody on their feet.</p>",
     "tips": [
-      "Running Time: 1hr 45min (including an interval).",
-      "Pacing: A lively, high-energy production with an upbeat score.",
-      "Loud noises: Expect some loud roars as you explore the jungles of Madagascar."
+      "This is a fantastic show for a family outing, especially for younger kids.",
+      "Running Time: 1hr 45min (including an interval). A great length for little ones with the interval providing a good stretch break!",
+      "Pacing: A lively, high-energy production with an upbeat score. It moves quickly and is great for holding attention.",
+      "Audience: It’s crack-a-lackin' entertainment for all the family and touring across the UK!",
+      "Loud Noises: Expect some loud roars as you explore the jungles of Madagascar and for those who need them, do not forget to pack ear defenders!"
     ],
-    "featured": true,
     "rank": 2,
     "status": "published"
   },
