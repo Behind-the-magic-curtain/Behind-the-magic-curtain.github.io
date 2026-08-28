@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.1)
- * Universal First-Image Logic, Multi-Image Swiper Generation & WYSIWYG Ribbon
+ * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.3)
+ * Inline Label/Badge Injection, Dual-Section News Composer, Multi-Image Queue & Auto-Build
  */
 
 const MASTER_PIN = "3011";
@@ -14,16 +14,34 @@ let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneylan
 let draggedRowIndex = null;
 let toastTimeout = null;
 
-/* --- 1. WYSIWYG Ribbon Helpers --- */
-function applyFormat(command, value = null) {
-    document.execCommand(command, false, value);
+/* --- 1. Inline Ribbon & Label Engine --- */
+function applyInlineFormat(command, value = null) {
+    if (command === 'formatBlock') {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            document.execCommand('formatBlock', false, `<${value}>`);
+        }
+    } else {
+        document.execCommand(command, false, value);
+    }
 }
 
-function insertLink() {
+function insertInlineLink() {
     const url = prompt('Enter web link URL (https://...):');
     if (url) {
         document.execCommand('createLink', false, url);
     }
+}
+
+function applyBadgeLabel(tagClass) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
+        alert('Please highlight the text first to turn it into a styled badge.');
+        return;
+    }
+    const selectedText = selection.toString();
+    const badgeHtml = `<span class="tag ${tagClass}">${selectedText}</span>&nbsp;`;
+    document.execCommand('insertHTML', false, badgeHtml);
 }
 
 /* --- 2. PIN Security & Initialization --- */
@@ -190,7 +208,7 @@ function syncNewsSlug() {
     document.getElementById('news-slug').value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '.html';
 }
 
-/* --- 4. Edit Dispatchers --- */
+/* --- 4. Edit Mode Dispatchers --- */
 function enterEditReview(id) {
     const item = currentCache.reviews.find(r => r.id === id);
     if (!item) return;
@@ -212,7 +230,15 @@ function enterEditReview(id) {
     document.getElementById('rev-image-alt').value = item.altText || '';
     document.getElementById('rev-summary').value = item.summary || '';
     document.getElementById('wysiwyg-content').innerHTML = item.bodyHtml || '<p></p>';
-    document.getElementById('rev-tips').value = (item.tips || []).join('\n');
+    
+    if (item.tipsHtml) {
+        document.getElementById('rev-tips-wysiwyg').innerHTML = item.tipsHtml;
+    } else if (Array.isArray(item.tips)) {
+        document.getElementById('rev-tips-wysiwyg').innerHTML = `<ul>${item.tips.map(t => `<li>${t}</li>`).join('')}</ul>`;
+    } else {
+        document.getElementById('rev-tips-wysiwyg').innerHTML = '';
+    }
+
     document.getElementById('rev-published').checked = item.status === 'published';
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Review';
 
@@ -294,6 +320,7 @@ function enterEditNews(id) {
     document.getElementById('news-author').value = item.author || 'Katy Rose Meaney';
     document.getElementById('news-summary').value = item.summary || '';
     document.getElementById('news-body-wysiwyg').innerHTML = item.bodyHtml || '';
+    document.getElementById('news-details-wysiwyg').innerHTML = item.detailsHtml || '';
     document.getElementById('news-published').checked = item.status === 'published';
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story';
 
@@ -322,10 +349,12 @@ function cancelEditMode() {
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story';
 
     document.getElementById('wysiwyg-content').innerHTML = '';
+    document.getElementById('rev-tips-wysiwyg').innerHTML = '';
     document.getElementById('wo-desc-wysiwyg').innerHTML = '';
     document.getElementById('th-access-wysiwyg').innerHTML = '';
     document.getElementById('th-relaxed-wysiwyg').innerHTML = '';
     document.getElementById('news-body-wysiwyg').innerHTML = '';
+    document.getElementById('news-details-wysiwyg').innerHTML = '';
 
     reviewImages = [];
     theatreImages = [];
@@ -337,7 +366,7 @@ function cancelEditMode() {
     renderImagePreviews('news');
 }
 
-/* --- 5. Publishing Engine with Universal First Image Logic --- */
+/* --- 5. Publishing Handlers --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -358,9 +387,9 @@ async function handleReviewSubmit() {
 
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
         
-        // Universal First Image Queue Logic
         const primaryImage = reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.webp' : 'placeholder.webp');
         const carouselImages = reviewImages.slice(1).map(img => img.name);
+        const tipsHtmlContent = document.getElementById('rev-tips-wysiwyg').innerHTML;
 
         const reviewEntry = {
             id: editId || 'rev_' + Date.now(),
@@ -379,7 +408,7 @@ async function handleReviewSubmit() {
             altText: document.getElementById('rev-image-alt').value.trim() || title,
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
-            tips: document.getElementById('rev-tips').value.split('\n').filter(t => t.trim()),
+            tipsHtml: tipsHtmlContent,
             rank: editId ? (reviews.find(r => r.id === editId)?.rank || 1) : 1,
             status: isPublished ? 'published' : 'draft'
         };
@@ -420,7 +449,6 @@ async function handleNewsSubmit() {
         const newsList = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
         const existing = editId ? newsList.find(n => n.id === editId) : null;
 
-        // Universal First Image Queue Logic
         const primaryImage = newsImages.length > 0 ? newsImages[0].name : (existing?.mainImage || 'news-default.webp');
         const carouselImages = newsImages.slice(1).map(img => img.name);
 
@@ -432,6 +460,7 @@ async function handleNewsSubmit() {
             author: document.getElementById('news-author').value.trim() || 'Katy Rose Meaney',
             summary: document.getElementById('news-summary').value.trim(),
             bodyHtml: document.getElementById('news-body-wysiwyg').innerHTML,
+            detailsHtml: document.getElementById('news-details-wysiwyg').innerHTML,
             mainImage: primaryImage,
             galleryImages: carouselImages,
             datePublished: existing ? existing.datePublished : nowIso,
@@ -443,10 +472,8 @@ async function handleNewsSubmit() {
         const updated = editId ? newsList.map(n => n.id === editId ? entry : n) : [entry, ...newsList];
         updated.forEach((n, idx) => n.rank = idx + 1);
 
-        // 1. Commit Data Feed
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
         
-        // 2. Commit Static HTML with Swiper Carousel Generator
         const pageHtml = buildFullNewsPageHtml(entry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news page: ${title}`);
 
@@ -547,7 +574,7 @@ async function handleTheatreSubmit() {
     }
 }
 
-/* --- 6. HTML Template Generators with Auto-Carousel Support --- */
+/* --- 6. HTML Template Generators --- */
 function buildFullNewsPageHtml(d) {
     const formattedDate = new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     
@@ -568,6 +595,14 @@ function buildFullNewsPageHtml(d) {
                 <div class="swiper-button-next" aria-label="Next slide"></div>
             </div>
         </div>`;
+    }
+
+    let detailsCardSection = '';
+    if (d.detailsHtml && d.detailsHtml.trim()) {
+        detailsCardSection = `
+        <article class="news-details-box">
+            ${d.detailsHtml}
+        </article>`;
     }
 
     const newsSchema = JSON.stringify({
@@ -639,6 +674,7 @@ function buildFullNewsPageHtml(d) {
                 <img src="images/${d.mainImage}" alt="${d.title}" class="review-main-image" loading="lazy">
                 ${d.bodyHtml}
                 ${gallerySection}
+                ${detailsCardSection}
                 <div style="margin-top: 40px; text-align: center;">
                     <a href="news.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to All News</a>
                 </div>
@@ -660,7 +696,9 @@ function buildFullReviewPageHtml(d) {
     if (d.tags?.mature) tags += `\n<span class="tag tag-mature">Mature themes</span>`;
 
     let tipsSection = '';
-    if (d.tips && d.tips.length > 0) {
+    if (d.tipsHtml && d.tipsHtml.trim()) {
+        tipsSection = `<article>\n<h3>Sensory Strategies & Parent Insights</h3>\n${d.tipsHtml}\n</article>`;
+    } else if (d.tips && d.tips.length > 0) {
         tipsSection = `<article>\n<h3>Sensory Strategies & Parent Insights</h3>\n<ul>\n${d.tips.map(t => `<li>${t}</li>`).join('\n')}\n</ul>\n</article>`;
     }
 
