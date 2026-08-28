@@ -1173,7 +1173,7 @@ a.clickable-card {
     font-size: 0.92rem;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 850px) { 
     .header-search-btn {
         margin-left: auto;
         margin-right: 8px;
