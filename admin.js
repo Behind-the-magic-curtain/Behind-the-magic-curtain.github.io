@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.0)
- * Word-Style Formatting Ribbon, WebP Compression & Automated HTML Publishing
+ * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.1)
+ * Universal First-Image Logic, Multi-Image Swiper Generation & WYSIWYG Ribbon
  */
 
 const MASTER_PIN = "3011";
@@ -98,7 +98,7 @@ function showToast(msg, type = 'status-success') {
     }
 }
 
-/* --- 3. Image Compressor --- */
+/* --- 3. Image Processing & Queue Logic --- */
 async function processAndCompressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -128,7 +128,6 @@ async function processAndCompressImage(file) {
 
 async function handleImageSelection(fileList, type) {
     let targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : (type === 'whatson' ? whatsonImages : newsImages));
-    if (type !== 'review') targetArray.length = 0;
 
     for (let i = 0; i < fileList.length; i++) {
         if (fileList[i].type.startsWith('image/')) {
@@ -147,14 +146,30 @@ function renderImagePreviews(type) {
 
     container.innerHTML = targetArray.map((item, idx) => `
         <div class="img-item">
-            <div style="display:flex; align-items:center; gap:10px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-weight:700; color:#888;">#${idx + 1}</span>
                 <img src="${item.preview}">
                 <span>${item.name}</span>
-                <span style="font-size:0.75rem; color:#00838f; font-weight:700;">WEBP READY</span>
+                ${idx === 0 
+                    ? '<span class="img-queue-badge badge-main-img"><i class="fa-solid fa-star"></i> Header & Card Image</span>' 
+                    : '<span class="img-queue-badge badge-gallery-img"><i class="fa-solid fa-images"></i> Carousel Slide</span>'}
             </div>
-            <button type="button" onclick="removeImage('${type}', ${idx})" class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+            <div style="display:flex; gap:6px;">
+                ${idx > 0 ? `<button type="button" onclick="moveImageInQueue('${type}', ${idx}, -1)" class="btn-edit" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
+                ${idx < targetArray.length - 1 ? `<button type="button" onclick="moveImageInQueue('${type}', ${idx}, 1)" class="btn-edit" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
+                <button type="button" onclick="removeImage('${type}', ${idx})" class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
         </div>
     `).join('');
+}
+
+function moveImageInQueue(type, idx, direction) {
+    const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : (type === 'whatson' ? whatsonImages : newsImages));
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= targetArray.length) return;
+    const [moved] = targetArray.splice(idx, 1);
+    targetArray.splice(targetIdx, 0, moved);
+    renderImagePreviews(type);
 }
 
 function removeImage(type, idx) {
@@ -234,10 +249,9 @@ function enterEditWhatsOn(id) {
     document.getElementById('wo-site-link').value = item.siteLink || '';
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Show';
 
-    if (item.image) {
-        whatsonImages = [{ base64: null, name: item.image, preview: `images/${item.image}` }];
-        renderImagePreviews('whatson');
-    }
+    whatsonImages = [];
+    if (item.image) whatsonImages.push({ base64: null, name: item.image, preview: `images/${item.image}` });
+    renderImagePreviews('whatson');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -258,10 +272,9 @@ function enterEditTheatre(id) {
     document.getElementById('th-relaxed-wysiwyg').innerHTML = item.relaxed || '';
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Theatre';
 
-    if (item.image) {
-        theatreImages = [{ base64: null, name: item.image, preview: `images/${item.image}` }];
-        renderImagePreviews('theatre');
-    }
+    theatreImages = [];
+    if (item.image) theatreImages.push({ base64: null, name: item.image, preview: `images/${item.image}` });
+    renderImagePreviews('theatre');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -284,10 +297,12 @@ function enterEditNews(id) {
     document.getElementById('news-published').checked = item.status === 'published';
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story';
 
-    if (item.mainImage) {
-        newsImages = [{ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
-        renderImagePreviews('news');
+    newsImages = [];
+    if (item.mainImage) newsImages.push({ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` });
+    if (item.galleryImages && Array.isArray(item.galleryImages)) {
+        item.galleryImages.forEach(gImg => newsImages.push({ base64: null, name: gImg, preview: `images/${gImg}` }));
     }
+    renderImagePreviews('news');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -322,7 +337,7 @@ function cancelEditMode() {
     renderImagePreviews('news');
 }
 
-/* --- 5. Handlers & Publishing --- */
+/* --- 5. Publishing Engine with Universal First Image Logic --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -332,7 +347,7 @@ async function handleReviewSubmit() {
     const editId = document.getElementById('rev-edit-id').value;
     const isPublished = document.getElementById('rev-published').checked;
 
-    showToast('⏳ Uploading and saving review...', 'status-loading');
+    showToast('⏳ Uploading images and compiling review...', 'status-loading');
 
     try {
         for (let item of reviewImages) {
@@ -342,7 +357,10 @@ async function handleReviewSubmit() {
         }
 
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
-        const galleryList = reviewImages.slice(1).map(img => img.name);
+        
+        // Universal First Image Queue Logic
+        const primaryImage = reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.webp' : 'placeholder.webp');
+        const carouselImages = reviewImages.slice(1).map(img => img.name);
 
         const reviewEntry = {
             id: editId || 'rev_' + Date.now(),
@@ -356,9 +374,9 @@ async function handleReviewSubmit() {
                 sensory: document.getElementById('tag-sensory').checked,
                 mature: document.getElementById('tag-mature').checked
             },
-            mainImage: reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.webp' : 'placeholder.webp'),
-            galleryImages: galleryList,
-            altText: document.getElementById('rev-image-alt').value.trim(),
+            mainImage: primaryImage,
+            galleryImages: carouselImages,
+            altText: document.getElementById('rev-image-alt').value.trim() || title,
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
             tips: document.getElementById('rev-tips').value.split('\n').filter(t => t.trim()),
@@ -374,11 +392,69 @@ async function handleReviewSubmit() {
         const pageHtml = buildFullReviewPageHtml(reviewEntry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish review page: ${title}`);
 
-        showToast(`🎉 Successfully saved "${title}"!`, 'status-success');
+        showToast(`🎉 Successfully published "${title}"!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
         showToast(`❌ Error: ${err.message}`, 'status-error');
+    }
+}
+
+async function handleNewsSubmit() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    const editId = document.getElementById('news-edit-id').value;
+    const title = document.getElementById('news-title').value.trim();
+    const slug = document.getElementById('news-slug').value.trim();
+    const nowIso = new Date().toISOString();
+
+    showToast('⏳ Uploading images and compiling news article...', 'status-loading');
+    try {
+        for (let item of newsImages) {
+            if (item.base64) {
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, item.base64, `Upload news image: ${item.name}`);
+            }
+        }
+
+        const newsList = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
+        const existing = editId ? newsList.find(n => n.id === editId) : null;
+
+        // Universal First Image Queue Logic
+        const primaryImage = newsImages.length > 0 ? newsImages[0].name : (existing?.mainImage || 'news-default.webp');
+        const carouselImages = newsImages.slice(1).map(img => img.name);
+
+        const entry = {
+            id: editId || 'news_' + Date.now(),
+            title,
+            slug,
+            category: document.getElementById('news-category').value.trim(),
+            author: document.getElementById('news-author').value.trim() || 'Katy Rose Meaney',
+            summary: document.getElementById('news-summary').value.trim(),
+            bodyHtml: document.getElementById('news-body-wysiwyg').innerHTML,
+            mainImage: primaryImage,
+            galleryImages: carouselImages,
+            datePublished: existing ? existing.datePublished : nowIso,
+            dateModified: nowIso,
+            status: document.getElementById('news-published').checked ? 'published' : 'draft',
+            rank: editId ? existing.rank : 1
+        };
+
+        const updated = editId ? newsList.map(n => n.id === editId ? entry : n) : [entry, ...newsList];
+        updated.forEach((n, idx) => n.rank = idx + 1);
+
+        // 1. Commit Data Feed
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
+        
+        // 2. Commit Static HTML with Swiper Carousel Generator
+        const pageHtml = buildFullNewsPageHtml(entry);
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news page: ${title}`);
+
+        showToast(`🎉 News story & image carousel published live!`, 'status-success');
+        cancelEditMode();
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ News error: ${err.message}`, 'status-error');
     }
 }
 
@@ -391,11 +467,15 @@ async function handleWhatsOnSubmit() {
 
     showToast('⏳ Saving What\'s On show...', 'status-loading');
     try {
-        if (whatsonImages.length > 0 && whatsonImages[0].base64) {
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${whatsonImages[0].name}`, whatsonImages[0].base64, `Upload show image: ${whatsonImages[0].name}`);
+        for (let item of whatsonImages) {
+            if (item.base64) {
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, item.base64, `Upload show image: ${item.name}`);
+            }
         }
 
         const shows = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
+        const primaryImage = whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.webp' : 'show-default.webp');
+
         const entry = {
             id: editId || 'wo_' + Date.now(),
             title,
@@ -407,7 +487,7 @@ async function handleWhatsOnSubmit() {
             age: document.getElementById('wo-age').value,
             category: document.getElementById('wo-category').value,
             isTouring: document.getElementById('wo-is-touring').checked,
-            image: whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.webp' : 'show-default.webp'),
+            image: primaryImage,
             desc: document.getElementById('wo-desc-wysiwyg').innerHTML,
             ticketLink: document.getElementById('wo-ticket-link').value.trim(),
             siteLink: document.getElementById('wo-site-link').value.trim(),
@@ -435,16 +515,20 @@ async function handleTheatreSubmit() {
 
     showToast('⏳ Saving Theatre Guide...', 'status-loading');
     try {
-        if (theatreImages.length > 0 && theatreImages[0].base64) {
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${theatreImages[0].name}`, theatreImages[0].base64, `Upload theatre photo: ${theatreImages[0].name}`);
+        for (let item of theatreImages) {
+            if (item.base64) {
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, item.base64, `Upload theatre photo: ${item.name}`);
+            }
         }
 
         const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        const primaryImage = theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.webp' : 'theatre-default.webp');
+
         const entry = {
             id: editId || 'th_' + Date.now(),
             name,
             location: document.getElementById('th-location').value.trim(),
-            image: theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.webp' : 'theatre-default.webp'),
+            image: primaryImage,
             website: document.getElementById('th-website').value.trim(),
             accessibility: document.getElementById('th-access-wysiwyg').innerHTML,
             relaxed: document.getElementById('th-relaxed-wysiwyg').innerHTML,
@@ -463,59 +547,29 @@ async function handleTheatreSubmit() {
     }
 }
 
-async function handleNewsSubmit() {
-    const creds = getCredentials();
-    if (!creds) return;
-
-    const editId = document.getElementById('news-edit-id').value;
-    const title = document.getElementById('news-title').value.trim();
-    const slug = document.getElementById('news-slug').value.trim();
-    const nowIso = new Date().toISOString();
-
-    showToast('⏳ Publishing News Story...', 'status-loading');
-    try {
-        if (newsImages.length > 0 && newsImages[0].base64) {
-            await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${newsImages[0].name}`, newsImages[0].base64, `Upload news image: ${newsImages[0].name}`);
-        }
-
-        const newsList = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
-        const existing = editId ? newsList.find(n => n.id === editId) : null;
-
-        const entry = {
-            id: editId || 'news_' + Date.now(),
-            title,
-            slug,
-            category: document.getElementById('news-category').value.trim(),
-            author: document.getElementById('news-author').value.trim() || 'Katy Rose Meaney',
-            summary: document.getElementById('news-summary').value.trim(),
-            bodyHtml: document.getElementById('news-body-wysiwyg').innerHTML,
-            mainImage: newsImages.length > 0 ? newsImages[0].name : (existing?.mainImage || 'news-default.webp'),
-            datePublished: existing ? existing.datePublished : nowIso,
-            dateModified: nowIso,
-            status: document.getElementById('news-published').checked ? 'published' : 'draft',
-            rank: editId ? existing.rank : 1
-        };
-
-        const updated = editId ? newsList.map(n => n.id === editId ? entry : n) : [entry, ...newsList];
-        updated.forEach((n, idx) => n.rank = idx + 1);
-
-        // 1. Save data feed
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
-        
-        // 2. Automatically generate static news article HTML
-        const pageHtml = buildFullNewsPageHtml(entry);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news page: ${title}`);
-
-        showToast(`🎉 News story published & HTML generated!`, 'status-success');
-        cancelEditMode();
-        loadManagementDashboard();
-    } catch (err) {
-        showToast(`❌ News error: ${err.message}`, 'status-error');
-    }
-}
-
+/* --- 6. HTML Template Generators with Auto-Carousel Support --- */
 function buildFullNewsPageHtml(d) {
     const formattedDate = new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    
+    let gallerySection = '';
+    if (d.galleryImages && Array.isArray(d.galleryImages) && d.galleryImages.length > 0) {
+        gallerySection = `
+        <div class="review-gallery">
+            <h2>Photo Gallery</h2>
+            <div class="swiper btmc-swiper">
+                <div class="swiper-wrapper">
+                    ${d.galleryImages.map(imgName => `
+                    <div class="swiper-slide">
+                        <img src="images/${imgName}" alt="Gallery photo for ${d.title}" loading="lazy">
+                    </div>`).join('\n')}
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev" aria-label="Previous slide"></div>
+                <div class="swiper-button-next" aria-label="Next slide"></div>
+            </div>
+        </div>`;
+    }
+
     const newsSchema = JSON.stringify({
         "@context": "https://schema.org",
         "@type": "NewsArticle",
@@ -555,6 +609,7 @@ function buildFullNewsPageHtml(d) {
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <script type="application/ld+json">
     ${newsSchema}
     <\/script>
@@ -581,8 +636,9 @@ function buildFullNewsPageHtml(d) {
         </section>
         <section class="page-content">
             <div class="container content-article">
-                <img src="images/${d.mainImage}" alt="${d.altText || d.title}" class="review-main-image" loading="lazy">
+                <img src="images/${d.mainImage}" alt="${d.title}" class="review-main-image" loading="lazy">
                 ${d.bodyHtml}
+                ${gallerySection}
                 <div style="margin-top: 40px; text-align: center;">
                     <a href="news.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to All News</a>
                 </div>
@@ -590,6 +646,7 @@ function buildFullNewsPageHtml(d) {
         </section>
     </main>
     <footer class="site-footer"><div class="container"></div></footer>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"><\/script>
     <script src="script.js"><\/script>
 </body>
 </html>`;
@@ -612,7 +669,7 @@ function buildFullReviewPageHtml(d) {
         gallerySection = `
         <div class="review-gallery">
             <h2>Production Gallery</h2>
-            <div class="swiper review-swiper">
+            <div class="swiper btmc-swiper">
                 <div class="swiper-wrapper">
                     ${d.galleryImages.map(imgName => `
                     <div class="swiper-slide">
@@ -691,7 +748,7 @@ function buildFullReviewPageHtml(d) {
         </section>
         <section class="page-content">
             <div class="container content-article">
-                <img src="images/${d.mainImage}" alt="${d.altText}" class="review-main-image" loading="lazy">
+                <img src="images/${d.mainImage}" alt="${d.altText || d.title}" class="review-main-image" loading="lazy">
                 <h2>Our Family Verdict</h2>
                 ${d.bodyHtml}
                 ${gallerySection}
@@ -706,7 +763,7 @@ function buildFullReviewPageHtml(d) {
 </html>`;
 }
 
-/* --- 6. Table Rendering & Reordering --- */
+/* --- 7. Table Rendering & Reordering --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
@@ -852,7 +909,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 7. Nav Switchboard & GitHub Bridge --- */
+/* --- 8. Nav Switchboard & GitHub Bridge --- */
 async function loadNavToggles() {
     const creds = getCredentials();
     if (!creds) return;
