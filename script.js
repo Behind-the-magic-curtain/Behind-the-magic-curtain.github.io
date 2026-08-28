@@ -670,41 +670,14 @@ async function loadReviewsDirectory() {
     }
 }
 
-/* --- 11. HTML Builders --- */
-function buildWhatsOnCardHTML(s) {
-    return `
-    <article class="listing-card">
-        <div class="listing-image">
-            <img src="images/${s.image}" alt="${s.title}" loading="lazy" decoding="async">
-        </div>
-        <div class="listing-content">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-                <h3 style="margin:0;">${s.title}</h3>
-                ${s.isTouring ? '<span class="tag tag-touring"><i class="fa-solid fa-route"></i> UK Tour</span>' : ''}
-            </div>
-            <div class="card-tags" style="margin:8px 0 12px 0;">
-                <span class="tag tag-age">${s.age}</span>
-                ${s.category === 'panto' ? '<span class="tag tag-mature" style="background:#d81b60;">Pantomime</span>' : ''}
-            </div>
-            <ul class="listing-info">
-                <li><i class="fa-solid fa-location-dot"></i> <span>${s.venue}</span></li>
-                <li><i class="fa-solid fa-calendar-days"></i> <span>${s.dates}</span></li>
-                ${s.runtime ? `<li><i class="fa-solid fa-clock"></i> <span>${s.runtime}</span></li>` : ''}
-            </ul>
-            <p>${s.desc}</p>
-            <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap;">
-                ${s.ticketLink ? `<a href="${s.ticketLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>` : ''}
-                ${s.siteLink ? `<a href="${s.siteLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>` : ''}
-            </div>
-        </div>
-    </article>`;
-}
-
+/* --- 11. HTML Builders (Clickable Card Architecture) --- */
 function buildNewsCardHTML(n) {
     const formattedDate = new Date(n.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     return `
-    <article class="card news-card">
-        <img src="images/${n.mainImage}" alt="${n.altText || n.title}" loading="lazy" decoding="async">
+    <a href="${n.slug}" class="card news-card clickable-card" aria-label="Read full news story: ${n.title}">
+        <div class="card-image-wrap">
+            <img src="images/${n.mainImage}" alt="${n.altText || n.title}" loading="lazy" decoding="async">
+        </div>
         <div class="card-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <span class="tag" style="background:var(--color-accent);">${n.category || 'News'}</span>
@@ -712,27 +685,9 @@ function buildNewsCardHTML(n) {
             </div>
             <h3>${n.title}</h3>
             <p>${n.summary}</p>
-            <a href="${n.slug}" class="btn btn-secondary">Read Full Story</a>
+            <span class="btn btn-secondary card-action-btn">Read Full Story</span>
         </div>
-    </article>`;
-}
-
-function buildTheatreCardHTML(t) {
-    return `
-    <article class="theatre-card">
-        <div class="theatre-img-container">
-            <img src="images/${t.image}" alt="${t.name}" loading="lazy" decoding="async">
-        </div>
-        <div class="theatre-info">
-            <h2>${t.name}</h2>
-            <span class="theatre-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${t.location}</span>
-            <div class="theatre-meta">
-                <p><strong>Accessibility:</strong> ${t.accessibility}</p>
-                <p><strong>Relaxed Performances & Sensory Rooms:</strong> ${t.relaxed}</p>
-            </div>
-            ${t.website ? `<a href="${t.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Theatre Website</a>` : ''}
-        </div>
-    </article>`;
+    </a>`;
 }
 
 function buildReviewCardHTML(r) {
@@ -742,8 +697,10 @@ function buildReviewCardHTML(r) {
     if (r.tags?.sensory) tagsHTML += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
 
     return `
-    <article class="card">
-        <img src="images/${r.mainImage}" alt="${r.altText || r.title}" loading="lazy" decoding="async">
+    <a href="${r.slug}" class="card review-card clickable-card" aria-label="Read full sensory review: ${r.title}">
+        <div class="card-image-wrap">
+            <img src="images/${r.mainImage}" alt="${r.altText || r.title}" loading="lazy" decoding="async">
+        </div>
         <div class="card-content">
             <div class="card-star-rating" role="img" aria-label="Rated ${r.rating} out of 5 stars">
                 <div class="star-rating" style="display: inline-block;">
@@ -754,9 +711,9 @@ function buildReviewCardHTML(r) {
             <h3>${r.title}</h3>
             <div class="card-tags">${tagsHTML}</div>
             <p>${r.summary}</p>
-            <a href="${r.slug}" class="btn btn-secondary">Read Full Review</a>
+            <span class="btn btn-secondary card-action-btn">Read Full Review</span>
         </div>
-    </article>`;
+    </a>`;
 }
 
 /* --- 12. Global Footer --- */
