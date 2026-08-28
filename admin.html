@@ -33,27 +33,47 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--color-border); font-family: var(--font-body); font-size: 0.95rem; outline: none; background: #fff; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--color-accent); }
         
-        /* Word Ribbon Toolbar Styling */
+        /* Clean Toggle Control */
+        .toggle-badge-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .toggle-badge-control:hover { border-color: var(--color-accent); background: #f1f5f9; }
+        .toggle-badge-control input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--color-primary); margin: 0; }
+        .toggle-badge-control span { font-weight: 600; font-size: 0.92rem; color: var(--color-text); }
+
+        /* Inline WYSIWYG Ribbon */
         .editor-container { border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: #fff; transition: border-color 0.2s ease; }
         .editor-container:focus-within { border-color: var(--color-accent); }
         .editor-ribbon { background: #f8fafc; border-bottom: 1.5px solid var(--color-border); padding: 6px 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
         .editor-ribbon button, .editor-ribbon select { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px; font-size: 0.85rem; font-weight: 600; color: #334155; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 4px; }
         .editor-ribbon button:hover { background: #e2e8f0; color: var(--color-primary); }
         .editor-ribbon select { padding: 5px 8px; }
-        .editor-content-area { min-height: 180px; max-height: 480px; overflow-y: auto; padding: 15px; outline: none; font-family: var(--font-body); font-size: 0.95rem; line-height: 1.7; color: var(--color-text); }
-        .editor-content-area h2 { font-family: var(--font-heading); color: var(--color-primary); font-size: 1.5rem; margin: 12px 0 6px 0; }
-        .editor-content-area h3 { font-family: var(--font-subheading); color: var(--color-text); font-size: 1.25rem; margin: 10px 0 4px 0; }
-        .editor-content-area p { margin-bottom: 1em; }
-        .editor-content-area ul { padding-left: 22px; margin-bottom: 1em; }
+        .editor-content-area { min-height: 180px; max-height: 480px; overflow-y: auto; padding: 16px; outline: none; font-family: var(--font-body); font-size: 0.95rem; line-height: 1.7; color: var(--color-text); }
         
-        /* Image Queue Cards */
+        .editor-content-area h2 { font-family: var(--font-subheading); color: var(--color-primary); font-size: 1.6rem; font-weight: 700; margin: 16px 0 8px 0; }
+        .editor-content-area h3 { font-family: var(--font-subheading); color: var(--color-text); font-size: 1.3rem; font-weight: 700; margin: 14px 0 6px 0; }
+        .editor-content-area p { margin-bottom: 1em; color: var(--color-text-light); }
+        .editor-content-area ul { padding-left: 24px; margin-bottom: 1em; }
+        .editor-content-area li { margin-bottom: 0.5em; }
+
+        /* Multi-Image Queue */
         .drop-zone { border: 2px dashed #94a3b8; background: #f8fafc; padding: 25px; border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: background 0.2s ease; }
         .img-item { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: var(--radius-sm); margin-top: 8px; }
-        .img-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .img-item img { width: 52px; height: 52px; object-fit: cover; border-radius: 4px; }
         .img-queue-badge { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
         .badge-main-img { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
         .badge-gallery-img { background: #f1f5f9; color: #475569; }
-        
+
         .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .crud-table th, .crud-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
         .crud-table th { background: #f1f5f9; color: #475569; font-weight: 700; }
@@ -62,8 +82,8 @@
         .grab-handle { cursor: grab; color: #94a3b8; margin-right: 8px; }
         .rank-badge { background: #00838f; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
         .badge-featured { background: #ffd700; color: #222; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
-        .btn-edit { background: #00838f; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
-        .btn-delete { background: #e53935; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background: #00838f; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+        .btn-delete { background: #e53935; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
         
         #status-toast { position: fixed; bottom: 25px; right: 25px; padding: 14px 24px; border-radius: 50px; color: #fff; font-weight: 600; font-size: 0.95rem; z-index: 9999; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
         .status-success { background: #2e7d32; display: block !important; }
@@ -165,26 +185,44 @@
                                 <label>Review Article Body *</label>
                                 <div class="editor-container">
                                     <div class="editor-ribbon">
-                                        <select onchange="applyFormat('formatBlock', this.value); this.selectedIndex=0;">
+                                        <select onchange="applyInlineFormat('formatBlock', this.value); this.selectedIndex=0;">
                                             <option value="" disabled selected>Formatting / Style</option>
                                             <option value="p">Paragraph</option>
                                             <option value="h2">Heading 2 (Brand Red)</option>
                                             <option value="h3">Heading 3 (Subheading)</option>
                                         </select>
-                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
-                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
-                                        <button type="button" onclick="applyFormat('underline')"><i class="fa-solid fa-underline"></i></button>
-                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
-                                        <button type="button" onclick="insertLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                        <select onchange="applyBadgeLabel(this.value); this.selectedIndex=0;">
+                                            <option value="" disabled selected>🏷️ Insert Badge / Label</option>
+                                            <option value="tag-age">Age / General (Plum)</option>
+                                            <option value="tag-adhd">Sensory Strategy (Teal)</option>
+                                            <option value="tag-sensory">Sensory / Music (Forest Green)</option>
+                                            <option value="tag-touring">Touring / Venue (Emerald)</option>
+                                            <option value="tag-mature">Mature Themes (Berry Pink)</option>
+                                        </select>
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('underline')"><i class="fa-solid fa-underline"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
                                     </div>
                                     <div id="wysiwyg-content" class="editor-content-area" contenteditable="true"></div>
                                 </div>
                             </div>
 
+                            <!-- WYSIWYG Ribbon Area: Sensory Advice & Parenting Insights -->
                             <div class="form-group full">
-                                <label>Sensory Advice & Parent Insights (One per line)</label>
-                                <textarea id="rev-tips" rows="3"></textarea>
+                                <label>Sensory Strategies & Parent Insights</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                    </div>
+                                    <div id="rev-tips-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:140px;"></div>
+                                </div>
                             </div>
+
                             <div class="form-group full">
                                 <label>Photos (Image #1 is Main Header; remaining images build Gallery Carousel)</label>
                                 <div class="drop-zone" onclick="document.getElementById('rev-file-input').click()">
@@ -259,9 +297,14 @@
                                     <option value="dance">Ballet / Dance</option>
                                 </select>
                             </div>
+                            
+                            <!-- Touring Production Checkbox -->
                             <div class="form-group">
                                 <label>Touring Production?</label>
-                                <label style="display:flex; align-items:center; gap:8px; margin-top:8px;"><input type="checkbox" id="wo-is-touring"> Yes, UK Tour</label>
+                                <label class="toggle-badge-control">
+                                    <input type="checkbox" id="wo-is-touring">
+                                    <span><i class="fa-solid fa-route" style="color:var(--color-primary); margin-right:4px;"></i> Yes, UK Tour</span>
+                                </label>
                             </div>
                             
                             <!-- WYSIWYG Ribbon Area: What's On Description -->
@@ -269,11 +312,17 @@
                                 <label>Show Description *</label>
                                 <div class="editor-container">
                                     <div class="editor-ribbon">
-                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
-                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
-                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <select onchange="applyInlineFormat('formatBlock', this.value); this.selectedIndex=0;">
+                                            <option value="" disabled selected>Formatting / Style</option>
+                                            <option value="p">Paragraph</option>
+                                            <option value="h3">Subheading</option>
+                                        </select>
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
                                     </div>
-                                    <div id="wo-desc-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
+                                    <div id="wo-desc-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:140px;"></div>
                                 </div>
                             </div>
 
@@ -286,7 +335,7 @@
                                 <input type="url" id="wo-site-link" placeholder="https://...">
                             </div>
                             <div class="form-group full">
-                                <label>Show Posters / Images (Image #1 is Main Poster)</label>
+                                <label>Show Posters / Images (Image #1 is Main Card Poster)</label>
                                 <div class="drop-zone" onclick="document.getElementById('wo-file-input').click()">
                                     <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
                                     <p style="margin:8px 0 0 0; font-weight:600;">Upload Show Images</p>
@@ -329,9 +378,10 @@
                                 <label>Accessibility & Level Access *</label>
                                 <div class="editor-container">
                                     <div class="editor-ribbon">
-                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
-                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
-                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
                                     </div>
                                     <div id="th-access-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
                                 </div>
@@ -342,9 +392,10 @@
                                 <label>Relaxed Performances & Sensory Support *</label>
                                 <div class="editor-container">
                                     <div class="editor-ribbon">
-                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
-                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
-                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
                                     </div>
                                     <div id="th-relaxed-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
                                 </div>
@@ -397,24 +448,46 @@
                                 <textarea id="news-summary" rows="2" required></textarea>
                             </div>
                             
-                            <!-- WYSIWYG Ribbon Area: News Body -->
+                            <!-- SECTION 1: Story / Body Text -->
                             <div class="form-group full">
-                                <label>Article Story / Body *</label>
+                                <label>Section 1: Main Story & Paragraphs *</label>
                                 <div class="editor-container">
                                     <div class="editor-ribbon">
-                                        <select onchange="applyFormat('formatBlock', this.value); this.selectedIndex=0;">
+                                        <select onchange="applyInlineFormat('formatBlock', this.value); this.selectedIndex=0;">
                                             <option value="" disabled selected>Formatting / Style</option>
                                             <option value="p">Paragraph</option>
                                             <option value="h2">Heading 2 (Brand Red)</option>
                                             <option value="h3">Heading 3 (Subheading)</option>
                                         </select>
-                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
-                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
-                                        <button type="button" onclick="applyFormat('underline')"><i class="fa-solid fa-underline"></i></button>
-                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
-                                        <button type="button" onclick="insertLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                        <select onchange="applyBadgeLabel(this.value); this.selectedIndex=0;">
+                                            <option value="" disabled selected>🏷️ Insert Badge / Label</option>
+                                            <option value="tag-age">Age / General (Plum)</option>
+                                            <option value="tag-adhd">Sensory Strategy (Teal)</option>
+                                            <option value="tag-sensory">Sensory / Music (Forest Green)</option>
+                                            <option value="tag-touring">Touring / Venue (Emerald)</option>
+                                            <option value="tag-mature">Mature Themes (Berry Pink)</option>
+                                        </select>
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('underline')"><i class="fa-solid fa-underline"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
                                     </div>
                                     <div id="news-body-wysiwyg" class="editor-content-area" contenteditable="true"></div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 2: Structured Details Box -->
+                            <div class="form-group full">
+                                <label>Section 2: Performance, Dates & Booking Details (Card Box)</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <button type="button" onclick="applyInlineFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                    </div>
+                                    <div id="news-details-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:160px;"></div>
                                 </div>
                             </div>
 
