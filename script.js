@@ -901,10 +901,14 @@ function handleGatewaySubmit() {
         window.open(gatewayTargetUrl, '_blank');
     }
 }
-/* --- 13. Swiper Carousel Auto-Initializer --- */
+/* --- 13. Universal Swiper Auto-Initializer --- */
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.review-swiper') && typeof Swiper !== 'undefined') {
-        new Swiper('.review-swiper', {
+    initSwiperGalleries();
+});
+
+function initSwiperGalleries() {
+    if (document.querySelector('.btmc-swiper') && typeof Swiper !== 'undefined') {
+        new Swiper('.btmc-swiper', {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 20,
@@ -918,4 +922,4 @@ document.addEventListener('DOMContentLoaded', () => {
             },
         });
     }
-});
+}
