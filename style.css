@@ -1350,3 +1350,50 @@ section {
 .gateway-input:focus {
     border-color: var(--color-accent);
 }
+/* Swiper Carousel & Production Galleries */
+.review-gallery {
+    margin: 40px 0;
+}
+
+.review-gallery h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+}
+
+.swiper.btmc-swiper {
+    width: 100%;
+    height: 480px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-light);
+    box-shadow: var(--shadow-card);
+}
+
+.swiper.btmc-swiper .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+.swiper.btmc-swiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+    color: var(--color-secondary) !important;
+}
+
+.swiper-pagination-bullet-active {
+    background: var(--color-primary) !important;
+}
+
+@media (max-width: 850px) {
+    .swiper.btmc-swiper {
+        height: 300px;
+    }
+}
