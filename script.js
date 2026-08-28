@@ -901,3 +901,21 @@ function handleGatewaySubmit() {
         window.open(gatewayTargetUrl, '_blank');
     }
 }
+/* --- 13. Swiper Carousel Auto-Initializer --- */
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.querySelector('.review-swiper') && typeof Swiper !== 'undefined') {
+        new Swiper('.review-swiper', {
+            loop: true,
+            slidesPerView: 1,
+            spaceBetween: 20,
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+    }
+});
