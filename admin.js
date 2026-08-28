@@ -1,8 +1,27 @@
 /*
  * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.3)
- * Inline Label/Badge Injection, Dual-Section News Composer, Multi-Image Queue & Auto-Build
+ * Interactive Image Framing/Cropper, Multi-Image Queue, Ribbon Formatting & GitHub Sync
  */
 
+const MASTER_PIN = "3011";
+
+let reviewImages = [];
+let theatreImages = [];
+let whatsonImages = [];
+let newsImages = [];
+let editMode = false;
+let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneyland: [], nav: [] };
+let draggedRowIndex = null;
+let toastTimeout = null;
+
+let cropState = {
+    img: null,
+    file: null,
+    type: null,
+    zoom: 1,
+    offsetY: 0,
+    remainingFiles: []
+};
 
 /* --- 1. PIN Security, Navigation & Mobile Drawer --- */
 function unlockStudio() {
@@ -42,80 +61,10 @@ function switchAdminTab(tabId, btn) {
     document.getElementById(tabId).style.display = 'block';
     if (btn) btn.classList.add('active');
     
-    // Auto-close drawer on mobile when tab is picked
     toggleSidebar(false);
 
-    // Scroll main panel back to top of new section
     const mainWrap = document.querySelector('.admin-main-wrap');
     if (mainWrap) mainWrap.scrollTop = 0;
-}
-
-const MASTER_PIN = "3011";
-
-let reviewImages = [];
-let theatreImages = [];
-let whatsonImages = [];
-let newsImages = [];
-let editMode = false;
-let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneyland: [], nav: [] };
-let draggedRowIndex = null;
-let toastTimeout = null;
-
-/* --- 1. Inline Ribbon & Label Engine --- */
-function applyInlineFormat(command, value = null) {
-    if (command === 'formatBlock') {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            document.execCommand('formatBlock', false, `<${value}>`);
-        }
-    } else {
-        document.execCommand(command, false, value);
-    }
-}
-
-function insertInlineLink() {
-    const url = prompt('Enter web link URL (https://...):');
-    if (url) {
-        document.execCommand('createLink', false, url);
-    }
-}
-
-function applyBadgeLabel(tagClass) {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
-        alert('Please highlight the text first to turn it into a styled badge.');
-        return;
-    }
-    const selectedText = selection.toString();
-    const badgeHtml = `<span class="tag ${tagClass}">${selectedText}</span>&nbsp;`;
-    document.execCommand('insertHTML', false, badgeHtml);
-}
-
-/* --- 2. PIN Security & Initialization --- */
-function unlockStudio() {
-    const pin = document.getElementById('pin-input').value.trim();
-    if (pin === MASTER_PIN) {
-        sessionStorage.setItem('btmc_admin_auth', 'true');
-        document.getElementById('pin-gate').style.display = 'none';
-        document.getElementById('admin-panel').style.display = 'flex';
-        loadSettings();
-        loadManagementDashboard();
-    } else {
-        document.getElementById('pin-error').style.display = 'block';
-        document.getElementById('pin-input').value = '';
-    }
-}
-
-function lockStudio() {
-    sessionStorage.removeItem('btmc_admin_auth');
-    location.reload();
-}
-
-function switchAdminTab(tabId, btn) {
-    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).style.display = 'block';
-    if (btn) btn.classList.add('active');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -131,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadManagementDashboard();
     }
     setupDropZones();
+    setupCropperControls();
 });
 
 function setupDropZones() {
@@ -163,7 +113,136 @@ function showToast(msg, type = 'status-success') {
     }
 }
 
-/* --- 3. Image Processing & Queue Logic --- */
+/* --- 2. Inline WYSIWYG Ribbon --- */
+function applyInlineFormat(command, value = null) {
+    if (command === 'formatBlock') {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            document.execCommand('formatBlock', false, `<${value}>`);
+        }
+    } else {
+        document.execCommand(command, false, value);
+    }
+}
+
+function insertInlineLink() {
+    const url = prompt('Enter web link URL (https://...):');
+    if (url) {
+        document.execCommand('createLink', false, url);
+    }
+}
+
+function applyBadgeLabel(tagClass) {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
+        alert('Please highlight the text first to turn it into a styled badge.');
+        return;
+    }
+    const selectedText = selection.toString();
+    const badgeHtml = `<span class="tag ${tagClass}">${selectedText}</span>&nbsp;`;
+    document.execCommand('insertHTML', false, badgeHtml);
+}
+
+/* --- 3. Interactive Image Cropper & Focal Studio --- */
+function setupCropperControls() {
+    const zoomInput = document.getElementById('crop-zoom');
+    const offsetInput = document.getElementById('crop-offset-y');
+
+    if (zoomInput) {
+        zoomInput.addEventListener('input', (e) => {
+            cropState.zoom = parseFloat(e.target.value);
+            document.getElementById('zoom-val').textContent = `${cropState.zoom.toFixed(2)}x`;
+            drawCropCanvas();
+        });
+    }
+
+    if (offsetInput) {
+        offsetInput.addEventListener('input', (e) => {
+            cropState.offsetY = parseInt(e.target.value);
+            document.getElementById('pos-val').textContent = `${cropState.offsetY}px`;
+            drawCropCanvas();
+        });
+    }
+}
+
+function openCropModal(file, type, remainingFiles) {
+    cropState.file = file;
+    cropState.type = type;
+    cropState.zoom = 1;
+    cropState.offsetY = 0;
+    cropState.remainingFiles = remainingFiles || [];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            cropState.img = img;
+            document.getElementById('crop-target-label').textContent = `${type.toUpperCase()} Card Header`;
+            document.getElementById('crop-zoom').value = 1;
+            document.getElementById('crop-offset-y').value = 0;
+            document.getElementById('zoom-val').textContent = '1.0x';
+            document.getElementById('pos-val').textContent = 'Center';
+            document.getElementById('crop-modal').style.display = 'flex';
+            drawCropCanvas();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function drawCropCanvas() {
+    const canvas = document.getElementById('crop-canvas');
+    if (!canvas || !cropState.img) return;
+    const ctx = canvas.getContext('2d');
+    const { img, zoom, offsetY } = cropState;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const hRatio = canvas.width / img.width;
+    const vRatio = canvas.height / img.height;
+    const baseRatio = Math.max(hRatio, vRatio);
+    
+    const renderWidth = img.width * baseRatio * zoom;
+    const renderHeight = img.height * baseRatio * zoom;
+    const x = (canvas.width - renderWidth) / 2;
+    const y = (canvas.height - renderHeight) / 2 + offsetY;
+
+    ctx.drawImage(img, x, y, renderWidth, renderHeight);
+}
+
+async function applyCardCrop() {
+    const canvas = document.getElementById('crop-canvas');
+    const webpBase64 = canvas.toDataURL('image/webp', 0.88);
+    const rawName = cropState.file.name.substring(0, cropState.file.name.lastIndexOf('.')) || cropState.file.name;
+    const cleanWebpName = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.webp';
+
+    const targetArray = cropState.type === 'review' ? reviewImages : (cropState.type === 'theatre' ? theatreImages : (cropState.type === 'whatson' ? whatsonImages : newsImages));
+    
+    targetArray.push({
+        base64: webpBase64.split(',')[1],
+        preview: webpBase64,
+        name: cleanWebpName
+    });
+
+    for (let f of cropState.remainingFiles) {
+        if (f.type.startsWith('image/')) {
+            const processed = await processAndCompressImage(f);
+            targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
+        }
+    }
+
+    document.getElementById('crop-modal').style.display = 'none';
+    renderImagePreviews(cropState.type);
+    showToast('✨ Card header framed and compressed to .webp!', 'status-success');
+}
+
+function cancelCrop() {
+    document.getElementById('crop-modal').style.display = 'none';
+}
+
+/* --- 4. Image Processing & Queue Logic --- */
 async function processAndCompressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -192,15 +271,20 @@ async function processAndCompressImage(file) {
 }
 
 async function handleImageSelection(fileList, type) {
-    let targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : (type === 'whatson' ? whatsonImages : newsImages));
+    if (!fileList || fileList.length === 0) return;
+    const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : (type === 'whatson' ? whatsonImages : newsImages));
 
-    for (let i = 0; i < fileList.length; i++) {
-        if (fileList[i].type.startsWith('image/')) {
-            const processed = await processAndCompressImage(fileList[i]);
-            targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
+    if (targetArray.length === 0 && fileList[0].type.startsWith('image/')) {
+        openCropModal(fileList[0], type, Array.from(fileList).slice(1));
+    } else {
+        for (let i = 0; i < fileList.length; i++) {
+            if (fileList[i].type.startsWith('image/')) {
+                const processed = await processAndCompressImage(fileList[i]);
+                targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
+            }
         }
+        renderImagePreviews(type);
     }
-    renderImagePreviews(type);
 }
 
 function renderImagePreviews(type) {
@@ -255,7 +339,7 @@ function syncNewsSlug() {
     document.getElementById('news-slug').value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '.html';
 }
 
-/* --- 4. Edit Mode Dispatchers --- */
+/* --- 5. Edit Mode Dispatchers --- */
 function enterEditReview(id) {
     const item = currentCache.reviews.find(r => r.id === id);
     if (!item) return;
@@ -413,7 +497,7 @@ function cancelEditMode() {
     renderImagePreviews('news');
 }
 
-/* --- 5. Publishing Handlers --- */
+/* --- 6. Publishing Handlers --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -462,8 +546,6 @@ async function handleReviewSubmit() {
         };
 
         const updatedReviews = editId ? reviews.map(r => r.id === editId ? reviewEntry : r) : [reviewEntry, ...reviews];
-        
-        // Re-index ranks sequentially based on list order
         updatedReviews.forEach((r, idx) => r.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews (${title})`);
@@ -624,7 +706,7 @@ async function handleTheatreSubmit() {
     }
 }
 
-/* --- 6. HTML Template Generators --- */
+/* --- 7. HTML Template Generators --- */
 function buildFullNewsPageHtml(d) {
     const formattedDate = new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     
@@ -851,7 +933,7 @@ function buildFullReviewPageHtml(d) {
 </html>`;
 }
 
-/* --- 7. Table Rendering & Reordering --- */
+/* --- 8. Table Rendering & Drag/Drop Reordering --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
@@ -997,7 +1079,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 8. Nav Switchboard & GitHub Bridge --- */
+/* --- 9. Nav Switchboard & GitHub Bridge --- */
 async function loadNavToggles() {
     const creds = getCredentials();
     if (!creds) return;
