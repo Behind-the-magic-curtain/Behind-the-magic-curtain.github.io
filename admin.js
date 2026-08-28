@@ -386,10 +386,11 @@ async function handleReviewSubmit() {
         }
 
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
+        const existingItem = editId ? reviews.find(r => r.id === editId) : null;
         
-        const primaryImage = reviewImages.length > 0 ? reviewImages[0].name : (editId ? reviews.find(r => r.id === editId)?.mainImage || 'placeholder.webp' : 'placeholder.webp');
+        const primaryImage = reviewImages.length > 0 ? reviewImages[0].name : (existingItem?.mainImage || 'placeholder.webp');
         const carouselImages = reviewImages.slice(1).map(img => img.name);
-        const tipsHtmlContent = document.getElementById('rev-tips-wysiwyg').innerHTML;
+        const tipsHtmlContent = document.getElementById('rev-tips-wysiwyg') ? document.getElementById('rev-tips-wysiwyg').innerHTML : '';
 
         const reviewEntry = {
             id: editId || 'rev_' + Date.now(),
@@ -409,11 +410,13 @@ async function handleReviewSubmit() {
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
             tipsHtml: tipsHtmlContent,
-            rank: editId ? (reviews.find(r => r.id === editId)?.rank || 1) : 1,
+            rank: existingItem ? (Number(existingItem.rank) || 1) : (reviews.length + 1),
             status: isPublished ? 'published' : 'draft'
         };
 
         const updatedReviews = editId ? reviews.map(r => r.id === editId ? reviewEntry : r) : [reviewEntry, ...reviews];
+        
+        // Re-index ranks sequentially based on list order
         updatedReviews.forEach((r, idx) => r.rank = idx + 1);
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews (${title})`);
@@ -421,7 +424,7 @@ async function handleReviewSubmit() {
         const pageHtml = buildFullReviewPageHtml(reviewEntry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish review page: ${title}`);
 
-        showToast(`🎉 Successfully published "${title}"!`, 'status-success');
+        showToast(`🎉 Successfully saved "${title}"!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
