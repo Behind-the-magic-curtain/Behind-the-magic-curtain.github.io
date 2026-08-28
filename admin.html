@@ -3,332 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BTMC Admin Studio | Behind the Magic Curtain</title>
+    <title>Admin Studio | Behind the Magic Curtain</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        :root {
-            --admin-red: #bd2419;
-            --admin-teal: #00838f;
-            --admin-bg: #f4f6f8;
-            --admin-card: #ffffff;
-            --admin-border: #e2e8f0;
-            --admin-text: #1e293b;
-        }
-        * { box-sizing: border-box; margin:0; padding:0; }
-        body { font-family: 'Poppins', sans-serif; background: var(--admin-bg); color: var(--admin-text); display: flex; height: 100vh; overflow: hidden; }
+        body { background-color: #f4f6f9; }
+        .admin-layout { display: none; min-height: 100vh; }
+        .pin-gate-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--color-primary) 0%, #800f07 100%); }
+        .pin-card { background: #fff; padding: 40px 30px; border-radius: var(--radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.25); text-align: center; max-width: 380px; width: 90%; }
+        .pin-input { font-size: 1.8rem; letter-spacing: 8px; text-align: center; width: 180px; padding: 10px; border: 2px solid var(--color-border); border-radius: var(--radius-md); margin: 20px 0; outline: none; }
         
-        /* PIN Gate */
-        #pin-gate { position: fixed; inset: 0; background: #1a1a1a; display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .pin-box { background: #fff; padding: 40px; border-radius: 12px; text-align: center; max-width: 360px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-        .pin-input { font-size: 24px; letter-spacing: 8px; text-align: center; padding: 10px; width: 100%; margin: 20px 0; border: 2px solid var(--admin-border); border-radius: 8px; }
+        .admin-sidebar { width: 260px; background: #1a1a1a; color: #fff; padding: 25px 0; flex-shrink: 0; display: flex; flex-direction: column; }
+        .admin-sidebar .brand { padding: 0 25px 25px 25px; border-bottom: 1px solid rgba(255,255,255,0.1); font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; color: #fff; }
+        .admin-nav-tabs { list-style: none; padding: 20px 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+        .admin-nav-tabs button { width: 100%; text-align: left; background: transparent; border: none; color: #ccc; padding: 14px 25px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: all 0.2s ease; }
+        .admin-nav-tabs button:hover, .admin-nav-tabs button.active { background: rgba(255,255,255,0.08); color: var(--color-secondary); border-left: 4px solid var(--color-secondary); }
         
-        /* Layout */
-        #admin-panel { width: 100%; height: 100%; display: flex; }
-        .admin-sidebar { width: 260px; background: #1e293b; color: #fff; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 1000; flex-shrink: 0; }
-        .admin-sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .admin-nav-tabs { list-style: none; padding: 15px 0; overflow-y: auto; flex: 1; }
-        .admin-nav-tabs li button { width: 100%; text-align: left; padding: 14px 20px; background: none; border: none; color: #cbd5e1; font-weight: 600; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; gap: 12px; border-left: 4px solid transparent; transition: all 0.2s; }
-        .admin-nav-tabs li button:hover, .admin-nav-tabs li button.active { background: rgba(255,255,255,0.08); color: #fff; border-left-color: var(--admin-teal); }
+        .admin-main { flex: 1; padding: 35px 40px; overflow-y: auto; max-width: 1100px; }
+        .admin-card { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: 30px; margin-bottom: 30px; border: 1px solid var(--color-border); }
+        .admin-card h2 { margin-top: 0; color: var(--color-primary); font-family: var(--font-heading); font-size: 1.6rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 22px; }
         
-        .admin-main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: var(--admin-bg); }
-        .admin-topbar { height: 65px; background: #fff; border-bottom: 1px solid var(--admin-border); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; position: sticky; top: 0; z-index: 50; }
-        .burger-btn { display: none; background: none; border: none; font-size: 1.4rem; color: #333; cursor: pointer; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full { grid-column: span 2; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; color: var(--color-text); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--color-border); font-family: var(--font-body); font-size: 0.95rem; outline: none; background: #fff; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--color-accent); }
         
-        .content-area { padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%; }
-        .form-card { background: #fff; border-radius: 12px; border: 1px solid var(--admin-border); padding: 25px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .form-row { display: flex; gap: 20px; margin-bottom: 16px; flex-wrap: wrap; }
-        .form-group { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 0.85rem; font-weight: 600; color: #475569; }
-        .form-group input, .form-group select, .form-group textarea { padding: 10px 14px; border: 1.5px solid var(--admin-border); border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; }
-        .form-group input:focus, .form-group textarea:focus { border-color: var(--admin-teal); }
+        /* Ribbon Toolbar Styling */
+        .editor-container { border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: #fff; transition: border-color 0.2s ease; }
+        .editor-container:focus-within { border-color: var(--color-accent); }
+        .editor-ribbon { background: #f8fafc; border-bottom: 1.5px solid var(--color-border); padding: 6px 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+        .editor-ribbon button, .editor-ribbon select { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 10px; font-size: 0.85rem; font-weight: 600; color: #334155; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 4px; }
+        .editor-ribbon button:hover { background: #e2e8f0; color: var(--color-primary); }
+        .editor-ribbon select { padding: 5px 8px; }
+        .editor-content-area { min-height: 180px; max-height: 480px; overflow-y: auto; padding: 15px; outline: none; font-family: var(--font-body); font-size: 0.95rem; line-height: 1.7; color: var(--color-text); }
+        .editor-content-area h2 { font-family: var(--font-heading); color: var(--color-primary); font-size: 1.5rem; margin: 12px 0 6px 0; }
+        .editor-content-area h3 { font-family: var(--font-subheading); color: var(--color-text); font-size: 1.25rem; margin: 10px 0 4px 0; }
+        .editor-content-area p { margin-bottom: 1em; }
+        .editor-content-area ul { padding-left: 22px; margin-bottom: 1em; }
         
-        /* Drop Zones & Image Previews */
-        .drop-zone { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 25px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
-        .img-preview-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; margin-bottom: 15px; }
-        .img-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f1f5f9; border-radius: 6px; }
-        .img-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .drop-zone { border: 2px dashed #94a3b8; background: #f8fafc; padding: 25px; border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: background 0.2s ease; }
+        .img-item { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: var(--radius-sm); margin-top: 8px; }
+        .img-item img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
         
-        /* Tables & Drag UI */
-        .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .crud-table th, .crud-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 0.9rem; vertical-align: middle; }
-        .crud-table th { background: #f8fafc; font-weight: 700; color: #475569; }
-        .draggable-row { cursor: grab; background: #fff; }
-        .draggable-row.dragging { opacity: 0.4; background: #e0f2f1; }
-        .draggable-row.drag-over { border-top: 3px solid var(--admin-teal); }
-        .grab-handle { margin-right: 8px; color: #94a3b8; cursor: grab; }
-        .rank-badge { font-weight: 700; color: #475569; }
-        .badge-featured { background: #e0f2f1; color: #00695c; font-weight: 700; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; }
-        .badge-status { color: #fff; font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+        .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .crud-table th, .crud-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        .crud-table th { background: #f1f5f9; color: #475569; font-weight: 700; }
+        .draggable-row.dragging { opacity: 0.4; }
+        .draggable-row.drag-over { border-top: 3px solid var(--color-primary); }
+        .grab-handle { cursor: grab; color: #94a3b8; margin-right: 8px; }
+        .rank-badge { background: #00838f; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .badge-featured { background: #ffd700; color: #222; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .badge-status { color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
+        .btn-edit { background: #00838f; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-delete { background: #e53935; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         
-        /* Buttons */
-        .btn-submit { background: var(--admin-red); color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-submit:hover { background: #9b1d14; }
-        .btn-edit { background: #e0f2f1; color: #00695c; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-right: 6px; }
-        .btn-delete { background: #fee2e2; color: #b91c1c; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        
-        /* Toast Notifications */
-        #status-toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 22px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: none; z-index: 30000; }
-        #status-toast.status-success { background: #e8f5e9; color: #2e7d32; border-left: 5px solid #2e7d32; display: block; }
-        #status-toast.status-error { background: #ffebee; color: #c62828; border-left: 5px solid #c62828; display: block; }
-        #status-toast.status-loading { background: #e0f2f1; color: #00695c; border-left: 5px solid #00695c; display: block; }
+        #status-toast { position: fixed; bottom: 25px; right: 25px; padding: 14px 24px; border-radius: 50px; color: #fff; font-weight: 600; font-size: 0.95rem; z-index: 9999; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .status-success { background: #2e7d32; display: block !important; }
+        .status-error { background: #d32f2f; display: block !important; }
+        .status-loading { background: #00838f; display: block !important; }
 
         @media (max-width: 850px) {
-            .burger-btn { display: block; }
-            .admin-sidebar { position: fixed; height: 100%; left: 0; top: 0; transform: translateX(-100%); }
-            .admin-sidebar.open { transform: translateX(0); }
+            .admin-layout { flex-direction: column; }
+            .admin-sidebar { width: 100%; }
+            .admin-main { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: span 1; }
         }
     </style>
 </head>
 <body>
-
-    <!-- PIN Screen -->
-    <div id="pin-gate">
-        <div class="pin-box">
-            <h2 style="color:var(--admin-red);"><i class="fa-solid fa-lock"></i> BTMC Studio</h2>
-            <p style="color:#666; font-size:0.85rem; margin-top:6px;">Enter 4-Digit Admin PIN</p>
-            <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••">
-            <button type="button" id="unlock-btn" class="btn-submit" style="width:100%; justify-content:center;">Unlock Studio</button>
-            <p id="pin-error" style="color:var(--admin-red); font-size:0.85rem; margin-top:12px; display:none;">Incorrect PIN. Try again.</p>
+    <div id="pin-gate" class="pin-gate-wrap">
+        <div class="pin-card">
+            <h2 style="color:var(--color-primary); font-family:var(--font-heading); margin-top:0;">BTMC Studio Gate</h2>
+            <p style="color:#666; font-size:0.95rem;">Enter Admin PIN to unlock management suite:</p>
+            <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="••••" autofocus>
+            <p id="pin-error" style="color:#d32f2f; font-weight:600; font-size:0.85rem; display:none;">Incorrect PIN. Try again.</p>
+            <button type="button" id="unlock-btn" class="btn btn-primary" style="width:100%;">Unlock Studio</button>
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel" style="display:none;">
+    <div id="admin-panel" class="admin-layout">
         <aside class="admin-sidebar" id="admin-sidebar">
-            <div class="admin-sidebar-header">
-                <span style="font-weight:800; font-size:1.1rem; color:#ffd700;">BTMC Studio</span>
-                <button type="button" onclick="toggleSidebar()" class="burger-btn" style="color:#fff;">&times;</button>
-            </div>
+            <div class="brand">Behind the Magic Curtain</div>
             <ul class="admin-nav-tabs">
                 <li><button type="button" class="tab-btn active" onclick="switchAdminTab('tab-reviews', this)"><i class="fa-solid fa-star"></i> Reviews</button></li>
                 <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-whatson', this)"><i class="fa-solid fa-calendar-days"></i> What's On</button></li>
-                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-theatres', this)"><i class="fa-solid fa-masks-theater"></i> Theatre Guide</button></li>
-                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-news', this)"><i class="fa-solid fa-newspaper"></i> News Feed</button></li>
+                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-theatres', this)"><i class="fa-solid fa-landmark"></i> Theatre Guide</button></li>
+                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-news', this)"><i class="fa-solid fa-newspaper"></i> News Stories</button></li>
                 <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-disneyland', this)"><i class="fa-solid fa-wand-magic-sparkles"></i> Disneyland Paris</button></li>
-                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-navtoggles', this)"><i class="fa-solid fa-toggle-on"></i> Nav Page Toggles</button></li>
+                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-navigation', this)"><i class="fa-solid fa-bars"></i> Nav Switchboard</button></li>
             </ul>
+            <div style="margin-top:auto; padding:20px 25px; display:flex; flex-direction:column; gap:10px;">
+                <button type="button" onclick="toggleSettingsModal()" style="background:#333; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:600;"><i class="fa-solid fa-gear"></i> GitHub Token</button>
+                <button type="button" onclick="lockStudio()" style="background:#e53935; color:#fff; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:600;"><i class="fa-solid fa-lock"></i> Lock Studio</button>
+            </div>
         </aside>
 
-        <div class="admin-main">
-            <header class="admin-topbar">
-                <button type="button" class="burger-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
-                <div id="edit-banner" style="display:none; align-items:center; gap:12px;">
-                    <span id="edit-item-title" style="font-weight:700; color:var(--admin-teal);">Editing Mode</span>
-                    <button type="button" onclick="cancelEditMode()" style="background:#f1f5f9; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">Cancel</button>
-                </div>
-                <div style="display:flex; gap:12px;">
-                    <button type="button" onclick="toggleSettingsModal()" style="background:none; border:1px solid var(--admin-border); padding:8px 14px; border-radius:6px; cursor:pointer;"><i class="fa-solid fa-gear"></i> Settings</button>
-                    <button type="button" onclick="lockStudio()" style="background:none; border:1px solid var(--admin-border); padding:8px 14px; border-radius:6px; cursor:pointer;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Lock</button>
-                </div>
-            </header>
+        <main class="admin-main">
+            <div id="edit-banner" style="display:none; justify-content:space-between; align-items:center; background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:12px 20px; border-radius:8px; margin-bottom:25px;">
+                <div><i class="fa-solid fa-pen-to-square"></i> <strong id="edit-item-title">Editing Item</strong></div>
+                <button type="button" onclick="cancelEditMode()" class="btn btn-secondary" style="padding:4px 12px; font-size:0.85rem;">Cancel Edit Mode</button>
+            </div>
 
-            <div class="content-area">
-                <div id="status-toast"></div>
+            <!-- Tab 1: Reviews -->
+            <section id="tab-reviews" class="tab-content">
+                <div class="admin-card">
+                    <h2>Review Composer</h2>
+                    <form id="form-review" onsubmit="event.preventDefault(); handleReviewSubmit();">
+                        <input type="hidden" id="rev-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Show Title *</label>
+                                <input type="text" id="rev-title" required oninput="syncReviewMeta()">
+                            </div>
+                            <div class="form-group">
+                                <label>Slug / Output Page *</label>
+                                <input type="text" id="rev-slug" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Catchy Subtitle *</label>
+                                <input type="text" id="rev-subtitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Rating (e.g. 5.0) *</label>
+                                <input type="number" step="0.5" min="1" max="5" id="rev-rating" value="5.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Age Recommendation *</label>
+                                <select id="rev-age">
+                                    <option value="All Ages">All Ages</option>
+                                    <option value="Ages 3+">Ages 3+</option>
+                                    <option value="Ages 4+">Ages 4+</option>
+                                    <option value="Ages 5+">Ages 5+</option>
+                                    <option value="Ages 7+">Ages 7+</option>
+                                    <option value="Ages 12+">Ages 12+</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sensory Badges</label>
+                                <div style="display:flex; gap:15px; margin-top:8px;">
+                                    <label><input type="checkbox" id="tag-adhd"> ADHD Strategy</label>
+                                    <label><input type="checkbox" id="tag-sensory"> Sensory Notes</label>
+                                    <label><input type="checkbox" id="tag-mature"> Mature Themes</label>
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <label>Card Standfirst / Summary *</label>
+                                <textarea id="rev-summary" rows="2" required></textarea>
+                            </div>
+                            
+                            <!-- WYSIWYG Ribbon Area: Review Body -->
+                            <div class="form-group full">
+                                <label>Review Article Body *</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <select onchange="applyFormat('formatBlock', this.value); this.selectedIndex=0;">
+                                            <option value="" disabled selected>Formatting / Style</option>
+                                            <option value="p">Paragraph</option>
+                                            <option value="h2">Heading 2 (Brand Red)</option>
+                                            <option value="h3">Heading 3 (Subheading)</option>
+                                        </select>
+                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyFormat('underline')"><i class="fa-solid fa-underline"></i></button>
+                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                    </div>
+                                    <div id="wysiwyg-content" class="editor-content-area" contenteditable="true"></div>
+                                </div>
+                            </div>
 
-                <!-- 1. Reviews Tab -->
-                <div id="tab-reviews" class="tab-content" style="display:block;">
-                    <div class="form-card">
-                        <h2 style="margin-bottom:20px;">Add / Edit Review</h2>
-                        <form id="form-review" onsubmit="event.preventDefault(); handleReviewSubmit();">
-                            <input type="hidden" id="rev-edit-id">
-                            <div class="form-row">
-                                <div class="form-group"><label>Title *</label><input type="text" id="rev-title" required oninput="syncReviewMeta()"></div>
-                                <div class="form-group"><label>Page Slug (.html)</label><input type="text" id="rev-slug" required></div>
+                            <div class="form-group full">
+                                <label>Sensory Advice & Parent Insights (One per line)</label>
+                                <textarea id="rev-tips" rows="3"></textarea>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Subtitle</label><input type="text" id="rev-subtitle"></div>
-                                <div class="form-group"><label>Rating (0.0 - 5.0)</label><input type="number" id="rev-rating" step="0.1" min="0" max="5" value="5.0"></div>
-                                <div class="form-group"><label>Age Recommendation</label><input type="text" id="rev-age" value="Ages 7+"></div>
-                            </div>
-                            <div class="form-row" style="gap:25px; margin-bottom:20px;">
-                                <label><input type="checkbox" id="tag-adhd"> ADHD Guide</label>
-                                <label><input type="checkbox" id="tag-sensory"> Sensory Notes</label>
-                                <label><input type="checkbox" id="tag-mature"> Mature Themes</label>
-                                <label><input type="checkbox" id="rev-published" checked> Published Live</label>
-                            </div>
-                            <div class="form-group" style="margin-bottom:12px;">
-                                <label>Image Alt Description</label>
-                                <input type="text" id="rev-image-alt" placeholder="Description for screen readers">
-                            </div>
-                            <div class="drop-zone" onclick="document.getElementById('rev-file-input').click()">
-                                <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:var(--admin-teal);"></i>
-                                <p>Drag & Drop WebP/JPG images (First image = Main Poster)</p>
+                            <div class="form-group full">
+                                <label>Photos (Main image + Gallery)</label>
+                                <div class="drop-zone" onclick="document.getElementById('rev-file-input').click()">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Drag & drop images here, or browse (auto-compresses to .webp)</p>
+                                </div>
                                 <input type="file" id="rev-file-input" multiple accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'review')">
+                                <div id="review-image-list"></div>
                             </div>
-                            <div id="review-image-list" class="img-preview-list"></div>
-                            <div class="form-group" style="margin:16px 0;"><label>Summary (Cards)</label><textarea id="rev-summary" rows="2"></textarea></div>
-                            <div class="form-group" style="margin-bottom:16px;"><label>Body Review HTML</label><div id="wysiwyg-content" contenteditable="true" style="min-height:160px; border:1.5px solid var(--admin-border); border-radius:8px; padding:12px; background:#fff;"></div></div>
-                            <div class="form-group" style="margin-bottom:20px;"><label>Key Tips for Parents (One per line)</label><textarea id="rev-tips" rows="3"></textarea></div>
-                            <button type="submit" id="rev-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Save Review</button>
-                        </form>
-                    </div>
-                    <div class="form-card">
-                        <h3>Manage Reviews Directory (Drag ☰ to Reorder Top 3)</h3>
-                        <div id="manage-reviews-table-container"></div>
-                    </div>
+                            <div class="form-group full">
+                                <label>Image Alt Text</label>
+                                <input type="text" id="rev-image-alt" placeholder="Description of image for accessibility & SEO">
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="checkbox" id="rev-published" checked>
+                                <strong>Publish to live site immediately</strong>
+                            </label>
+                            <button type="submit" id="rev-submit-btn" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Save Review</button>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- 2. What's On Tab -->
-                <div id="tab-whatson" class="tab-content" style="display:none;">
-                    <div class="form-card">
-                        <h2 style="margin-bottom:20px;">Add / Edit What's On Show</h2>
-                        <form id="form-whatson" onsubmit="event.preventDefault(); handleWhatsOnSubmit();">
-                            <input type="hidden" id="wo-edit-id">
-                            <div class="form-row">
-                                <div class="form-group"><label>Show Title *</label><input type="text" id="wo-title" required></div>
-                                <div class="form-group"><label>Venue Name & City *</label><input type="text" id="wo-venue" required></div>
+                <div class="admin-card">
+                    <h2>Manage Existing Reviews (Drag ☰ to Reorder)</h2>
+                    <div id="manage-reviews-table-container"></div>
+                </div>
+            </section>
+
+            <!-- Tab 2: What's On -->
+            <section id="tab-whatson" class="tab-content" style="display:none;">
+                <div class="admin-card">
+                    <h2>What's On Show Composer</h2>
+                    <form id="form-whatson" onsubmit="event.preventDefault(); handleWhatsOnSubmit();">
+                        <input type="hidden" id="wo-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Show Title *</label>
+                                <input type="text" id="wo-title" required>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Region / Area</label><input type="text" id="wo-region" placeholder="e.g., West Midlands, London, Nationwide"></div>
-                                <div class="form-group"><label>Dates String</label><input type="text" id="wo-dates" placeholder="Booking until Oct 2026"></div>
-                                <div class="form-group"><label>Auto-Expiry Date (YYYY-MM-DD)</label><input type="date" id="wo-expiry"></div>
+                            <div class="form-group">
+                                <label>Venue *</label>
+                                <input type="text" id="wo-venue" required>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Running Time</label><input type="text" id="wo-runtime" placeholder="e.g. 2hrs (incl. interval)"></div>
-                                <div class="form-group"><label>Age Rating</label><input type="text" id="wo-age" value="Ages 4+"></div>
-                                <div class="form-group"><label>Category</label><select id="wo-category"><option value="theatre">Standard Theatre</option><option value="panto">Pantomime</option><option value="musical">Musical</option><option value="attraction">Family Event</option></select></div>
-                                <div class="form-group" style="justify-content:center;"><label><input type="checkbox" id="wo-is-touring"> <strong>Touring Production (UK Tour)</strong></label></div>
+                            <div class="form-group">
+                                <label>Region / Area</label>
+                                <input type="text" id="wo-region" value="West Midlands">
                             </div>
-                            <div class="drop-zone" onclick="document.getElementById('wo-file-input').click()">
-                                <i class="fa-solid fa-image" style="font-size:2rem; color:var(--admin-teal);"></i>
-                                <p>Upload Show Poster</p>
+                            <div class="form-group">
+                                <label>Dates *</label>
+                                <input type="text" id="wo-dates" placeholder="e.g. Booking until October 2026" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Auto-Expiry Date</label>
+                                <input type="date" id="wo-expiry">
+                            </div>
+                            <div class="form-group">
+                                <label>Running Time</label>
+                                <input type="text" id="wo-runtime" placeholder="e.g. 2hrs 15mins (incl. interval)">
+                            </div>
+                            <div class="form-group">
+                                <label>Age Advisory</label>
+                                <input type="text" id="wo-age" value="Ages 4+">
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="wo-category">
+                                    <option value="theatre">Theatre</option>
+                                    <option value="musical">Musical</option>
+                                    <option value="panto">Pantomime</option>
+                                    <option value="dance">Ballet / Dance</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Touring Production?</label>
+                                <label style="display:flex; align-items:center; gap:8px; margin-top:8px;"><input type="checkbox" id="wo-is-touring"> Yes, UK Tour</label>
+                            </div>
+                            
+                            <!-- WYSIWYG Ribbon Area: What's On Description -->
+                            <div class="form-group full">
+                                <label>Show Description *</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                    </div>
+                                    <div id="wo-desc-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Ticket Link</label>
+                                <input type="url" id="wo-ticket-link" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Official Production Website</label>
+                                <input type="url" id="wo-site-link" placeholder="https://...">
+                            </div>
+                            <div class="form-group full">
+                                <label>Poster / Banner Image</label>
+                                <div class="drop-zone" onclick="document.getElementById('wo-file-input').click()">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Upload Show Image</p>
+                                </div>
                                 <input type="file" id="wo-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'whatson')">
+                                <div id="whatson-image-list"></div>
                             </div>
-                            <div id="whatson-image-list" class="img-preview-list"></div>
-                            <div class="form-group" style="margin:16px 0;"><label>Description</label><textarea id="wo-desc" rows="3"></textarea></div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Ticket Link</label><input type="url" id="wo-ticket-link"></div>
-                                <div class="form-group"><label>Show Website Link</label><input type="url" id="wo-site-link"></div>
-                            </div>
-                            <button type="submit" id="wo-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Save What's On Show</button>
-                        </form>
-                    </div>
-                    <div class="form-card">
-                        <h3>Manage What's On Listings (Drag ☰ to Reorder)</h3>
-                        <div id="manage-whatson-table-container"></div>
-                    </div>
+                        </div>
+                        <button type="submit" id="wo-submit-btn" class="btn btn-primary" style="margin-top:15px;"><i class="fa-solid fa-cloud-arrow-up"></i> Save What's On Show</button>
+                    </form>
                 </div>
+                <div class="admin-card">
+                    <h2>Manage What's On Listings (Drag ☰ to Reorder)</h2>
+                    <div id="manage-whatson-table-container"></div>
+                </div>
+            </section>
 
-                <!-- 3. Theatres Tab -->
-                <div id="tab-theatres" class="tab-content" style="display:none;">
-                    <div class="form-card">
-                        <h2 style="margin-bottom:20px;">Add / Edit Theatre Venue</h2>
-                        <form id="form-theatre" onsubmit="event.preventDefault(); handleTheatreSubmit();">
-                            <input type="hidden" id="th-edit-id">
-                            <div class="form-row">
-                                <div class="form-group"><label>Theatre Name *</label><input type="text" id="th-name" required></div>
-                                <div class="form-group"><label>City / Location *</label><input type="text" id="th-location" placeholder="e.g., Wolverhampton, Birmingham, London" required></div>
+            <!-- Tab 3: Theatre Guide -->
+            <section id="tab-theatres" class="tab-content" style="display:none;">
+                <div class="admin-card">
+                    <h2>Theatre Directory Composer</h2>
+                    <form id="form-theatre" onsubmit="event.preventDefault(); handleTheatreSubmit();">
+                        <input type="hidden" id="th-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Theatre Name *</label>
+                                <input type="text" id="th-name" required>
                             </div>
-                            <div class="drop-zone" onclick="document.getElementById('th-file-input').click()">
-                                <i class="fa-solid fa-building" style="font-size:2rem; color:var(--admin-teal);"></i>
-                                <p>Upload Theatre Photo</p>
+                            <div class="form-group">
+                                <label>City / Location *</label>
+                                <input type="text" id="th-location" required>
+                            </div>
+                            <div class="form-group full">
+                                <label>Official Website</label>
+                                <input type="url" id="th-website" placeholder="https://...">
+                            </div>
+                            
+                            <!-- WYSIWYG Ribbon Area: Accessibility -->
+                            <div class="form-group full">
+                                <label>Accessibility & Level Access *</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                    </div>
+                                    <div id="th-access-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
+                                </div>
+                            </div>
+
+                            <!-- WYSIWYG Ribbon Area: Relaxed & Sensory Facilities -->
+                            <div class="form-group full">
+                                <label>Relaxed Performances & Sensory Support *</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                    </div>
+                                    <div id="th-relaxed-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group full">
+                                <label>Theatre Photo</label>
+                                <div class="drop-zone" onclick="document.getElementById('th-file-input').click()">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Upload Theatre Photo</p>
+                                </div>
                                 <input type="file" id="th-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'theatre')">
+                                <div id="theatre-image-list"></div>
                             </div>
-                            <div id="theatre-image-list" class="img-preview-list"></div>
-                            <div class="form-group" style="margin:16px 0;"><label>Accessibility Facilities</label><textarea id="th-access" rows="2" placeholder="Level access, lift locations, booster seats..."></textarea></div>
-                            <div class="form-group" style="margin-bottom:16px;"><label>Relaxed & Sensory Support</label><textarea id="th-relaxed" rows="2" placeholder="Chill-out zones, ear defenders, relaxed performances..."></textarea></div>
-                            <div class="form-group" style="margin-bottom:20px;"><label>Website URL</label><input type="url" id="th-website"></div>
-                            <button type="submit" id="th-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry</button>
-                        </form>
-                    </div>
-                    <div class="form-card">
-                        <h3>Manage Theatre Venues (Drag ☰ to Reorder)</h3>
-                        <div id="manage-theatres-table-container"></div>
-                    </div>
+                        </div>
+                        <button type="submit" id="th-submit-btn" class="btn btn-primary" style="margin-top:15px;"><i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry</button>
+                    </form>
                 </div>
+                <div class="admin-card">
+                    <h2>Manage Theatres (Drag ☰ to Reorder)</h2>
+                    <div id="manage-theatres-table-container"></div>
+                </div>
+            </section>
 
-                <!-- 4. News Tab -->
-                <div id="tab-news" class="tab-content" style="display:none;">
-                    <div class="form-card">
-                        <h2 style="margin-bottom:20px;">Publish News Story (Google Discover Optimized)</h2>
-                        <form id="form-news" onsubmit="event.preventDefault(); handleNewsSubmit();">
-                            <input type="hidden" id="news-edit-id">
-                            <div class="form-row">
-                                <div class="form-group"><label>Headline *</label><input type="text" id="news-title" required oninput="syncNewsSlug()"></div>
-                                <div class="form-group"><label>Slug (.html)</label><input type="text" id="news-slug" required></div>
+            <!-- Tab 4: News -->
+            <section id="tab-news" class="tab-content" style="display:none;">
+                <div class="admin-card">
+                    <h2>News Article Composer</h2>
+                    <form id="form-news" onsubmit="event.preventDefault(); handleNewsSubmit();">
+                        <input type="hidden" id="news-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Headline *</label>
+                                <input type="text" id="news-title" required oninput="syncNewsSlug()">
                             </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Category</label><input type="text" id="news-category" value="Theatre News"></div>
-                                <div class="form-group"><label>Author</label><input type="text" id="news-author" value="Katy Rose Meaney"></div>
-                                <div class="form-group" style="justify-content:center;"><label><input type="checkbox" id="news-published" checked> Published</label></div>
+                            <div class="form-group">
+                                <label>Slug / Output Page *</label>
+                                <input type="text" id="news-slug" required>
                             </div>
-                            <div class="drop-zone" onclick="document.getElementById('news-file-input').click()">
-                                <i class="fa-solid fa-newspaper" style="font-size:2rem; color:var(--admin-teal);"></i>
-                                <p>Upload High-Res Featured Image</p>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <input type="text" id="news-category" value="Theatre News">
+                            </div>
+                            <div class="form-group">
+                                <label>Author</label>
+                                <input type="text" id="news-author" value="Katy Rose Meaney">
+                            </div>
+                            <div class="form-group full">
+                                <label>Standfirst / Card Summary *</label>
+                                <textarea id="news-summary" rows="2" required></textarea>
+                            </div>
+                            
+                            <!-- WYSIWYG Ribbon Area: News Body -->
+                            <div class="form-group full">
+                                <label>Article Story / Body *</label>
+                                <div class="editor-container">
+                                    <div class="editor-ribbon">
+                                        <select onchange="applyFormat('formatBlock', this.value); this.selectedIndex=0;">
+                                            <option value="" disabled selected>Formatting / Style</option>
+                                            <option value="p">Paragraph</option>
+                                            <option value="h2">Heading 2 (Brand Red)</option>
+                                            <option value="h3">Heading 3 (Subheading)</option>
+                                        </select>
+                                        <button type="button" onclick="applyFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                                        <button type="button" onclick="applyFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                                        <button type="button" onclick="applyFormat('underline')"><i class="fa-solid fa-underline"></i></button>
+                                        <button type="button" onclick="applyFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
+                                        <button type="button" onclick="insertLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                    </div>
+                                    <div id="news-body-wysiwyg" class="editor-content-area" contenteditable="true"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group full">
+                                <label>Cover Image</label>
+                                <div class="drop-zone" onclick="document.getElementById('news-file-input').click()">
+                                    <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Upload Cover Photo</p>
+                                </div>
                                 <input type="file" id="news-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'news')">
+                                <div id="news-image-list"></div>
                             </div>
-                            <div id="news-image-list" class="img-preview-list"></div>
-                            <div class="form-group" style="margin:16px 0;"><label>Summary / Standfirst</label><textarea id="news-summary" rows="2"></textarea></div>
-                            <div class="form-group" style="margin-bottom:20px;"><label>Story HTML Body</label><textarea id="news-body" rows="6" placeholder="<p>Full article body...</p>"></textarea></div>
-                            <button type="submit" id="news-submit-btn" class="btn-submit"><i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story</button>
-                        </form>
-                    </div>
-                    <div class="form-card">
-                        <h3>Manage News Stories (Drag ☰ to Reorder)</h3>
-                        <div id="manage-news-table-container"></div>
-                    </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                                <input type="checkbox" id="news-published" checked>
+                                <strong>Publish live immediately</strong>
+                            </label>
+                            <button type="submit" id="news-submit-btn" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story</button>
+                        </div>
+                    </form>
                 </div>
+                <div class="admin-card">
+                    <h2>Manage News Feed (Drag ☰ to Reorder)</h2>
+                    <div id="manage-news-table-container"></div>
+                </div>
+            </section>
 
-                <!-- 5. Disneyland Paris Tab -->
-                <div id="tab-disneyland" class="tab-content" style="display:none;">
-                    <div class="form-card">
-                        <h2>Disneyland Paris Sensory Database</h2>
-                        <form id="form-disneyland" onsubmit="event.preventDefault(); handleDisneylandSubmit();">
-                            <input type="hidden" id="dlp-edit-id">
-                            <div class="form-row">
-                                <div class="form-group"><label>Attraction Name</label><input type="text" id="dlp-name" required></div>
-                                <div class="form-group"><label>Park</label><select id="dlp-park"><option>Disneyland Park</option><option>Walt Disney Studios Park</option></select></div>
-                                <div class="form-group"><label>Land</label><input type="text" id="dlp-land"></div>
-                                <div class="form-group"><label>Type</label><select id="dlp-type"><option>Ride</option><option>Show</option><option>Experience</option></select></div>
+            <!-- Tab 5: Disneyland Paris -->
+            <section id="tab-disneyland" class="tab-content" style="display:none;">
+                <div class="admin-card">
+                    <h2>Disneyland Paris Baseline Editor</h2>
+                    <form id="form-disneyland" onsubmit="event.preventDefault(); handleDisneylandSubmit();">
+                        <input type="hidden" id="dlp-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Attraction Name *</label>
+                                <input type="text" id="dlp-name" required>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group"><label>Minimum Height</label><input type="text" id="dlp-height" placeholder="e.g. 102cm or None"></div>
-                                <div class="form-group"><label>Thrill (1-5)</label><input type="number" id="dlp-speed" min="1" max="5" value="3"></div>
-                                <div class="form-group"><label>Fear (1-5)</label><input type="number" id="dlp-fear" min="1" max="5" value="3"></div>
-                                <div class="form-group"><label>Noise (1-5)</label><input type="number" id="dlp-noise" min="1" max="5" value="3"></div>
-                                <div class="form-group"><label>Darkness (1-5)</label><input type="number" id="dlp-darkness" min="1" max="5" value="3"></div>
+                            <div class="form-group">
+                                <label>Park</label>
+                                <select id="dlp-park">
+                                    <option value="Disneyland Park">Disneyland Park</option>
+                                    <option value="Walt Disney Studios / Disney Adventure World">Walt Disney Studios / Disney Adventure World</option>
+                                </select>
                             </div>
-                            <div class="form-group" style="margin-bottom:16px;"><label>Sensory Notes</label><textarea id="dlp-notes" rows="2"></textarea></div>
-                            <div class="form-group" style="margin-bottom:20px;"><label>ADHD Tip</label><textarea id="dlp-adhd" rows="2"></textarea></div>
-                            <button type="submit" id="dlp-submit-btn" class="btn-submit">Save Disneyland Baseline</button>
-                        </form>
-                    </div>
-                    <div class="form-card">
-                        <h3>Manage Disneyland Paris Attractions</h3>
-                        <div id="manage-disneyland-table-container"></div>
-                    </div>
+                            <div class="form-group">
+                                <label>Land</label>
+                                <input type="text" id="dlp-land" placeholder="e.g. Fantasyland, Adventureland">
+                            </div>
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select id="dlp-type">
+                                    <option value="Ride">Ride</option>
+                                    <option value="Show">Show</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Min Height</label>
+                                <input type="text" id="dlp-height" value="None">
+                            </div>
+                            <div class="form-group">
+                                <label>Sensory Scores (1-5)</label>
+                                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;">
+                                    <input type="number" id="dlp-speed" min="1" max="5" value="3" title="Speed">
+                                    <input type="number" id="dlp-fear" min="1" max="5" value="3" title="Fear">
+                                    <input type="number" id="dlp-noise" min="1" max="5" value="3" title="Noise">
+                                    <input type="number" id="dlp-darkness" min="1" max="5" value="3" title="Darkness">
+                                </div>
+                            </div>
+                            <div class="form-group full">
+                                <label>Sensory Description</label>
+                                <textarea id="dlp-notes" rows="2"></textarea>
+                            </div>
+                            <div class="form-group full">
+                                <label>ADHD & Sensory Strategy Tip</label>
+                                <textarea id="dlp-adhd" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" id="dlp-submit-btn" class="btn btn-primary" style="margin-top:15px;">Save Disneyland Baseline</button>
+                    </form>
                 </div>
+                <div class="admin-card">
+                    <h2>Disneyland Attraction List</h2>
+                    <div id="manage-disneyland-table-container"></div>
+                </div>
+            </section>
 
-                <!-- 6. Navigation Toggles Tab -->
-                <div id="tab-navtoggles" class="tab-content" style="display:none;">
-                    <div class="form-card">
-                        <h2>Header Navigation Visibility Toggles</h2>
-                        <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">Enable or disable navigation tabs across the entire website in real-time without deleting pages.</p>
-                        <div id="nav-toggle-list" style="display:flex; flex-direction:column; gap:12px;"></div>
-                        <button type="button" onclick="saveNavToggles()" class="btn-submit" style="margin-top:20px;"><i class="fa-solid fa-floppy-disk"></i> Update Live Navigation</button>
-                    </div>
+            <!-- Tab 6: Navigation Switchboard -->
+            <section id="tab-navigation" class="tab-content" style="display:none;">
+                <div class="admin-card">
+                    <h2>Header Navigation Switchboard</h2>
+                    <p style="color:#666;">Toggle links visible in the site's top navigation bar:</p>
+                    <div id="nav-toggle-list" style="display:flex; flex-direction:column; gap:10px; margin:20px 0;"></div>
+                    <button type="button" onclick="saveNavToggles()" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Save Navigation Order</button>
                 </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- GitHub Settings Modal -->
+    <div id="settings-drawer" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:30px; border-radius:12px; width:90%; max-width:450px;">
+            <h3 style="margin-top:0;">GitHub Connection</h3>
+            <div class="form-group"><label>Owner / Username</label><input type="text" id="gh-owner"></div>
+            <div class="form-group"><label>Repository Name</label><input type="text" id="gh-repo"></div>
+            <div class="form-group"><label>Personal Access Token</label><input type="password" id="gh-token"></div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button type="button" onclick="toggleSettingsModal()" class="btn btn-secondary">Cancel</button>
+                <button type="button" onclick="saveSettings()" class="btn btn-primary">Save Config</button>
             </div>
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-drawer" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:20000; align-items:center; justify-content:center;">
-        <div style="background:#fff; padding:30px; border-radius:12px; max-width:440px; width:90%; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-            <h3>GitHub Settings</h3>
-            <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Configure your repository bridge to save live updates.</p>
-            <div class="form-group" style="margin:12px 0;"><label>Owner / User</label><input type="text" id="gh-owner"></div>
-            <div class="form-group" style="margin-bottom:12px;"><label>Repository Name</label><input type="text" id="gh-repo"></div>
-            <div class="form-group" style="margin-bottom:20px;"><label>Personal Access Token</label><input type="password" id="gh-token"></div>
-            <div style="display:flex; gap:10px;">
-                <button type="button" onclick="saveSettings()" class="btn-submit" style="flex:1; justify-content:center;">Save</button>
-                <button type="button" onclick="toggleSettingsModal()" style="background:#eee; border:none; padding:10px 18px; border-radius:50px; cursor:pointer;">Close</button>
-            </div>
-        </div>
-    </div>
-
+    <div id="status-toast"></div>
     <script src="admin.js"></script>
 </body>
 </html>
