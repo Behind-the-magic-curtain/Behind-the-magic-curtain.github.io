@@ -1205,19 +1205,19 @@ section {
     }
 }
 /* -------------------------------------------------- */
-/* 15. Gated Download & Competition Gateway Modal     */
+/* 15. Gated Lead Magnet & Social Download Modal      */
 /* -------------------------------------------------- */
 
 .btmc-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.75);
+    background: rgba(0, 0, 0, 0.78);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    z-index: 20000;
     padding: 20px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(5px);
 }
 
 .btmc-gateway-card {
@@ -1225,7 +1225,7 @@ section {
     border-radius: var(--radius-lg);
     max-width: 520px;
     width: 100%;
-    padding: 32px 24px;
+    padding: 32px 26px;
     box-shadow: var(--shadow-hover);
     position: relative;
     text-align: center;
@@ -1238,16 +1238,22 @@ section {
     right: 16px;
     background: transparent;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    line-height: 1;
     color: #888;
     cursor: pointer;
+    transition: color 0.2s;
+}
+
+.gateway-close-btn:hover {
+    color: var(--color-primary);
 }
 
 .gateway-steps {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin: 24px 0;
+    gap: 14px;
+    margin: 22px 0;
     text-align: left;
 }
 
@@ -1259,11 +1265,14 @@ section {
     background: var(--color-bg-light);
     border-radius: var(--radius-md);
     border: 1.5px solid var(--color-border);
+    gap: 12px;
+    transition: all 0.25s ease;
 }
 
+/* Gold Verified State */
 .gateway-step.completed {
-    border-color: var(--color-accent);
-    background: #e0f2f1;
+    border-color: #d4af37;
+    background: #fffdf0;
 }
 
 .step-info {
@@ -1275,29 +1284,67 @@ section {
 .step-num {
     background: var(--color-primary);
     color: #fff;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.88rem;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
 }
 
 .gateway-step.completed .step-num {
-    background: var(--color-accent);
+    background: var(--color-secondary);
+    color: #111111;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.gateway-social-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.social-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-size: 0.84rem;
+    border-radius: 50px;
+    border: 1.5px solid var(--color-border);
+    background: #ffffff;
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.social-action-btn:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.social-action-btn.clicked {
+    background: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: #111111;
 }
 
 .gateway-input {
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 18px;
     border-radius: 50px;
     border: 1.5px solid var(--color-border);
     font-family: var(--font-body);
     font-size: 0.95rem;
     outline: none;
     margin-bottom: 12px;
+    box-sizing: border-box;
 }
 
 .gateway-input:focus {
