@@ -572,8 +572,9 @@ section {
 
 .card img {
     width: 100%;
-    height: 210px;
+    height: 220px;
     object-fit: cover;
+    object-position: center top;
 }
 
 .card-content {
@@ -622,14 +623,16 @@ a.clickable-card {
 
 .clickable-card .card-image-wrap {
     overflow: hidden;
-    height: 210px;
+    height: 220px;
     width: 100%;
+    background-color: #f1f5f9;
 }
 
 .clickable-card .card-image-wrap img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
     transition: transform 0.35s ease;
 }
 
@@ -643,7 +646,7 @@ a.clickable-card {
     transform: translateY(-2px);
 }
 
-/* What's On Listing Card */
+/* What's On Listing Card (Fixed Proportional Poster) */
 .listing-card {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -654,12 +657,24 @@ a.clickable-card {
     overflow: hidden;
     box-shadow: var(--shadow-card);
     margin-bottom: 30px;
+    align-items: start;
+}
+
+.listing-image {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    background-color: #f8fafc;
+    overflow: hidden;
 }
 
 .listing-image img {
     width: 100%;
     height: 100%;
+    max-height: 380px;
     object-fit: cover;
+    object-position: center top;
+    display: block;
 }
 
 .listing-content {
@@ -695,10 +710,10 @@ a.clickable-card {
     text-align: center;
 }
 
-/* Theatre Guide Cards - Clean Proportional Aspect Ratio */
+/* Theatre Guide Cards (Clean 4:3 Ratio & Alignment Protection) */
 .theatre-card {
     display: flex;
-    align-items: stretch;
+    align-items: flex-start;
     background: #ffffff;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -714,7 +729,9 @@ a.clickable-card {
 }
 
 .theatre-img-container {
-    flex: 0 0 340px;
+    flex: 0 0 320px;
+    width: 320px;
+    align-self: stretch;
     position: relative;
     overflow: hidden;
     background-color: #f1f5f9;
@@ -723,7 +740,7 @@ a.clickable-card {
 .theatre-img-container img {
     width: 100%;
     height: 100%;
-    min-height: 100%;
+    min-height: 260px;
     object-fit: cover;
     object-position: center center;
     display: block;
@@ -735,6 +752,27 @@ a.clickable-card {
     display: flex;
     flex-direction: column;
 }
+
+.theatre-info h2 {
+    margin-top: 0;
+    font-size: 1.6rem;
+    color: var(--color-primary);
+}
+
+.theatre-location {
+    font-family: var(--font-subheading);
+    font-size: 0.95rem;
+    color: var(--color-text-light);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.theatre-meta p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
 /* ---------------------------------- */
 /* 10. Single Article & Review Detail */
 /* ---------------------------------- */
