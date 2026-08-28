@@ -1,5 +1,19 @@
 [
   {
+    "id": "news_1787910264163",
+    "title": "Birmingham Royal Ballet Cygnets Take to the Water Ahead of Swan Lake at Birmingham Hippodrome",
+    "slug": "birmingham-royal-ballet-swan-lake-hippodrome.html",
+    "category": "Theatre News",
+    "author": "Katy Rose Meaney",
+    "summary": "Birmingham Royal Ballet’s cygnets made a splash at Cannon Hill Park’s boating lake to celebrate Sir Peter Wright’s Swan Lake heading to Birmingham Hippodrome and London's Sadler's Wells this autumn.",
+    "bodyHtml": "<p>Dancers from Birmingham Royal Ballet made a splash at Cannon Hill Park’s boating lake this week, striking a pose alongside the iconic swan boats to celebrate the upcoming revival of Sir Peter Wright and Galina Samsova’s world-renowned production of <em>Swan Lake</em>.</p>\n\n<p>The company’s first cast of four cygnets — <strong>Rachele Pizzillo, Reina Fuchigami, Rosanna Ely, and Sofia Liñares</strong> — took time out of intensive rehearsals to visit the historic Birmingham park, posing on the water before taking to the stage at <strong>Birmingham Hippodrome</strong> from <strong>Wednesday 23 September to Saturday 3 October 2026</strong>.</p>\n\n<p>The cygnets in <em>Swan Lake</em> perform the iconic <em>Danse des petits cygnes</em> (Dance of the Little Swans) in Act II — one of the most recognisable and demanding pieces of classical choreography in ballet. The four dancers must cross arms in unbroken formation and move in precise, flawless unison, capturing young cygnets huddling together.</p>\n\n<p>Set to Pyotr Ilyich Tchaikovsky’s legendary score performed live by the <strong>Royal Ballet Sinfonia</strong>, the ballet tells the timeless story of Prince Siegfried and Odette, a princess cursed by the sorcerer Baron von Rothbart to live as a swan by day and a woman by night.</p>\n\n<div class=\"card-tags\" style=\"margin: 25px 0;\">\n    <span class=\"tag tag-touring\"><i class=\"fa-solid fa-route\"></i> Birmingham & London</span>\n    <span class=\"tag tag-age\">Ages 5+</span>\n    <span class=\"tag tag-sensory\">Live Orchestra</span>\n</div>\n\n<p>Following its ten-day run at Birmingham Hippodrome, the production will transfer to London’s <strong>Sadler’s Wells Theatre</strong> from <strong>Wednesday 28 to Saturday 31 October 2026</strong>.</p>\n\n<p>Families looking to get a closer look at the world of classical ballet can also catch Birmingham Royal Ballet in the city centre this weekend as part of Birmingham Weekender in the Bullring on Saturday 29 August, featuring free <em>Swan Lake</em> children's dance workshops.</p>\n\n<article style=\"margin-top: 30px;\">\n    <h3>Swan Lake Performance & Booking Details</h3>\n    <ul>\n        <li><strong>Birmingham Hippodrome:</strong> Wednesday 23 September – Saturday 3 October 2026</li>\n        <li><strong>Sadler’s Wells, London:</strong> Wednesday 28 October – Saturday 31 October 2026</li>\n        <li><strong>Music:</strong> Pyotr Ilyich Tchaikovsky, played live by the Royal Ballet Sinfonia</li>\n        <li><strong>Choreography & Production:</strong> Sir Peter Wright and Galina Samsova</li>\n        <li><strong>Family & Sensory Note:</strong> Features atmospheric stage lighting and dramatic live orchestral climaxes. Birmingham Hippodrome offers accessible seating and dedicated quiet spaces for families.</li>\n        <li><strong>Tickets & Information:</strong> Book online via <a href=\"https://www.brb.org.uk\" target=\"_blank\" rel=\"noopener noreferrer\">brb.org.uk</a></li>\n    </ul>\n</article>",
+    "mainImage": "l-r-reina-fuchigami-rosanna-ely-rachele-pizzillo-sofia-li-ares-.webp",
+    "datePublished": "2026-08-28T09:44:22.176Z",
+    "dateModified": "2026-08-28T09:44:22.176Z",
+    "status": "published",
+    "rank": 1
+  },
+  {
     "id": "news_1710000000000",
     "title": "West Midlands Theatres Announce Relaxed Performances for 2026/27",
     "slug": "west-midlands-theatres-relaxed-performances-2026.html",
@@ -11,7 +25,7 @@
     "altText": "Auditorium with relaxed lighting",
     "category": "Theatre News",
     "bodyHtml": "<p>Venues across the Midlands have announced expanded accessible schedules...</p>",
-    "rank": 1,
+    "rank": 2,
     "status": "published"
   }
 ]
