@@ -779,16 +779,16 @@ function handleFooterNewsletterSubmit() {
     emailInput.value = '';
     showBtmcToast(`Welcome ${name || ''}! Check your inbox for a welcome email.`);
 }
-/* --- 13. Gated Social & Download Engine --- */
+/* --- 13. Gated Lead Magnet & Dual-Social Gateway --- */
 let gatewayTargetUrl = '';
-let socialFollowClicked = false;
+let socialStepVerified = false;
 
-function triggerGatedDownload(targetDownloadUrl, resourceTitle = "Disneyland Paris Planner") {
-    gatewayTargetUrl = targetDownloadUrl;
-    
-    // Bypass if already unlocked previously
+function triggerGatedDownload(targetUrl, resourceTitle = "Disneyland Paris Planner") {
+    gatewayTargetUrl = targetUrl;
+
+    // Direct access if visitor has already unlocked previously
     if (localStorage.getItem('btmc_lead_unlocked') === 'true') {
-        window.open(targetDownloadUrl, '_blank');
+        window.open(targetUrl, '_blank');
         return;
     }
 
@@ -797,20 +797,27 @@ function triggerGatedDownload(targetDownloadUrl, resourceTitle = "Disneyland Par
         const modalHtml = `
             <div id="btmc-gateway-modal" class="btmc-modal-overlay" style="display:none;">
                 <div class="btmc-gateway-card">
-                    <button class="gateway-close-btn" onclick="closeGatewayModal()">&times;</button>
-                    <h2 id="gateway-title" style="font-size:1.6rem; color:var(--color-primary); margin-bottom:8px;">Unlock Your Free Guide</h2>
-                    <p style="font-size:0.9rem; color:var(--color-text-light);">Complete 2 quick steps to unlock instant access:</p>
+                    <button type="button" class="gateway-close-btn" onclick="closeGatewayModal()">&times;</button>
+                    <h2 id="gateway-title" style="font-size:1.55rem; color:var(--color-primary); margin-bottom:8px; margin-top:0;">Unlock Free Guide</h2>
+                    <p style="font-size:0.9rem; color:var(--color-text-light); margin-bottom:18px;">Follow on Facebook or Instagram and enter your details below to unlock immediate access.</p>
                     
                     <div class="gateway-steps">
                         <div class="gateway-step" id="step-social-row">
                             <div class="step-info">
                                 <span class="step-num" id="step-1-icon">1</span>
                                 <div>
-                                    <strong style="display:block; font-size:0.95rem;">Follow us on Instagram / Facebook</strong>
-                                    <span style="font-size:0.8rem; color:#666;">Support our family theatre & sensory guides</span>
+                                    <strong style="display:block; font-size:0.92rem; color:var(--color-text);">Follow Our Family Journey</strong>
+                                    <span id="step-1-subtext" style="font-size:0.78rem; color:#666;">Choose either platform to verify (1 required)</span>
                                 </div>
                             </div>
-                            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding:6px 14px; font-size:0.85rem;" onclick="markSocialStepDone()">Follow</a>
+                            <div class="gateway-social-actions">
+                                <a href="https://www.facebook.com/share/1DqVxkKiWZ/" target="_blank" rel="noopener noreferrer" class="social-action-btn" id="btn-social-fb" onclick="markSocialVerified(this)">
+                                    <i class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook
+                                </a>
+                                <a href="https://www.instagram.com/behind.the.magic.curtain?igsi=MXVwdjZjeTZsZGZvNQ==" target="_blank" rel="noopener noreferrer" class="social-action-btn" id="btn-social-ig" onclick="markSocialVerified(this)">
+                                    <i class="fa-brands fa-instagram" style="color:#e4405f;"></i> Instagram
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -821,7 +828,7 @@ function triggerGatedDownload(targetDownloadUrl, resourceTitle = "Disneyland Par
                             <i class="fa-solid fa-unlock"></i> Unlock & Download Now
                         </button>
                     </form>
-                    <p style="font-size:0.75rem; color:#888; margin-top:12px;">🔒 We respect your privacy. Zero spam. Unsubscribe anytime.</p>
+                    <p style="font-size:0.75rem; color:#888; margin:12px 0 0 0;">🔒 Zero spam. <a href="unsubscribe.html" style="color:#666; text-decoration:underline;">Unsubscribe or delete your data</a> anytime.</p>
                 </div>
             </div>
         `;
@@ -838,12 +845,17 @@ function closeGatewayModal() {
     if (modal) modal.style.display = 'none';
 }
 
-function markSocialStepDone() {
-    socialFollowClicked = true;
+function markSocialVerified(btnElement) {
+    socialStepVerified = true;
+    if (btnElement) btnElement.classList.add('clicked');
+
     const row = document.getElementById('step-social-row');
     const icon = document.getElementById('step-1-icon');
+    const subtext = document.getElementById('step-1-subtext');
+
     if (row) row.classList.add('completed');
     if (icon) icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+    if (subtext) subtext.innerHTML = '<strong style="color:#007788;">Verified!</strong> You can follow both if you like.';
 }
 
 function handleGatewaySubmit() {
@@ -855,17 +867,28 @@ function handleGatewaySubmit() {
         return;
     }
 
-    // Submit silently to Google Sheets via your existing footer form backend
-    document.getElementById('footer_gform_optin').value = "Yes - Join Club";
-    document.getElementById('footer_gform_contact').value = `${name || 'Parent'} (${email})`;
-    document.getElementById('footer_gform_diary').value = `Lead Magnet Download: ${gatewayTargetUrl}`;
-    document.getElementById('native_footer_form').submit();
+    if (!socialStepVerified) {
+        showBtmcToast('Please click Facebook or Instagram above to follow us before unlocking.', 'toast-info');
+        return;
+    }
 
-    // Cache authorization so user only does this once
+    // Submit payload silently through the Google Forms background bridge
+    const optinInput = document.getElementById('footer_gform_optin') || document.getElementById('dlp_gform_optin');
+    const contactInput = document.getElementById('footer_gform_contact') || document.getElementById('dlp_gform_contact');
+    const diaryInput = document.getElementById('footer_gform_diary') || document.getElementById('dlp_gform_diary');
+    const nativeForm = document.getElementById('native_footer_form') || document.getElementById('native_dlp_form');
+
+    if (optinInput && contactInput && diaryInput && nativeForm) {
+        optinInput.value = "Yes - Join Club";
+        contactInput.value = `${name || 'Parent'} (${email})`;
+        diaryInput.value = `Lead Magnet Download: ${gatewayTargetUrl}`;
+        nativeForm.submit();
+    }
+
+    // Save unlock status to prevent asking again on future downloads
     localStorage.setItem('btmc_lead_unlocked', 'true');
     closeGatewayModal();
 
-    // Download/open target document
     showBtmcToast(`Thank you, ${name || 'friend'}! Your guide is opening.`);
     if (gatewayTargetUrl) {
         window.open(gatewayTargetUrl, '_blank');
