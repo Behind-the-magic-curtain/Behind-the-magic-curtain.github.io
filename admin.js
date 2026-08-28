@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V2.8)
- * Resilient API Bridge, Drag-and-Drop Ordering, WebP Compression & Sensory Strategy Handlers
+ * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.0)
+ * Word-Style Formatting Ribbon, WebP Compression & Automated HTML Publishing
  */
 
 const MASTER_PIN = "3011";
@@ -14,7 +14,19 @@ let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneylan
 let draggedRowIndex = null;
 let toastTimeout = null;
 
-/* --- 1. PIN Security & Initialization --- */
+/* --- 1. WYSIWYG Ribbon Helpers --- */
+function applyFormat(command, value = null) {
+    document.execCommand(command, false, value);
+}
+
+function insertLink() {
+    const url = prompt('Enter web link URL (https://...):');
+    if (url) {
+        document.execCommand('createLink', false, url);
+    }
+}
+
+/* --- 2. PIN Security & Initialization --- */
 function unlockStudio() {
     const pin = document.getElementById('pin-input').value.trim();
     if (pin === MASTER_PIN) {
@@ -34,16 +46,11 @@ function lockStudio() {
     location.reload();
 }
 
-function toggleSidebar() {
-    document.getElementById('admin-sidebar').classList.toggle('open');
-}
-
 function switchAdminTab(tabId, btn) {
     document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById(tabId).style.display = 'block';
     if (btn) btn.classList.add('active');
-    if (window.innerWidth <= 850) toggleSidebar();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -91,7 +98,7 @@ function showToast(msg, type = 'status-success') {
     }
 }
 
-/* --- 2. WebP Image Compressor --- */
+/* --- 3. Image Compressor --- */
 async function processAndCompressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -143,7 +150,7 @@ function renderImagePreviews(type) {
             <div style="display:flex; align-items:center; gap:10px;">
                 <img src="${item.preview}">
                 <span>${item.name}</span>
-                <span style="font-size:0.75rem; color:#00838f; font-weight:700;">WEBP OPTIMIZED</span>
+                <span style="font-size:0.75rem; color:#00838f; font-weight:700;">WEBP READY</span>
             </div>
             <button type="button" onclick="removeImage('${type}', ${idx})" class="btn-delete"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -168,7 +175,7 @@ function syncNewsSlug() {
     document.getElementById('news-slug').value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '.html';
 }
 
-/* --- 3. Edit Dispatchers --- */
+/* --- 4. Edit Dispatchers --- */
 function enterEditReview(id) {
     const item = currentCache.reviews.find(r => r.id === id);
     if (!item) return;
@@ -192,7 +199,7 @@ function enterEditReview(id) {
     document.getElementById('wysiwyg-content').innerHTML = item.bodyHtml || '<p></p>';
     document.getElementById('rev-tips').value = (item.tips || []).join('\n');
     document.getElementById('rev-published').checked = item.status === 'published';
-    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Review';
+    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Review';
 
     reviewImages = [];
     if (item.mainImage) reviewImages.push({ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` });
@@ -222,7 +229,7 @@ function enterEditWhatsOn(id) {
     document.getElementById('wo-age').value = item.age || 'Ages 4+';
     document.getElementById('wo-category').value = item.category || 'theatre';
     document.getElementById('wo-is-touring').checked = !!item.isTouring;
-    document.getElementById('wo-desc').value = item.desc || '';
+    document.getElementById('wo-desc-wysiwyg').innerHTML = item.desc || '';
     document.getElementById('wo-ticket-link').value = item.ticketLink || '';
     document.getElementById('wo-site-link').value = item.siteLink || '';
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Show';
@@ -247,8 +254,8 @@ function enterEditTheatre(id) {
     document.getElementById('th-name').value = item.name || '';
     document.getElementById('th-location').value = item.location || '';
     document.getElementById('th-website').value = item.website || '';
-    document.getElementById('th-access').value = item.accessibility || '';
-    document.getElementById('th-relaxed').value = item.relaxed || '';
+    document.getElementById('th-access-wysiwyg').innerHTML = item.accessibility || '';
+    document.getElementById('th-relaxed-wysiwyg').innerHTML = item.relaxed || '';
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Live Theatre';
 
     if (item.image) {
@@ -273,7 +280,7 @@ function enterEditNews(id) {
     document.getElementById('news-category').value = item.category || 'Theatre News';
     document.getElementById('news-author').value = item.author || 'Katy Rose Meaney';
     document.getElementById('news-summary').value = item.summary || '';
-    document.getElementById('news-body').value = item.bodyHtml || '';
+    document.getElementById('news-body-wysiwyg').innerHTML = item.bodyHtml || '';
     document.getElementById('news-published').checked = item.status === 'published';
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story';
 
@@ -281,31 +288,6 @@ function enterEditNews(id) {
         newsImages = [{ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` }];
         renderImagePreviews('news');
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function enterEditDisneyland(id) {
-    const item = currentCache.disneyland.find(d => d.id === id);
-    if (!item) return;
-
-    editMode = true;
-    document.getElementById('edit-banner').style.display = 'flex';
-    document.getElementById('edit-item-title').textContent = `Disneyland: ${item.name}`;
-
-    switchAdminTab('tab-disneyland', document.querySelectorAll('.admin-nav-tabs button')[4]);
-    document.getElementById('dlp-edit-id').value = item.id;
-    document.getElementById('dlp-name').value = item.name || '';
-    document.getElementById('dlp-park').value = item.park || 'Disneyland Park';
-    document.getElementById('dlp-land').value = item.land || '';
-    document.getElementById('dlp-type').value = item.type || 'Ride';
-    document.getElementById('dlp-height').value = item.minHeight || 'None';
-    document.getElementById('dlp-speed').value = item.thrillLevel || 3;
-    document.getElementById('dlp-fear').value = item.fearFactor || 3;
-    document.getElementById('dlp-noise').value = item.noiseLevel || 3;
-    document.getElementById('dlp-darkness').value = item.darkness || 3;
-    document.getElementById('dlp-notes').value = item.sensoryNotes || '';
-    document.getElementById('dlp-adhd').value = item.adhdTip || '';
-    document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Baseline';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -318,15 +300,18 @@ function cancelEditMode() {
     document.getElementById('wo-edit-id').value = '';
     document.getElementById('th-edit-id').value = '';
     document.getElementById('news-edit-id').value = '';
-    document.getElementById('dlp-edit-id').value = '';
 
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Review';
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save What\'s On Show';
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry';
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story';
-    document.getElementById('dlp-submit-btn').innerHTML = 'Save Disneyland Baseline';
 
     document.getElementById('wysiwyg-content').innerHTML = '';
+    document.getElementById('wo-desc-wysiwyg').innerHTML = '';
+    document.getElementById('th-access-wysiwyg').innerHTML = '';
+    document.getElementById('th-relaxed-wysiwyg').innerHTML = '';
+    document.getElementById('news-body-wysiwyg').innerHTML = '';
+
     reviewImages = [];
     theatreImages = [];
     whatsonImages = [];
@@ -337,7 +322,7 @@ function cancelEditMode() {
     renderImagePreviews('news');
 }
 
-/* --- 4. Submissions --- */
+/* --- 5. Handlers & Publishing --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -387,7 +372,7 @@ async function handleReviewSubmit() {
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews (${title})`);
 
         const pageHtml = buildFullReviewPageHtml(reviewEntry);
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish page: ${title}`);
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish review page: ${title}`);
 
         showToast(`🎉 Successfully saved "${title}"!`, 'status-success');
         cancelEditMode();
@@ -423,7 +408,7 @@ async function handleWhatsOnSubmit() {
             category: document.getElementById('wo-category').value,
             isTouring: document.getElementById('wo-is-touring').checked,
             image: whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.webp' : 'show-default.webp'),
-            desc: document.getElementById('wo-desc').value.trim(),
+            desc: document.getElementById('wo-desc-wysiwyg').innerHTML,
             ticketLink: document.getElementById('wo-ticket-link').value.trim(),
             siteLink: document.getElementById('wo-site-link').value.trim(),
             rank: editId ? (shows.find(w => w.id === editId)?.rank || 1) : shows.length + 1
@@ -461,8 +446,8 @@ async function handleTheatreSubmit() {
             location: document.getElementById('th-location').value.trim(),
             image: theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.webp' : 'theatre-default.webp'),
             website: document.getElementById('th-website').value.trim(),
-            accessibility: document.getElementById('th-access').value.trim(),
-            relaxed: document.getElementById('th-relaxed').value.trim(),
+            accessibility: document.getElementById('th-access-wysiwyg').innerHTML,
+            relaxed: document.getElementById('th-relaxed-wysiwyg').innerHTML,
             rank: editId ? (theatres.find(t => t.id === editId)?.rank || 1) : theatres.length + 1
         };
 
@@ -503,7 +488,7 @@ async function handleNewsSubmit() {
             category: document.getElementById('news-category').value.trim(),
             author: document.getElementById('news-author').value.trim() || 'Katy Rose Meaney',
             summary: document.getElementById('news-summary').value.trim(),
-            bodyHtml: document.getElementById('news-body').value.trim(),
+            bodyHtml: document.getElementById('news-body-wysiwyg').innerHTML,
             mainImage: newsImages.length > 0 ? newsImages[0].name : (existing?.mainImage || 'news-default.webp'),
             datePublished: existing ? existing.datePublished : nowIso,
             dateModified: nowIso,
@@ -514,8 +499,14 @@ async function handleNewsSubmit() {
         const updated = editId ? newsList.map(n => n.id === editId ? entry : n) : [entry, ...newsList];
         updated.forEach((n, idx) => n.rank = idx + 1);
 
+        // 1. Save data feed
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
-        showToast(`🎉 News story published!`, 'status-success');
+        
+        // 2. Automatically generate static news article HTML
+        const pageHtml = buildFullNewsPageHtml(entry);
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news page: ${title}`);
+
+        showToast(`🎉 News story published & HTML generated!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
@@ -523,362 +514,85 @@ async function handleNewsSubmit() {
     }
 }
 
-async function handleDisneylandSubmit() {
-    const creds = getCredentials();
-    if (!creds) return;
-
-    const editId = document.getElementById('dlp-edit-id').value;
-    const name = document.getElementById('dlp-name').value.trim();
-
-    showToast('⏳ Saving Disneyland Baseline...', 'status-loading');
-    try {
-        const dlpData = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
-        const entry = {
-            id: editId || 'dlp_' + name.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
-            name,
-            park: document.getElementById('dlp-park').value,
-            land: document.getElementById('dlp-land').value.trim(),
-            type: document.getElementById('dlp-type').value,
-            minHeight: document.getElementById('dlp-height').value.trim() || 'None',
-            thrillLevel: parseInt(document.getElementById('dlp-speed').value),
-            fearFactor: parseInt(document.getElementById('dlp-fear').value),
-            noiseLevel: parseInt(document.getElementById('dlp-noise').value),
-            darkness: parseInt(document.getElementById('dlp-darkness').value),
-            sensoryNotes: document.getElementById('dlp-notes').value.trim(),
-            adhdTip: document.getElementById('dlp-adhd').value.trim()
-        };
-
-        const updatedDlp = editId ? dlpData.map(d => d.id === editId ? entry : d) : [...dlpData, entry];
-
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedDlp, null, 2)))), `Save Disneyland Baseline: ${name}`);
-        showToast(`✅ Updated "${name}" in Disneyland Database!`, 'status-success');
-        cancelEditMode();
-        loadManagementDashboard();
-    } catch (err) {
-        showToast(`❌ Error: ${err.message}`, 'status-error');
-    }
-}
-
-/* --- 5. Dashboard Table Managers --- */
-async function loadManagementDashboard() {
-    const creds = getCredentials();
-    if (!creds) return;
-
-    try {
-        const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
-        currentCache.reviews = reviews.sort((a,b) => (a.rank||0) - (b.rank||0));
-        renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
-    } catch (err) {
-        const c = document.getElementById('manage-reviews-table-container');
-        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
-    }
-
-    try {
-        const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
-        currentCache.whatson = whatson.sort((a,b) => (a.rank||0) - (b.rank||0));
-        renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
-    } catch (err) {
-        const c = document.getElementById('manage-whatson-table-container');
-        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
-    }
-
-    try {
-        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
-        currentCache.theatres = theatres.sort((a,b) => (a.rank||0) - (b.rank||0));
-        renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
-    } catch (err) {
-        const c = document.getElementById('manage-theatres-table-container');
-        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
-    }
-
-    try {
-        const news = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
-        currentCache.news = news.sort((a,b) => (a.rank||0) - (b.rank||0));
-        renderDraggableTable('news', 'manage-news-table-container', currentCache.news);
-    } catch (err) {
-        const c = document.getElementById('manage-news-table-container');
-        if (c) c.innerHTML = `<p style="color:#666;">No news data found.</p>`;
-    }
-
-    try {
-        const dlp = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
-        currentCache.disneyland = dlp;
-        renderDisneylandTable(currentCache.disneyland);
-    } catch (err) {
-        const c = document.getElementById('manage-disneyland-table-container');
-        if (c) c.innerHTML = `<p style="color:#bd2419;">Error: ${err.message}</p>`;
-    }
-
-    loadNavToggles();
-}
-
-function renderDisneylandTable(items) {
-    const container = document.getElementById('manage-disneyland-table-container');
-    if (!container) return;
-
-    if (items.length === 0) {
-        container.innerHTML = `<p style="color:#666;">No Disneyland Paris entries found.</p>`;
-        return;
-    }
-
-    let html = `
-        <table class="crud-table">
-            <thead>
-                <tr>
-                    <th>Attraction / Show</th>
-                    <th>Park & Land</th>
-                    <th>Scores (Speed / Fear / Noise / Dark)</th>
-                    <th style="width: 140px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    items.forEach((item) => {
-        html += `
-            <tr>
-                <td><strong>${item.name}</strong> <span style="font-size:0.8rem; color:#888;">(${item.type || 'Ride'})</span></td>
-                <td>${item.park} - ${item.land}</td>
-                <td>
-                    <span style="font-size:0.85rem; color:#444; font-weight:600;">
-                        🚀 ${item.thrillLevel || 1}/5 &nbsp;|&nbsp; 👻 ${item.fearFactor || 1}/5 &nbsp;|&nbsp; 🔊 ${item.noiseLevel || 1}/5 &nbsp;|&nbsp; 🌑 ${item.darkness || 1}/5
-                    </span>
-                </td>
-                <td>
-                    <button type="button" class="btn-edit" onclick="enterEditDisneyland('${item.id}')">
-                        <i class="fa-solid fa-pen"></i> Edit Baseline
-                    </button>
-                </td>
-            </tr>
-        `;
-    });
-
-    html += `</tbody></table>`;
-    container.innerHTML = html;
-}
-
-function renderDraggableTable(type, containerId, items) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    if (items.length === 0) {
-        container.innerHTML = `<p style="color:#666; padding:15px 0;">No ${type} entries found.</p>`;
-        return;
-    }
-
-    let tableHtml = `
-        <table class="crud-table" id="table-${type}">
-            <thead>
-                <tr>
-                    <th style="width: 80px;">Rank</th>
-                    <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
-                    ${type === 'reviews' ? '<th style="width: 160px;">Position / Slot</th>' : ''}
-                    ${type === 'whatson' ? '<th>Venue</th><th>End Date</th>' : ''}
-                    ${type === 'theatres' ? '<th>City / Location</th>' : ''}
-                    ${type === 'news' ? '<th>Category</th><th>Date</th>' : ''}
-                    ${type === 'reviews' || type === 'news' ? '<th style="width: 110px;">Status</th>' : ''}
-                    <th style="width: 180px;">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    items.forEach((item, index) => {
-        tableHtml += `
-            <tr class="draggable-row" draggable="true" data-type="${type}" data-index="${index}">
-                <td>
-                    <span class="grab-handle"><i class="fa-solid fa-bars"></i></span>
-                    <span class="rank-badge">#${index + 1}</span>
-                </td>
-                <td><strong>${item.title || item.name}</strong></td>
-                ${type === 'reviews' ? `<td>${index < 3 ? `<span class="badge-featured">Homepage #${index+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory only</span>'}</td>` : ''}
-                ${type === 'whatson' ? `<td>${item.venue}</td><td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>` : ''}
-                ${type === 'theatres' ? `<td>${item.location}</td>` : ''}
-                ${type === 'news' ? `<td>${item.category || 'News'}</td><td>${(item.datePublished || '').substring(0, 10)}</td>` : ''}
-                ${type === 'reviews' || type === 'news' ? `<td><span class="badge-status" style="background:${item.status==='published'?'#2e7d32':'#757575'}">${item.status}</span></td>` : ''}
-                <td>
-                    <div style="display:flex; gap:6px;">
-                        <button type="button" class="btn-edit" onclick="${type === 'reviews' ? `enterEditReview('${item.id}')` : (type === 'whatson' ? `enterEditWhatsOn('${item.id}')` : (type === 'theatres' ? `enterEditTheatre('${item.id}')` : `enterEditNews('${item.id}')`))}"><i class="fa-solid fa-pen"></i> Edit</button>
-                        <button type="button" class="btn-delete" onclick="deleteItem('${type}', '${item.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
-                    </div>
-                </td>
-            </tr>
-        `;
-    });
-
-    tableHtml += `</tbody></table>`;
-    container.innerHTML = tableHtml;
-
-    attachDragEventListeners(type);
-}
-
-function attachDragEventListeners(type) {
-    const table = document.getElementById(`table-${type}`);
-    if (!table) return;
-
-    const rows = table.querySelectorAll('.draggable-row');
-    rows.forEach(row => {
-        row.addEventListener('dragstart', (e) => {
-            draggedRowIndex = parseInt(row.getAttribute('data-index'));
-            row.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        });
-
-        row.addEventListener('dragend', () => {
-            row.classList.remove('dragging');
-            table.querySelectorAll('.draggable-row').forEach(r => r.classList.remove('drag-over'));
-        });
-
-        row.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            row.classList.add('drag-over');
-        });
-
-        row.addEventListener('dragleave', () => {
-            row.classList.remove('drag-over');
-        });
-
-        row.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            row.classList.remove('drag-over');
-            const targetIndex = parseInt(row.getAttribute('data-index'));
-
-            if (draggedRowIndex !== null && draggedRowIndex !== targetIndex) {
-                const list = currentCache[type];
-                const [movedItem] = list.splice(draggedRowIndex, 1);
-                list.splice(targetIndex, 0, movedItem);
-
-                list.forEach((item, idx) => item.rank = idx + 1);
-                
-                showToast(`⏳ Saving new ${type} order...`, 'status-loading');
-                const creds = getCredentials();
-                await commitGitHubFile(creds.owner, creds.repo, creds.token, `data/${type}.json`, btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), `Re-order ${type}`);
-                showToast(`✅ ${type} order updated!`, 'status-success');
-                loadManagementDashboard();
+function buildFullNewsPageHtml(d) {
+    const formattedDate = new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    const newsSchema = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": d.title,
+        "image": [`https://behindthemagiccurtain.co.uk/images/${d.mainImage}`],
+        "datePublished": d.datePublished,
+        "dateModified": d.dateModified,
+        "author": [{
+            "@type": "Person",
+            "name": d.author,
+            "jobTitle": "Theatre Critic & Features Writer"
+        }],
+        "publisher": {
+            "@type": "Organization",
+            "name": "Behind the Magic Curtain",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://behindthemagiccurtain.co.uk/images/logo.webp"
             }
-        });
+        },
+        "description": d.summary
     });
-}
 
-async function deleteItem(type, id) {
-    if (!confirm('Are you sure you want to delete this entry?')) return;
-    const creds = getCredentials();
-    const file = `data/${type}.json`;
-    let data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
-    data = data.filter(item => item.id !== id);
-    data.forEach((item, idx) => item.rank = idx + 1);
-    
-    await commitGitHubFile(creds.owner, creds.repo, creds.token, file, btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), `Delete from ${type}`);
-    showToast('✅ Entry deleted successfully!', 'status-success');
-    loadManagementDashboard();
-}
-
-/* --- 6. Navigation Switchboard --- */
-async function loadNavToggles() {
-    const creds = getCredentials();
-    if (!creds) return;
-    try {
-        const navData = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/navigation.json');
-        currentCache.nav = navData.items || [];
-        const container = document.getElementById('nav-toggle-list');
-        if (!container) return;
-        container.innerHTML = currentCache.nav.map((item, idx) => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
-                <div>
-                    <strong>${item.title}</strong>
-                    <span style="font-size:0.8rem; color:#64748b; margin-left:8px;">(${item.url})</span>
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${d.title} | Behind the Magic Curtain</title>
+    <meta name="description" content="${d.summary}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="${d.title} | Behind the Magic Curtain">
+    <meta property="og:description" content="${d.summary}">
+    <meta property="og:image" content="images/${d.mainImage}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script type="application/ld+json">
+    ${newsSchema}
+    <\/script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
+            <nav class="main-nav"><button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
+                <ul></ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section class="page-header">
+            <div class="container" style="max-width: 820px;">
+                <div style="display:flex; justify-content:center; gap:12px; align-items:center; margin-bottom:12px;">
+                    <span class="tag" style="background:var(--color-accent);">${d.category || 'News'}</span>
+                    <time datetime="${d.datePublished}" style="font-size:0.85rem; color:var(--color-text-light);"><i class="fa-regular fa-clock"></i> ${formattedDate}</time>
                 </div>
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                    <input type="checkbox" id="nav-toggle-${idx}" ${item.enabled ? 'checked' : ''}>
-                    <span>Visible in Nav</span>
-                </label>
+                <h1>${d.title}</h1>
+                <p style="font-size:1.15rem; color:var(--color-text-light); margin-top:12px;">By <strong>${d.author}</strong></p>
             </div>
-        `).join('');
-    } catch (e) {
-        console.warn('Nav toggle error:', e);
-    }
-}
-
-async function saveNavToggles() {
-    const creds = getCredentials();
-    if (!creds) return;
-
-    currentCache.nav.forEach((item, idx) => {
-        const checkbox = document.getElementById(`nav-toggle-${idx}`);
-        if (checkbox) item.enabled = checkbox.checked;
-    });
-
-    try {
-        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/navigation.json', btoa(unescape(encodeURIComponent(JSON.stringify({ items: currentCache.nav }, null, 2)))), 'Update Header Navigation Toggles');
-        showToast('✅ Navigation switchboard updated live!', 'status-success');
-    } catch (e) {
-        showToast('❌ Failed to update navigation', 'status-error');
-    }
-}
-
-/* --- 7. Settings & GitHub REST Bridge --- */
-function getCredentials() {
-    const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
-    const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
-    const token = (localStorage.getItem('btmc_gh_token') || '').trim();
-    if (!owner || !repo || !token) {
-        toggleSettingsModal();
-        showToast('⚠️ Configure GitHub token settings first.', 'status-error');
-        return null;
-    }
-    return { owner, repo, token };
-}
-
-function saveSettings() {
-    localStorage.setItem('btmc_gh_owner', document.getElementById('gh-owner').value.trim());
-    localStorage.setItem('btmc_gh_repo', document.getElementById('gh-repo').value.trim());
-    localStorage.setItem('btmc_gh_token', document.getElementById('gh-token').value.trim());
-    showToast('✅ GitHub configuration saved!', 'status-success');
-    toggleSettingsModal();
-    loadManagementDashboard();
-}
-
-function loadSettings() {
-    document.getElementById('gh-owner').value = localStorage.getItem('btmc_gh_owner') || '';
-    document.getElementById('gh-repo').value = localStorage.getItem('btmc_gh_repo') || '';
-    document.getElementById('gh-token').value = localStorage.getItem('btmc_gh_token') || '';
-}
-
-function toggleSettingsModal() {
-    const el = document.getElementById('settings-drawer');
-    el.style.display = el.style.display === 'none' ? 'flex' : 'none';
-}
-
-async function fetchJsonFile(owner, repo, token, path) {
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (res.status === 404) return [];
-    if (!res.ok) throw new Error(`Could not load ${path} (Status: ${res.status})`);
-    const data = await res.json();
-    const binaryString = atob(data.content.replace(/\s/g, ''));
-    const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
-    return JSON.parse(new TextDecoder('utf-8').decode(bytes) || '[]');
-}
-
-async function commitGitHubFile(owner, repo, token, path, contentBase64, message) {
-    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-    let sha = null;
-    try {
-        const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
-        if (getRes.ok) {
-            const data = await getRes.json();
-            sha = data.sha;
-        }
-    } catch(e) {}
-
-    const res = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
-        body: JSON.stringify({ message, content: contentBase64, ...(sha && { sha }) })
-    });
-    if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
+        </section>
+        <section class="page-content">
+            <div class="container content-article">
+                <img src="images/${d.mainImage}" alt="${d.altText || d.title}" class="review-main-image" loading="lazy">
+                ${d.bodyHtml}
+                <div style="margin-top: 40px; text-align: center;">
+                    <a href="news.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to All News</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer"><div class="container"></div></footer>
+    <script src="script.js"><\/script>
+</body>
+</html>`;
 }
 
 function buildFullReviewPageHtml(d) {
@@ -990,4 +704,251 @@ function buildFullReviewPageHtml(d) {
     <script src="script.js"><\/script>
 </body>
 </html>`;
+}
+
+/* --- 6. Table Rendering & Reordering --- */
+async function loadManagementDashboard() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    try {
+        const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
+        currentCache.reviews = reviews.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
+    } catch (err) {}
+
+    try {
+        const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
+        currentCache.whatson = whatson.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
+    } catch (err) {}
+
+    try {
+        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        currentCache.theatres = theatres.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
+    } catch (err) {}
+
+    try {
+        const news = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
+        currentCache.news = news.sort((a,b) => (a.rank||0) - (b.rank||0));
+        renderDraggableTable('news', 'manage-news-table-container', currentCache.news);
+    } catch (err) {}
+
+    loadNavToggles();
+}
+
+function renderDraggableTable(type, containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (items.length === 0) {
+        container.innerHTML = `<p style="color:#666; padding:15px 0;">No ${type} entries found.</p>`;
+        return;
+    }
+
+    let tableHtml = `
+        <table class="crud-table" id="table-${type}">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Rank</th>
+                    <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
+                    ${type === 'reviews' ? '<th style="width: 160px;">Slot</th>' : ''}
+                    ${type === 'whatson' ? '<th>Venue</th><th>End Date</th>' : ''}
+                    ${type === 'theatres' ? '<th>Location</th>' : ''}
+                    ${type === 'news' ? '<th>Category</th><th>Date</th>' : ''}
+                    <th style="width: 180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    items.forEach((item, index) => {
+        tableHtml += `
+            <tr class="draggable-row" draggable="true" data-type="${type}" data-index="${index}">
+                <td>
+                    <span class="grab-handle"><i class="fa-solid fa-bars"></i></span>
+                    <span class="rank-badge">#${index + 1}</span>
+                </td>
+                <td><strong>${item.title || item.name}</strong></td>
+                ${type === 'reviews' ? `<td>${index < 3 ? `<span class="badge-featured">Homepage #${index+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory</span>'}</td>` : ''}
+                ${type === 'whatson' ? `<td>${item.venue}</td><td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>` : ''}
+                ${type === 'theatres' ? `<td>${item.location}</td>` : ''}
+                ${type === 'news' ? `<td>${item.category || 'News'}</td><td>${(item.datePublished || '').substring(0, 10)}</td>` : ''}
+                <td>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="btn-edit" onclick="${type === 'reviews' ? `enterEditReview('${item.id}')` : (type === 'whatson' ? `enterEditWhatsOn('${item.id}')` : (type === 'theatres' ? `enterEditTheatre('${item.id}')` : `enterEditNews('${item.id}')`))}"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button type="button" class="btn-delete" onclick="deleteItem('${type}', '${item.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    container.innerHTML = tableHtml;
+
+    attachDragEventListeners(type);
+}
+
+function attachDragEventListeners(type) {
+    const table = document.getElementById(`table-${type}`);
+    if (!table) return;
+
+    const rows = table.querySelectorAll('.draggable-row');
+    rows.forEach(row => {
+        row.addEventListener('dragstart', (e) => {
+            draggedRowIndex = parseInt(row.getAttribute('data-index'));
+            row.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        row.addEventListener('dragend', () => {
+            row.classList.remove('dragging');
+            table.querySelectorAll('.draggable-row').forEach(r => r.classList.remove('drag-over'));
+        });
+
+        row.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            row.classList.add('drag-over');
+        });
+
+        row.addEventListener('dragleave', () => {
+            row.classList.remove('drag-over');
+        });
+
+        row.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            row.classList.remove('drag-over');
+            const targetIndex = parseInt(row.getAttribute('data-index'));
+
+            if (draggedRowIndex !== null && draggedRowIndex !== targetIndex) {
+                const list = currentCache[type];
+                const [movedItem] = list.splice(draggedRowIndex, 1);
+                list.splice(targetIndex, 0, movedItem);
+
+                list.forEach((item, idx) => item.rank = idx + 1);
+                
+                showToast(`⏳ Saving new ${type} order...`, 'status-loading');
+                const creds = getCredentials();
+                await commitGitHubFile(creds.owner, creds.repo, creds.token, `data/${type}.json`, btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), `Re-order ${type}`);
+                showToast(`✅ ${type} order updated!`, 'status-success');
+                loadManagementDashboard();
+            }
+        });
+    });
+}
+
+async function deleteItem(type, id) {
+    if (!confirm('Are you sure you want to delete this entry?')) return;
+    const creds = getCredentials();
+    const file = `data/${type}.json`;
+    let data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
+    data = data.filter(item => item.id !== id);
+    data.forEach((item, idx) => item.rank = idx + 1);
+    
+    await commitGitHubFile(creds.owner, creds.repo, creds.token, file, btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), `Delete from ${type}`);
+    showToast('✅ Entry deleted successfully!', 'status-success');
+    loadManagementDashboard();
+}
+
+/* --- 7. Nav Switchboard & GitHub Bridge --- */
+async function loadNavToggles() {
+    const creds = getCredentials();
+    if (!creds) return;
+    try {
+        const navData = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/navigation.json');
+        currentCache.nav = navData.items || [];
+        const container = document.getElementById('nav-toggle-list');
+        if (!container) return;
+        container.innerHTML = currentCache.nav.map((item, idx) => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;">
+                <div><strong>${item.title}</strong> <span style="font-size:0.8rem; color:#64748b;">(${item.url})</span></div>
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="nav-toggle-${idx}" ${item.enabled ? 'checked' : ''}>
+                    <span>Visible</span>
+                </label>
+            </div>
+        `).join('');
+    } catch (e) {}
+}
+
+async function saveNavToggles() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    currentCache.nav.forEach((item, idx) => {
+        const checkbox = document.getElementById(`nav-toggle-${idx}`);
+        if (checkbox) item.enabled = checkbox.checked;
+    });
+
+    try {
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/navigation.json', btoa(unescape(encodeURIComponent(JSON.stringify({ items: currentCache.nav }, null, 2)))), 'Update Nav Toggles');
+        showToast('✅ Navigation switchboard updated!', 'status-success');
+    } catch (e) {
+        showToast('❌ Failed to update navigation', 'status-error');
+    }
+}
+
+function getCredentials() {
+    const owner = (localStorage.getItem('btmc_gh_owner') || '').trim();
+    const repo = (localStorage.getItem('btmc_gh_repo') || '').trim();
+    const token = (localStorage.getItem('btmc_gh_token') || '').trim();
+    if (!owner || !repo || !token) {
+        toggleSettingsModal();
+        showToast('⚠️ Configure GitHub token first.', 'status-error');
+        return null;
+    }
+    return { owner, repo, token };
+}
+
+function saveSettings() {
+    localStorage.setItem('btmc_gh_owner', document.getElementById('gh-owner').value.trim());
+    localStorage.setItem('btmc_gh_repo', document.getElementById('gh-repo').value.trim());
+    localStorage.setItem('btmc_gh_token', document.getElementById('gh-token').value.trim());
+    showToast('✅ GitHub configuration saved!', 'status-success');
+    toggleSettingsModal();
+    loadManagementDashboard();
+}
+
+function loadSettings() {
+    document.getElementById('gh-owner').value = localStorage.getItem('btmc_gh_owner') || '';
+    document.getElementById('gh-repo').value = localStorage.getItem('btmc_gh_repo') || '';
+    document.getElementById('gh-token').value = localStorage.getItem('btmc_gh_token') || '';
+}
+
+function toggleSettingsModal() {
+    const el = document.getElementById('settings-drawer');
+    el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+}
+
+async function fetchJsonFile(owner, repo, token, path) {
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) return [];
+    if (!res.ok) throw new Error(`Could not load ${path} (Status: ${res.status})`);
+    const data = await res.json();
+    const binaryString = atob(data.content.replace(/\s/g, ''));
+    const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+    return JSON.parse(new TextDecoder('utf-8').decode(bytes) || '[]');
+}
+
+async function commitGitHubFile(owner, repo, token, path, contentBase64, message) {
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    let sha = null;
+    try {
+        const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+        if (getRes.ok) {
+            const data = await getRes.json();
+            sha = data.sha;
+        }
+    } catch(e) {}
+
+    const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+        body: JSON.stringify({ message, content: contentBase64, ...(sha && { sha }) })
+    });
+    if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
 }
