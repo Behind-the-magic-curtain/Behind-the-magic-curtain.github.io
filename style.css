@@ -16,8 +16,8 @@
 
     /* Neutrals & Surfaces */
     --color-text: #222222;          /* High contrast primary text */
-    --color-text-light: #555555;    /* Subtitles and body secondary */
-    --color-border: #e0e0e0;
+    --color-text-light: #475569;    /* Clean modern slate body secondary */
+    --color-border: #e2e8f0;
     --color-bg-light: #f8f9fa;
     --color-bg-white: #ffffff;
 
@@ -121,8 +121,10 @@ h3 {
 }
 
 p {
-    margin-bottom: 1.4em;
+    margin-bottom: 1.2em;
     color: var(--color-text-light);
+    font-size: 0.95rem;
+    line-height: 1.7;
 }
 
 ul, ol {
@@ -133,6 +135,8 @@ ul, ol {
 li {
     margin-bottom: 0.6em;
     color: var(--color-text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
 hr {
@@ -298,7 +302,6 @@ hr {
     transform: translateY(-2px);
 }
 
-/* Category Tags */
 .card-tags {
     display: flex;
     flex-wrap: wrap;
@@ -442,7 +445,6 @@ section {
     margin: 0;
 }
 
-/* Welcome Block */
 .btmc-welcome-section {
     background-color: #ffffff;
     padding: 70px 0;
@@ -570,13 +572,6 @@ section {
     box-shadow: var(--shadow-hover);
 }
 
-.card img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    object-position: center top;
-}
-
 .card-content {
     padding: 22px;
     display: flex;
@@ -702,6 +697,7 @@ a.clickable-card {
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--color-text-light);
 }
 
 .listing-info li i {
@@ -710,7 +706,7 @@ a.clickable-card {
     text-align: center;
 }
 
-/* Theatre Guide Cards (Clean 4:3 Ratio & Alignment Protection) */
+/* Theatre Guide Cards — Proportional Clean Alignment */
 .theatre-card {
     display: flex;
     align-items: flex-start;
@@ -729,9 +725,11 @@ a.clickable-card {
 }
 
 .theatre-img-container {
-    flex: 0 0 320px;
-    width: 320px;
+    flex: 0 0 340px;
+    width: 340px;
     align-self: stretch;
+    min-height: 280px;
+    max-height: 380px;
     position: relative;
     overflow: hidden;
     background-color: #1e293b;
@@ -740,9 +738,8 @@ a.clickable-card {
 .theatre-img-container img {
     width: 100%;
     height: 100%;
-    min-height: 260px;
     object-fit: cover;
-    object-position: center center;
+    object-position: center top;
     display: block;
 }
 
@@ -757,20 +754,34 @@ a.clickable-card {
     margin-top: 0;
     font-size: 1.6rem;
     color: var(--color-primary);
+    font-family: var(--font-heading);
 }
 
 .theatre-location {
-    font-family: var(--font-subheading);
+    font-family: var(--font-body);
     font-size: 0.95rem;
-    color: var(--color-text-light);
-    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: 14px;
     display: block;
 }
 
 .theatre-meta p {
-    font-size: 0.92rem;
-    line-height: 1.6;
-    margin-bottom: 10px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-text-light);
+    margin-bottom: 12px;
+}
+
+.theatre-meta strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.theatre-info .btn {
+    align-self: flex-start;
+    margin-top: 10px;
 }
 
 /* ---------------------------------- */
@@ -1024,6 +1035,8 @@ a.clickable-card {
 
     .theatre-img-container {
         flex: 0 0 220px;
+        width: 100%;
+        max-height: 240px;
     }
 
     .theatre-info {
