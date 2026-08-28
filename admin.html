@@ -794,6 +794,44 @@
         </div>
     </div>
 
+    <!-- Interactive Card Image Crop & Focal Tuner Modal -->
+    <div id="crop-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:10001; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:var(--radius-lg); width:92%; max-width:680px; padding:25px; box-shadow:0 15px 40px rgba(0,0,0,0.4); display:flex; flex-direction:column; gap:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
+                <h3 style="margin:0; color:var(--color-primary); font-family:var(--font-heading);"><i class="fa-solid fa-crop-simple"></i> Frame Card Image (#1 Header)</h3>
+                <span id="crop-target-label" class="tag tag-adhd">Review Card</span>
+            </div>
+
+            <p style="font-size:0.88rem; color:#555; margin:0;">Drag to reposition and adjust zoom so titles and main characters aren't cut off on card previews.</p>
+
+            <div style="position:relative; width:100%; height:280px; background:#111; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center;" id="canvas-container">
+                <canvas id="crop-canvas" width="600" height="340" style="width:100%; height:100%; object-fit:contain;"></canvas>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; align-items:center;">
+                <div>
+                    <label style="font-size:0.85rem; font-weight:600; display:flex; justify-content:space-between;">
+                        <span><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
+                        <span id="zoom-val">1.0x</span>
+                    </label>
+                    <input type="range" id="crop-zoom" min="0.5" max="2.5" step="0.05" value="1" style="width:100%;">
+                </div>
+                <div>
+                    <label style="font-size:0.85rem; font-weight:600; display:flex; justify-content:space-between;">
+                        <span><i class="fa-solid fa-arrows-up-down"></i> Vertical Position</span>
+                        <span id="pos-val">Center</span>
+                    </label>
+                    <input type="range" id="crop-offset-y" min="-150" max="150" step="1" value="0" style="width:100%;">
+                </div>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:5px;">
+                <button type="button" onclick="cancelCrop()" class="btn btn-secondary" style="padding:8px 18px;">Cancel</button>
+                <button type="button" onclick="applyCardCrop()" class="btn btn-primary" style="padding:8px 22px;"><i class="fa-solid fa-check"></i> Apply & Compress (.webp)</button>
+            </div>
+        </div>
+    </div>
+
     <!-- GitHub Settings Modal -->
     <div id="settings-drawer" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; align-items:center; justify-content:center;">
         <div style="background:#fff; padding:30px; border-radius:12px; width:90%; max-width:450px;">
@@ -810,46 +848,5 @@
 
     <div id="status-toast"></div>
     <script src="admin.js"></script>
-
-<!-- Interactive Card Image Crop & Focal Tuner Modal -->
-<div id="crop-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:10001; align-items:center; justify-content:center;">
-    <div style="background:#fff; border-radius:var(--radius-lg); width:92%; max-width:680px; padding:25px; box-shadow:0 15px 40px rgba(0,0,0,0.4); display:flex; flex-direction:column; gap:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:10px;">
-            <h3 style="margin:0; color:var(--color-primary); font-family:var(--font-heading);"><i class="fa-solid fa-crop-simple"></i> Frame Card Image (#1 Header)</h3>
-            <span id="crop-target-label" class="tag tag-adhd">Review Card</span>
-        </div>
-
-        <p style="font-size:0.88rem; color:#555; margin:0;">Drag to reposition and adjust zoom so titles and main characters aren't cut off on card previews.</p>
-
-        <!-- Live Canvas Preview Frame -->
-        <div style="position:relative; width:100%; height:280px; background:#111; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:grab;" id="canvas-container">
-            <canvas id="crop-canvas" width="600" height="340" style="width:100%; height:100%; object-fit:contain;"></canvas>
-        </div>
-
-        <!-- Interactive Zoom & Pan Controls -->
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; align-items:center;">
-            <div>
-                <label style="font-size:0.85rem; font-weight:600; display:flex; justify-content:space-between;">
-                    <span><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
-                    <span id="zoom-val">1.0x</span>
-                </label>
-                <input type="range" id="crop-zoom" min="0.5" max="2.5" step="0.05" value="1" style="width:100%;">
-            </div>
-            <div>
-                <label style="font-size:0.85rem; font-weight:600; display:flex; justify-content:space-between;">
-                    <span><i class="fa-solid fa-arrows-up-down"></i> Vertical Position</span>
-                    <span id="pos-val">Center</span>
-                </label>
-                <input type="range" id="crop-offset-y" min="-150" max="150" step="1" value="0" style="width:100%;">
-            </div>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:5px;">
-            <button type="button" onclick="cancelCrop()" class="btn btn-secondary" style="padding:8px 18px;">Cancel</button>
-            <button type="button" onclick="applyCardCrop()" class="btn btn-primary" style="padding:8px 22px;"><i class="fa-solid fa-check"></i> Apply & Compress (.webp)</button>
-        </div>
-    </div>
-</div>
-    
 </body>
 </html>
