@@ -545,6 +545,43 @@ section {
 /* 9. Card Grids & Layouts            */
 /* ---------------------------------- */
 
+/* Clickable Whole-Card Styling */
+a.clickable-card {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.clickable-card:hover {
+    color: inherit;
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.clickable-card .card-image-wrap {
+    overflow: hidden;
+    height: 210px;
+    width: 100%;
+}
+
+.clickable-card .card-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.clickable-card:hover .card-image-wrap img {
+    transform: scale(1.04);
+}
+
+.clickable-card:hover .card-action-btn {
+    background-color: var(--color-accent);
+    color: var(--color-bg-white);
+    transform: translateY(-2px);
+}
 /* Review Cards Grid */
 .card-grid {
     display: grid;
