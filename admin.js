@@ -1,6 +1,6 @@
 /*
  * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.3)
- * Interactive Image Framing/Cropper, Multi-Image Queue, Ribbon Formatting & GitHub Sync
+ * Automatic WebP Optimizer, Frictionless Queue & Reordering Management
  */
 
 const MASTER_PIN = "3011";
@@ -13,15 +13,6 @@ let editMode = false;
 let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneyland: [], nav: [] };
 let draggedRowIndex = null;
 let toastTimeout = null;
-
-let cropState = {
-    img: null,
-    file: null,
-    type: null,
-    zoom: 1,
-    offsetY: 0,
-    remainingFiles: []
-};
 
 /* --- 1. PIN Security, Navigation & Mobile Drawer --- */
 function unlockStudio() {
@@ -62,7 +53,6 @@ function switchAdminTab(tabId, btn) {
     if (btn) btn.classList.add('active');
     
     toggleSidebar(false);
-
     const mainWrap = document.querySelector('.admin-main-wrap');
     if (mainWrap) mainWrap.scrollTop = 0;
 }
@@ -80,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadManagementDashboard();
     }
     setupDropZones();
-    setupCropperControls();
 });
 
 function setupDropZones() {
@@ -135,7 +124,7 @@ function insertInlineLink() {
 function applyBadgeLabel(tagClass) {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
-        alert('Please highlight the text first to turn it into a styled badge.');
+        alert('Please highlight text first to apply badge styling.');
         return;
     }
     const selectedText = selection.toString();
@@ -143,106 +132,7 @@ function applyBadgeLabel(tagClass) {
     document.execCommand('insertHTML', false, badgeHtml);
 }
 
-/* --- 3. Interactive Image Cropper & Focal Studio --- */
-function setupCropperControls() {
-    const zoomInput = document.getElementById('crop-zoom');
-    const offsetInput = document.getElementById('crop-offset-y');
-
-    if (zoomInput) {
-        zoomInput.addEventListener('input', (e) => {
-            cropState.zoom = parseFloat(e.target.value);
-            document.getElementById('zoom-val').textContent = `${cropState.zoom.toFixed(2)}x`;
-            drawCropCanvas();
-        });
-    }
-
-    if (offsetInput) {
-        offsetInput.addEventListener('input', (e) => {
-            cropState.offsetY = parseInt(e.target.value);
-            document.getElementById('pos-val').textContent = `${cropState.offsetY}px`;
-            drawCropCanvas();
-        });
-    }
-}
-
-function openCropModal(file, type, remainingFiles) {
-    cropState.file = file;
-    cropState.type = type;
-    cropState.zoom = 1;
-    cropState.offsetY = 0;
-    cropState.remainingFiles = remainingFiles || [];
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-            cropState.img = img;
-            document.getElementById('crop-target-label').textContent = `${type.toUpperCase()} Card Header`;
-            document.getElementById('crop-zoom').value = 1;
-            document.getElementById('crop-offset-y').value = 0;
-            document.getElementById('zoom-val').textContent = '1.0x';
-            document.getElementById('pos-val').textContent = 'Center';
-            document.getElementById('crop-modal').style.display = 'flex';
-            drawCropCanvas();
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-
-function drawCropCanvas() {
-    const canvas = document.getElementById('crop-canvas');
-    if (!canvas || !cropState.img) return;
-    const ctx = canvas.getContext('2d');
-    const { img, zoom, offsetY } = cropState;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#111';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    const hRatio = canvas.width / img.width;
-    const vRatio = canvas.height / img.height;
-    const baseRatio = Math.max(hRatio, vRatio);
-    
-    const renderWidth = img.width * baseRatio * zoom;
-    const renderHeight = img.height * baseRatio * zoom;
-    const x = (canvas.width - renderWidth) / 2;
-    const y = (canvas.height - renderHeight) / 2 + offsetY;
-
-    ctx.drawImage(img, x, y, renderWidth, renderHeight);
-}
-
-async function applyCardCrop() {
-    const canvas = document.getElementById('crop-canvas');
-    const webpBase64 = canvas.toDataURL('image/webp', 0.88);
-    const rawName = cropState.file.name.substring(0, cropState.file.name.lastIndexOf('.')) || cropState.file.name;
-    const cleanWebpName = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.webp';
-
-    const targetArray = cropState.type === 'review' ? reviewImages : (cropState.type === 'theatre' ? theatreImages : (cropState.type === 'whatson' ? whatsonImages : newsImages));
-    
-    targetArray.push({
-        base64: webpBase64.split(',')[1],
-        preview: webpBase64,
-        name: cleanWebpName
-    });
-
-    for (let f of cropState.remainingFiles) {
-        if (f.type.startsWith('image/')) {
-            const processed = await processAndCompressImage(f);
-            targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
-        }
-    }
-
-    document.getElementById('crop-modal').style.display = 'none';
-    renderImagePreviews(cropState.type);
-    showToast('✨ Card header framed and compressed to .webp!', 'status-success');
-}
-
-function cancelCrop() {
-    document.getElementById('crop-modal').style.display = 'none';
-}
-
-/* --- 4. Image Processing & Queue Logic --- */
+/* --- 3. Seamless Auto-WebP Compression Engine --- */
 async function processAndCompressImage(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -261,9 +151,9 @@ async function processAndCompressImage(file) {
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
 
-                const webpBase64 = canvas.toDataURL('image/webp', 0.85);
+                const webpBase64 = canvas.toDataURL('image/webp', 0.86);
                 const rawName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-                const cleanWebpName = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.webp';
+                const cleanWebpName = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '.webp';
                 resolve({ base64: webpBase64.split(',')[1], preview: webpBase64, name: cleanWebpName });
             };
         };
@@ -274,17 +164,16 @@ async function handleImageSelection(fileList, type) {
     if (!fileList || fileList.length === 0) return;
     const targetArray = type === 'review' ? reviewImages : (type === 'theatre' ? theatreImages : (type === 'whatson' ? whatsonImages : newsImages));
 
-    if (targetArray.length === 0 && fileList[0].type.startsWith('image/')) {
-        openCropModal(fileList[0], type, Array.from(fileList).slice(1));
-    } else {
-        for (let i = 0; i < fileList.length; i++) {
-            if (fileList[i].type.startsWith('image/')) {
-                const processed = await processAndCompressImage(fileList[i]);
-                targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
-            }
+    showToast('⏳ Optimising images...', 'status-loading');
+
+    for (let i = 0; i < fileList.length; i++) {
+        if (fileList[i].type.startsWith('image/')) {
+            const processed = await processAndCompressImage(fileList[i]);
+            targetArray.push({ base64: processed.base64, name: processed.name, preview: processed.preview });
         }
-        renderImagePreviews(type);
     }
+    renderImagePreviews(type);
+    showToast('✨ Image ready!', 'status-success');
 }
 
 function renderImagePreviews(type) {
@@ -300,7 +189,7 @@ function renderImagePreviews(type) {
                 <img src="${item.preview}">
                 <span>${item.name}</span>
                 ${idx === 0 
-                    ? '<span class="img-queue-badge badge-main-img"><i class="fa-solid fa-star"></i> Header & Card Image</span>' 
+                    ? '<span class="img-queue-badge badge-main-img"><i class="fa-solid fa-star"></i> Primary Card Photo</span>' 
                     : '<span class="img-queue-badge badge-gallery-img"><i class="fa-solid fa-images"></i> Carousel Slide</span>'}
             </div>
             <div style="display:flex; gap:6px;">
@@ -339,7 +228,7 @@ function syncNewsSlug() {
     document.getElementById('news-slug').value = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '.html';
 }
 
-/* --- 5. Edit Mode Dispatchers --- */
+/* --- 4. Edit Mode Dispatchers --- */
 function enterEditReview(id) {
     const item = currentCache.reviews.find(r => r.id === id);
     if (!item) return;
@@ -497,7 +386,7 @@ function cancelEditMode() {
     renderImagePreviews('news');
 }
 
-/* --- 6. Publishing Handlers --- */
+/* --- 5. Publishing Handlers --- */
 async function handleReviewSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -706,7 +595,7 @@ async function handleTheatreSubmit() {
     }
 }
 
-/* --- 7. HTML Template Generators --- */
+/* --- 6. HTML Template Generators --- */
 function buildFullNewsPageHtml(d) {
     const formattedDate = new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     
@@ -773,7 +662,7 @@ function buildFullNewsPageHtml(d) {
     <meta property="og:image" content="images/${d.mainImage}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600;700&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -887,7 +776,7 @@ function buildFullReviewPageHtml(d) {
     <meta property="og:image" content="images/${d.mainImage}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600;700&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -933,7 +822,7 @@ function buildFullReviewPageHtml(d) {
 </html>`;
 }
 
-/* --- 8. Table Rendering & Drag/Drop Reordering --- */
+/* --- 7. Table Rendering & Drag/Drop Reordering --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
     if (!creds) return;
@@ -1079,7 +968,7 @@ async function deleteItem(type, id) {
     loadManagementDashboard();
 }
 
-/* --- 9. Nav Switchboard & GitHub Bridge --- */
+/* --- 8. Nav Switchboard & GitHub Bridge --- */
 async function loadNavToggles() {
     const creds = getCredentials();
     if (!creds) return;
