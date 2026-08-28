@@ -33,7 +33,7 @@
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border-radius: var(--radius-sm); border: 1.5px solid var(--color-border); font-family: var(--font-body); font-size: 0.95rem; outline: none; background: #fff; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--color-accent); }
         
-        /* Ribbon Toolbar Styling */
+        /* Word Ribbon Toolbar Styling */
         .editor-container { border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; background: #fff; transition: border-color 0.2s ease; }
         .editor-container:focus-within { border-color: var(--color-accent); }
         .editor-ribbon { background: #f8fafc; border-bottom: 1.5px solid var(--color-border); padding: 6px 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -46,9 +46,13 @@
         .editor-content-area p { margin-bottom: 1em; }
         .editor-content-area ul { padding-left: 22px; margin-bottom: 1em; }
         
+        /* Image Queue Cards */
         .drop-zone { border: 2px dashed #94a3b8; background: #f8fafc; padding: 25px; border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: background 0.2s ease; }
-        .img-item { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: var(--radius-sm); margin-top: 8px; }
-        .img-item img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; }
+        .img-item { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: var(--radius-sm); margin-top: 8px; }
+        .img-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+        .img-queue-badge { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 12px; }
+        .badge-main-img { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-gallery-img { background: #f1f5f9; color: #475569; }
         
         .crud-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .crud-table th, .crud-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
@@ -58,7 +62,6 @@
         .grab-handle { cursor: grab; color: #94a3b8; margin-right: 8px; }
         .rank-badge { background: #00838f; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
         .badge-featured { background: #ffd700; color: #222; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
-        .badge-status { color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
         .btn-edit { background: #00838f; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         .btn-delete { background: #e53935; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         
@@ -183,16 +186,16 @@
                                 <textarea id="rev-tips" rows="3"></textarea>
                             </div>
                             <div class="form-group full">
-                                <label>Photos (Main image + Gallery)</label>
+                                <label>Photos (Image #1 is Main Header; remaining images build Gallery Carousel)</label>
                                 <div class="drop-zone" onclick="document.getElementById('rev-file-input').click()">
                                     <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
-                                    <p style="margin:8px 0 0 0; font-weight:600;">Drag & drop images here, or browse (auto-compresses to .webp)</p>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Drag & drop multiple photos (auto-compresses to .webp)</p>
                                 </div>
                                 <input type="file" id="rev-file-input" multiple accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'review')">
                                 <div id="review-image-list"></div>
                             </div>
                             <div class="form-group full">
-                                <label>Image Alt Text</label>
+                                <label>Main Image Alt Text</label>
                                 <input type="text" id="rev-image-alt" placeholder="Description of image for accessibility & SEO">
                             </div>
                         </div>
@@ -283,12 +286,12 @@
                                 <input type="url" id="wo-site-link" placeholder="https://...">
                             </div>
                             <div class="form-group full">
-                                <label>Poster / Banner Image</label>
+                                <label>Show Posters / Images (Image #1 is Main Poster)</label>
                                 <div class="drop-zone" onclick="document.getElementById('wo-file-input').click()">
                                     <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
-                                    <p style="margin:8px 0 0 0; font-weight:600;">Upload Show Image</p>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Upload Show Images</p>
                                 </div>
-                                <input type="file" id="wo-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'whatson')">
+                                <input type="file" id="wo-file-input" multiple accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'whatson')">
                                 <div id="whatson-image-list"></div>
                             </div>
                         </div>
@@ -348,12 +351,12 @@
                             </div>
 
                             <div class="form-group full">
-                                <label>Theatre Photo</label>
+                                <label>Theatre Photo (Image #1 is Main Card Photo)</label>
                                 <div class="drop-zone" onclick="document.getElementById('th-file-input').click()">
                                     <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
                                     <p style="margin:8px 0 0 0; font-weight:600;">Upload Theatre Photo</p>
                                 </div>
-                                <input type="file" id="th-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'theatre')">
+                                <input type="file" id="th-file-input" multiple accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'theatre')">
                                 <div id="theatre-image-list"></div>
                             </div>
                         </div>
@@ -416,12 +419,12 @@
                             </div>
 
                             <div class="form-group full">
-                                <label>Cover Image</label>
+                                <label>News Images (Image #1 is Main Header; remaining images build Gallery Carousel)</label>
                                 <div class="drop-zone" onclick="document.getElementById('news-file-input').click()">
                                     <i class="fa-solid fa-cloud-arrow-up" style="font-size:2rem; color:#00838f;"></i>
-                                    <p style="margin:8px 0 0 0; font-weight:600;">Upload Cover Photo</p>
+                                    <p style="margin:8px 0 0 0; font-weight:600;">Drag & drop multiple news photos (auto-compresses to .webp)</p>
                                 </div>
-                                <input type="file" id="news-file-input" accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'news')">
+                                <input type="file" id="news-file-input" multiple accept="image/*" style="display:none;" onchange="handleImageSelection(this.files, 'news')">
                                 <div id="news-image-list"></div>
                             </div>
                         </div>
