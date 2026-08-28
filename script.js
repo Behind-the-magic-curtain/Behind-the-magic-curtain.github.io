@@ -593,24 +593,12 @@ async function loadPantomimeDirectory() {
         console.warn('Panto load failure:', e);
     }
 }
-
-/* --- 10. Reviews Directory --- */
-async function loadFeaturedReviews() {
-    const container = document.querySelector('.home-featured .card-grid');
-    if (!container) return;
-    try {
-        const res = await fetch('data/reviews.json');
-        if (!res.ok) return;
-        const reviews = await res.json();
-        const featured = reviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0)).slice(0, 3);
-        container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
-    } catch (e) {}
-}
-
+/* --- 10. Dynamic Reviews Directory Parser --- */
 async function loadReviewsDirectory() {
     const container = document.getElementById('all-reviews-grid');
     const filterButtons = document.querySelectorAll('.filter-btn');
     if (!container) return;
+    
     try {
         const res = await fetch('data/reviews.json');
         if (!res.ok) return;
@@ -622,13 +610,28 @@ async function loadReviewsDirectory() {
                 if (filter === 'all') return true;
                 if (filter === 'adhd') return r.tags && r.tags.adhd;
                 if (filter === 'sensory') return r.tags && r.tags.sensory;
-                if (filter === 'under5') return ['Ages 0+', 'Ages 1+', 'Ages 2+', 'Ages 3+', 'Ages 4+'].includes(r.age);
-                if (filter === '5plus') return ['Ages 5+', 'Ages 6+', 'Ages 7+', 'Ages 8+'].includes(r.age);
+
+                // Extract any leading number from strings like "Ages 3+", "3-7 Yrs", "Ages 10+"
+                const numMatch = (r.age || '').match(/\d+/);
+                const ageNum = numMatch ? parseInt(numMatch[0], 10) : null;
+
+                if (filter === 'under5') {
+                    if (r.age && r.age.toLowerCase().includes('all')) return true;
+                    return ageNum !== null && ageNum < 5;
+                }
+                if (filter === '5plus') {
+                    return ageNum !== null && ageNum >= 5;
+                }
                 return true;
             });
-            container.innerHTML = filtered.length > 0 ? filtered.map(r => buildReviewCardHTML(r)).join('') : '<p style="text-align: center; color: var(--color-text-light);">No reviews match this filter.</p>';
+
+            container.innerHTML = filtered.length > 0 
+                ? filtered.map(r => buildReviewCardHTML(r)).join('') 
+                : '<p style="text-align: center; color: var(--color-text-light); margin: 30px 0;">No reviews match this filter.</p>';
         };
+
         render('all');
+
         filterButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterButtons.forEach(b => b.classList.remove('active'));
@@ -636,8 +639,12 @@ async function loadReviewsDirectory() {
                 render(btn.getAttribute('data-filter'));
             });
         });
-    } catch (e) {}
+    } catch (e) {
+        console.warn('Reviews load failure:', e);
+    }
 }
+
+
 
 /* --- 11. HTML Builders --- */
 function buildWhatsOnCardHTML(s) {
