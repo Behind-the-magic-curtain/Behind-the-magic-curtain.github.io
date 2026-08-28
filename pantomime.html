@@ -3,10 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panto Guide | Behind the Magic Curtain</title>
-    <meta name="description" content="The ultimate guide to family and sensory-friendly pantomimes across the Midlands and the UK.">
+    <title>UK Pantomime Guide & Sensory Reviews | Behind the Magic Curtain</title>
+    <meta name="description" content="Family pantomime guide, relaxed performance dates, sensory notes, and honest reviews across the West Midlands and UK.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="UK Pantomime Guide & Sensory Reviews | Behind the Magic Curtain">
+    <meta property="og:description" content="Find sensory-friendly and relaxed pantomimes across the UK with tips for neurodivergent families.">
+    <meta property="og:image" content="images/panto-default.webp">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;600;700&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Core Stylesheets -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* On-Brand Solid Red Pantomime Banner */
+        .panto-hero {
+            background-color: var(--color-primary, #bd2419);
+            color: #ffffff;
+            text-align: center;
+            padding: 65px 20px 50px 20px;
+        }
+
+        .panto-hero h1 {
+            color: #ffffff;
+            font-family: var(--font-heading, 'Raleway', sans-serif);
+            font-size: clamp(2.3rem, 5.5vw, 3.6rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .panto-hero p {
+            color: var(--color-secondary, #ffd700);
+            font-family: var(--font-subheading, 'Playfair Display', Georgia, serif);
+            font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+            font-weight: 600;
+            max-width: 780px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Sensory Notice Box */
+        .panto-notice-banner {
+            background: #ffffff;
+            border: 2px dashed var(--color-accent, #00838f);
+            border-radius: var(--radius-lg, 16px);
+            padding: 24px 28px;
+            margin: -25px auto 40px auto;
+            max-width: 960px;
+            box-shadow: var(--shadow-card, 0 4px 15px rgba(0,0,0,0.06));
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .panto-notice-icon {
+            font-size: 2.4rem;
+            color: var(--color-accent, #00838f);
+            flex-shrink: 0;
+        }
+
+        .panto-notice-text h2 {
+            font-family: var(--font-heading, 'Raleway', sans-serif);
+            font-size: 1.25rem;
+            color: var(--color-primary, #bd2419);
+            margin: 0 0 4px 0;
+        }
+
+        .panto-notice-text p {
+            font-size: 0.92rem;
+            color: var(--color-text-light, #555555);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .panto-notice-banner {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="site-header">
@@ -14,22 +98,53 @@
             <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
             <nav class="main-nav">
                 <button class="nav-toggle" aria-label="toggle navigation"><span class="hamburger"></span></button>
-                <ul></ul>
+                <ul>
+                    <!-- Populated dynamically by script.js from data/navigation.json -->
+                </ul>
             </nav>
         </div>
     </header>
+
     <main>
-        <section class="page-header" style="background: linear-gradient(135deg, #bd2419 0%, #d81b60 100%); color:#fff;">
+        <!-- Solid Theatre Red Banner Header -->
+        <section class="panto-hero">
             <div class="container">
-                <h1 style="color:#fff;">Festive Pantomime Guide</h1>
-                <p style="color:#ffd700;">Our curated roundup of the best family and relaxed pantos this season!</p>
+                <h1>Festive Pantomime Guide</h1>
+                <p>Relaxed performances, sensory alerts, and honest family verdicts across the UK.</p>
             </div>
         </section>
-        <section class="page-content">
-            <div class="container" id="panto-list"></div>
+
+        <!-- Sensory & Relaxed Advisory Banner -->
+        <div class="container">
+            <div class="panto-notice-banner">
+                <div class="panto-notice-icon">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </div>
+                <div class="panto-notice-text">
+                    <h2>Sensory & Relaxed Performances</h2>
+                    <p>Pantomimes often include loud pyrotechnics, strobe lighting, and audience participation. Look out for our <strong>Sensory Notes</strong> and dedicated <strong>Relaxed Performance</strong> tags on each listing.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Pantomime Listings -->
+        <section class="page-content" style="padding-top: 10px;">
+            <div class="container">
+                <div id="panto-list">
+                    <p style="text-align: center; color: #777; padding: 40px 0;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Loading festive pantomimes and reviews...
+                    </p>
+                </div>
+            </div>
         </section>
     </main>
-    <footer class="site-footer"><div class="container"></div></footer>
+
+    <footer class="site-footer">
+        <div class="container">
+            <!-- Global Footer injected dynamically by script.js -->
+        </div>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
