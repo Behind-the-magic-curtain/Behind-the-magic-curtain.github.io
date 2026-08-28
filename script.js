@@ -593,7 +593,27 @@ async function loadPantomimeDirectory() {
         console.warn('Panto load failure:', e);
     }
 }
-/* --- 10. Dynamic Reviews Directory Parser --- */
+/* --- 10. Reviews Directory & Homepage Top 3 Synchronizer --- */
+async function loadFeaturedReviews() {
+    const container = document.querySelector('.home-featured .card-grid') || document.getElementById('home-featured-grid');
+    if (!container) return;
+    try {
+        const res = await fetch('data/reviews.json');
+        if (!res.ok) return;
+        const reviews = await res.json();
+        
+        // Filter published and sort strictly by numerical rank (#1, #2, #3)
+        const featured = reviews
+            .filter(r => r.status === 'published')
+            .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999))
+            .slice(0, 3);
+            
+        container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
+    } catch (e) {
+        console.warn('Featured reviews load failure:', e);
+    }
+}
+
 async function loadReviewsDirectory() {
     const container = document.getElementById('all-reviews-grid');
     const filterButtons = document.querySelectorAll('.filter-btn');
@@ -603,7 +623,10 @@ async function loadReviewsDirectory() {
         const res = await fetch('data/reviews.json');
         if (!res.ok) return;
         let allReviews = await res.json();
-        allReviews = allReviews.filter(r => r.status === 'published').sort((a, b) => (a.rank || 0) - (b.rank || 0));
+        
+        allReviews = allReviews
+            .filter(r => r.status === 'published')
+            .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
         const render = (filter = 'all') => {
             const filtered = allReviews.filter(r => {
@@ -611,7 +634,7 @@ async function loadReviewsDirectory() {
                 if (filter === 'adhd') return r.tags && r.tags.adhd;
                 if (filter === 'sensory') return r.tags && r.tags.sensory;
 
-                // Extract any leading number from strings like "Ages 3+", "3-7 Yrs", "Ages 10+"
+                // Extract age integer (e.g. "Ages 3+", "Ages 7+", "Ages 12+")
                 const numMatch = (r.age || '').match(/\d+/);
                 const ageNum = numMatch ? parseInt(numMatch[0], 10) : null;
 
@@ -619,8 +642,11 @@ async function loadReviewsDirectory() {
                     if (r.age && r.age.toLowerCase().includes('all')) return true;
                     return ageNum !== null && ageNum < 5;
                 }
-                if (filter === '5plus') {
-                    return ageNum !== null && ageNum >= 5;
+                if (filter === '5to8') {
+                    return ageNum !== null && ageNum >= 5 && ageNum <= 8;
+                }
+                if (filter === '9plus') {
+                    return ageNum !== null && ageNum >= 9;
                 }
                 return true;
             });
@@ -640,11 +666,9 @@ async function loadReviewsDirectory() {
             });
         });
     } catch (e) {
-        console.warn('Reviews load failure:', e);
+        console.warn('Reviews directory load failure:', e);
     }
 }
-
-
 
 /* --- 11. HTML Builders --- */
 function buildWhatsOnCardHTML(s) {
