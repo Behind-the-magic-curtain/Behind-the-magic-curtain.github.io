@@ -3,6 +3,53 @@
  * Inline Label/Badge Injection, Dual-Section News Composer, Multi-Image Queue & Auto-Build
  */
 
+
+/* --- 1. PIN Security, Navigation & Mobile Drawer --- */
+function unlockStudio() {
+    const pin = document.getElementById('pin-input').value.trim();
+    if (pin === MASTER_PIN) {
+        sessionStorage.setItem('btmc_admin_auth', 'true');
+        document.getElementById('pin-gate').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'flex';
+        loadSettings();
+        loadManagementDashboard();
+    } else {
+        document.getElementById('pin-error').style.display = 'block';
+        document.getElementById('pin-input').value = '';
+    }
+}
+
+function lockStudio() {
+    sessionStorage.removeItem('btmc_admin_auth');
+    location.reload();
+}
+
+function toggleSidebar(open) {
+    const sidebar = document.getElementById('admin-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (open) {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+    } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+    }
+}
+
+function switchAdminTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    if (btn) btn.classList.add('active');
+    
+    // Auto-close drawer on mobile when tab is picked
+    toggleSidebar(false);
+
+    // Scroll main panel back to top of new section
+    const mainWrap = document.querySelector('.admin-main-wrap');
+    if (mainWrap) mainWrap.scrollTop = 0;
+}
+
 const MASTER_PIN = "3011";
 
 let reviewImages = [];
