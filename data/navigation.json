@@ -34,7 +34,7 @@
       "id": "nav_news",
       "title": "News",
       "url": "news.html",
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "nav_panto",
