@@ -143,79 +143,18 @@
             </div>
         </section>
 
-        <!-- Featured Reviews (Top 3 Slot) -->
-        <section class="home-featured">
-            <div class="container">
-                <h2>Featured Reviews</h2>
-                <div class="card-grid">
-
-                    <!-- Slot 1: Madagascar -->
-                    <article class="card">
-                        <img src="images/madagascar-review.jpg" alt="Madagascar the Musical cast on stage" loading="lazy" decoding="async">
-                        <div class="card-content">
-                            <div class="card-star-rating" role="img" aria-label="Rated 4 out of 5 stars">
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-regular fa-star" aria-hidden="true"></i>
-                            </div>
-                            <h3>Madagascar The Musical</h3>
-                            <div class="card-tags">
-                                <span class="tag tag-age">Ages 3+</span>
-                                <span class="tag tag-adhd">ADHD-Friendly Guide</span>
-                                <span class="tag tag-sensory">Sensory Notes</span>
-                            </div>
-                            <p>It’s crack-a-lackin' entertainment for all the family! This high-energy show is the perfect length for a younger audience. Here's our full guide...</p>
-                            <a href="madagascar-the-musical.html" class="btn btn-secondary">Read Full Review</a>
-                        </div>
-                    </article>
-
-                    <!-- Slot 2: The Boy At The Back Of The Class -->
-                    <article class="card">
-                        <img src="images/the-boy-at-the-back-of-the-class.jpg" alt="The Boy at the Back of the Class" loading="lazy" decoding="async">
-                        <div class="card-content">
-                            <div class="card-star-rating" role="img" aria-label="Rated 5 out of 5 stars">
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                            </div>
-                            <h3>The Boy At The Back Of The Class</h3>
-                            <div class="card-tags">
-                                <span class="tag tag-age">Ages 7+</span>
-                                <span class="tag tag-adhd">ADHD-Friendly Guide</span>
-                            </div>
-                            <p>The Boy at the Back of the Class is an award-winning book that tells the story of a 9-year-old refugee arriving in the UK. Forced to flee Syria, Ahmet searches for his family...</p>
-                            <a href="the-boy-at-the-back-of-the-class.html" class="btn btn-secondary">Read Full Review</a>
-                        </div>
-                    </article>
-
-                    <!-- Slot 3: Black Power Desk -->
-                    <article class="card">
-                        <img src="images/black-power-desk.jpg" alt="Celia and Dina sit next to the title Black Power Desk" loading="lazy" decoding="async">
-                        <div class="card-content">
-                            <div class="card-star-rating" role="img" aria-label="Rated 5 out of 5 stars">
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                                <i class="fa-solid fa-star" aria-hidden="true"></i>
-                            </div>
-                            <h3>Black Power Desk</h3>
-                            <div class="card-tags">
-                                <span class="tag tag-age">Ages 12+</span>
-                                <span class="tag tag-mature">Mature themes</span>
-                            </div>
-                            <p>Powerful and gripping, Black Power Desk tells the story of two sisters battling racial oppression in 1970's London.</p>
-                            <a href="black-power-desk.html" class="btn btn-secondary">Read Full Review</a>
-                        </div>
-                    </article>
-
-                </div>
-            </div>
-        </section>
+     <!-- Featured Reviews (Top 3 Driven by Admin Studio Order) -->
+<section class="home-featured" style="padding: 60px 0;">
+    <div class="container">
+        <h2 style="font-family: var(--font-heading); color: var(--color-text); margin-bottom: 25px;">Featured Reviews</h2>
+        <div class="card-grid" id="home-featured-grid">
+            <!-- Dynamic reviews loaded directly from data/reviews.json via script.js -->
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="reviews.html" class="btn btn-secondary"><i class="fa-solid fa-masks-theater"></i> View All Reviews</a>
+        </div>
+    </div>
+</section>  
 
         <!-- Parent Tips Callout -->
         <section class="cta">
