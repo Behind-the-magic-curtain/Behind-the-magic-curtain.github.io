@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V2.9)
- * On-Brand Floating Toasts, Internal Global Search & Sensory Strategy Engine
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V3.0)
+ * On-Brand Floating Toasts, Whole-Card Click Architecture, Global Search & Dynamic Renderers
  */
 
 let dlpAttractionsCache = [];
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalSearchTray();
     initGlobalFooter();
     initDynamicPages();
+    initSwiperGalleries();
 });
 
 /* --- 1. On-Brand Toast System (Replaces window.alert) --- */
@@ -192,7 +193,6 @@ async function handleGlobalSearchInput(e) {
             }
         });
 
-        // Retains internal site traffic
         whatson.forEach(w => {
             if (`${w.title} ${w.venue} ${w.desc}`.toLowerCase().includes(query)) {
                 matches.push({ type: "What's On", title: w.title, desc: `${w.venue} • ${w.dates}`, url: `whats-on.html?q=${encodeURIComponent(w.title)}`, badge: 'Live Show' });
@@ -239,7 +239,7 @@ async function handleGlobalSearchInput(e) {
 
 /* --- 4. Dynamic Page Switcher --- */
 function initDynamicPages() {
-    if (document.querySelector('.home-featured .card-grid')) loadFeaturedReviews();
+    if (document.querySelector('.home-featured .card-grid') || document.getElementById('home-featured-grid')) loadFeaturedReviews();
     if (document.querySelector('#all-reviews-grid')) loadReviewsDirectory();
     if (document.querySelector('#whatson-list')) loadWhatsOnDirectory();
     if (document.querySelector('#theatre-list')) loadTheatreGuideDirectory();
@@ -384,49 +384,6 @@ function updateCustomRatedCount() {
     if (badge) badge.textContent = `${count} Custom Rated`;
 }
 
-function saveRatingsToDevice() {
-    localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
-    showBtmcToast('Your personalized Disneyland Paris scores have been saved to this device!');
-}
-
-function openCommunityModal() {
-    const modal = document.getElementById('community-modal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeCommunityModal() {
-    const modal = document.getElementById('community-modal');
-    if (modal) modal.style.display = 'none';
-}
-
-function handleCommunitySubmit() {
-    const name = (document.getElementById('dlp-user-name').value || 'BTMC Parent').trim();
-    const email = (document.getElementById('dlp-user-email').value || '').trim();
-    const optIn = document.getElementById('dlp-join-optin').checked;
-
-    const ratedEntries = Object.keys(userCustomRatings).map(id => {
-        const r = userCustomRatings[id];
-        return `${r.name || id} [Speed:${r.speed}, Fear:${r.fear}, Noise:${r.noise}, Dark:${r.dark}]`;
-    });
-
-    if (ratedEntries.length === 0) {
-        showBtmcToast('Please rate at least 1 attraction before submitting!', 'toast-error');
-        return;
-    }
-
-    const payloadText = `=== BTMC DLP COMMUNITY TRIP LOG ===\nSubmitter: ${name}\nRatings:\n` + ratedEntries.join('\n');
-    const optInStatus = optIn && email ? "Yes - Join Club" : "No - Anonymous";
-    const contactInfo = email ? `${name} (${email})` : `Anonymous Parent (${name})`;
-
-    document.getElementById('dlp_gform_optin').value = optInStatus;
-    document.getElementById('dlp_gform_contact').value = contactInfo;
-    document.getElementById('dlp_gform_diary').value = payloadText;
-    document.getElementById('native_dlp_form').submit();
-
-    closeCommunityModal();
-    showBtmcToast(`Thank you, ${name}! Your family trip ratings have been submitted to our community database.`);
-}
-
 /* --- 6. What's On Directory --- */
 async function loadWhatsOnDirectory() {
     const container = document.getElementById('whatson-list');
@@ -442,7 +399,7 @@ async function loadWhatsOnDirectory() {
 
         const activeShows = shows
             .filter(s => !s.expiryDate || s.expiryDate >= today)
-            .sort((a, b) => (a.rank || 0) - (b.rank || 0));
+            .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
@@ -488,7 +445,7 @@ async function loadTheatreGuideDirectory() {
         const res = await fetch('data/theatres.json');
         if (!res.ok) throw new Error('Could not load Theatres');
         const theatres = await res.json();
-        theatres.sort((a, b) => (a.rank || 0) - (b.rank || 0));
+        theatres.sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
         if (locationSelect) {
             const locations = [...new Set(theatres.map(t => t.location).filter(Boolean))].sort();
@@ -555,7 +512,7 @@ async function loadNewsDirectory() {
 
         const published = news
             .filter(n => n.status === 'published')
-            .sort((a, b) => new Date(b.datePublished) - new Date(a.datePublished));
+            .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
         container.innerHTML = published.length > 0
             ? published.map(n => buildNewsCardHTML(n)).join('')
@@ -593,7 +550,8 @@ async function loadPantomimeDirectory() {
         console.warn('Panto load failure:', e);
     }
 }
-/* --- 10. Reviews Directory & Homepage Top 3 Synchronizer --- */
+
+/* --- 10. Reviews Directory & Homepage Top 3 --- */
 async function loadFeaturedReviews() {
     const container = document.querySelector('.home-featured .card-grid') || document.getElementById('home-featured-grid');
     if (!container) return;
@@ -601,29 +559,22 @@ async function loadFeaturedReviews() {
         const res = await fetch('data/reviews.json');
         if (!res.ok) return;
         const reviews = await res.json();
-        
-        // Filter published and sort strictly by numerical rank (#1, #2, #3)
         const featured = reviews
             .filter(r => r.status === 'published')
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999))
             .slice(0, 3);
-            
         container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
-    } catch (e) {
-        console.warn('Featured reviews load failure:', e);
-    }
+    } catch (e) {}
 }
 
 async function loadReviewsDirectory() {
     const container = document.getElementById('all-reviews-grid');
     const filterButtons = document.querySelectorAll('.filter-btn');
     if (!container) return;
-    
     try {
         const res = await fetch('data/reviews.json');
         if (!res.ok) return;
         let allReviews = await res.json();
-        
         allReviews = allReviews
             .filter(r => r.status === 'published')
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
@@ -634,7 +585,6 @@ async function loadReviewsDirectory() {
                 if (filter === 'adhd') return r.tags && r.tags.adhd;
                 if (filter === 'sensory') return r.tags && r.tags.sensory;
 
-                // Extract age integer (e.g. "Ages 3+", "Ages 7+", "Ages 12+")
                 const numMatch = (r.age || '').match(/\d+/);
                 const ageNum = numMatch ? parseInt(numMatch[0], 10) : null;
 
@@ -642,18 +592,15 @@ async function loadReviewsDirectory() {
                     if (r.age && r.age.toLowerCase().includes('all')) return true;
                     return ageNum !== null && ageNum < 5;
                 }
-                if (filter === '5to8') {
+                if (filter === '5plus') {
                     return ageNum !== null && ageNum >= 5 && ageNum <= 8;
                 }
-                if (filter === '9plus') {
+                if (filter === 'older') {
                     return ageNum !== null && ageNum >= 9;
                 }
                 return true;
             });
-
-            container.innerHTML = filtered.length > 0 
-                ? filtered.map(r => buildReviewCardHTML(r)).join('') 
-                : '<p style="text-align: center; color: var(--color-text-light); margin: 30px 0;">No reviews match this filter.</p>';
+            container.innerHTML = filtered.length > 0 ? filtered.map(r => buildReviewCardHTML(r)).join('') : '<p style="text-align: center; color: var(--color-text-light); margin: 30px 0;">No reviews match this filter.</p>';
         };
 
         render('all');
@@ -665,12 +612,39 @@ async function loadReviewsDirectory() {
                 render(btn.getAttribute('data-filter'));
             });
         });
-    } catch (e) {
-        console.warn('Reviews directory load failure:', e);
-    }
+    } catch (e) {}
 }
 
 /* --- 11. HTML Builders (Clickable Card Architecture) --- */
+function buildWhatsOnCardHTML(s) {
+    return `
+    <article class="listing-card">
+        <div class="listing-image">
+            <img src="images/${s.image}" alt="${s.title}" loading="lazy" decoding="async">
+        </div>
+        <div class="listing-content">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+                <h3 style="margin:0;">${s.title}</h3>
+                ${s.isTouring ? '<span class="tag tag-touring"><i class="fa-solid fa-route"></i> UK Tour</span>' : ''}
+            </div>
+            <div class="card-tags" style="margin:8px 0 12px 0;">
+                <span class="tag tag-age">${s.age}</span>
+                ${s.category === 'panto' ? '<span class="tag tag-mature" style="background:#d81b60;">Pantomime</span>' : ''}
+            </div>
+            <ul class="listing-info">
+                <li><i class="fa-solid fa-location-dot"></i> <span>${s.venue}</span></li>
+                <li><i class="fa-solid fa-calendar-days"></i> <span>${s.dates}</span></li>
+                ${s.runtime ? `<li><i class="fa-solid fa-clock"></i> <span>${s.runtime}</span></li>` : ''}
+            </ul>
+            <p>${s.desc}</p>
+            <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap;">
+                ${s.ticketLink ? `<a href="${s.ticketLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>` : ''}
+                ${s.siteLink ? `<a href="${s.siteLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>` : ''}
+            </div>
+        </div>
+    </article>`;
+}
+
 function buildNewsCardHTML(n) {
     const formattedDate = new Date(n.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     return `
@@ -688,6 +662,24 @@ function buildNewsCardHTML(n) {
             <span class="btn btn-secondary card-action-btn">Read Full Story</span>
         </div>
     </a>`;
+}
+
+function buildTheatreCardHTML(t) {
+    return `
+    <article class="theatre-card">
+        <div class="theatre-img-container">
+            <img src="images/${t.image}" alt="${t.name}" loading="lazy" decoding="async">
+        </div>
+        <div class="theatre-info">
+            <h2>${t.name}</h2>
+            <span class="theatre-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${t.location}</span>
+            <div class="theatre-meta">
+                <p><strong>Accessibility:</strong> ${t.accessibility}</p>
+                <p><strong>Relaxed Performances & Sensory Rooms:</strong> ${t.relaxed}</p>
+            </div>
+            ${t.website ? `<a href="${t.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Theatre Website</a>` : ''}
+        </div>
+    </article>`;
 }
 
 function buildReviewCardHTML(r) {
@@ -767,140 +759,39 @@ function handleFooterNewsletterSubmit() {
     emailInput.value = '';
     showBtmcToast(`Welcome ${name || ''}! Check your inbox for a welcome email.`);
 }
-/* --- 13. Gated Lead Magnet & Dual-Social Gateway --- */
-let gatewayTargetUrl = '';
-let socialStepVerified = false;
 
-function triggerGatedDownload(targetUrl, resourceTitle = "Disneyland Paris Planner") {
-    gatewayTargetUrl = targetUrl;
-
-    // Direct access if visitor has already unlocked previously
-    if (localStorage.getItem('btmc_lead_unlocked') === 'true') {
-        window.open(targetUrl, '_blank');
-        return;
-    }
-
-    let modal = document.getElementById('btmc-gateway-modal');
-    if (!modal) {
-        const modalHtml = `
-            <div id="btmc-gateway-modal" class="btmc-modal-overlay" style="display:none;">
-                <div class="btmc-gateway-card">
-                    <button type="button" class="gateway-close-btn" onclick="closeGatewayModal()">&times;</button>
-                    <h2 id="gateway-title" style="font-size:1.55rem; color:var(--color-primary); margin-bottom:8px; margin-top:0;">Unlock Free Guide</h2>
-                    <p style="font-size:0.9rem; color:var(--color-text-light); margin-bottom:18px;">Follow on Facebook or Instagram and enter your details below to unlock immediate access.</p>
-                    
-                    <div class="gateway-steps">
-                        <div class="gateway-step" id="step-social-row">
-                            <div class="step-info">
-                                <span class="step-num" id="step-1-icon">1</span>
-                                <div>
-                                    <strong style="display:block; font-size:0.92rem; color:var(--color-text);">Follow Our Family Journey</strong>
-                                    <span id="step-1-subtext" style="font-size:0.78rem; color:#666;">Choose either platform to verify (1 required)</span>
-                                </div>
-                            </div>
-                            <div class="gateway-social-actions">
-                                <a href="https://www.facebook.com/share/1DqVxkKiWZ/" target="_blank" rel="noopener noreferrer" class="social-action-btn" id="btn-social-fb" onclick="markSocialVerified(this)">
-                                    <i class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook
-                                </a>
-                                <a href="https://www.instagram.com/behind.the.magic.curtain?igsi=MXVwdjZjeTZsZGZvNQ==" target="_blank" rel="noopener noreferrer" class="social-action-btn" id="btn-social-ig" onclick="markSocialVerified(this)">
-                                    <i class="fa-brands fa-instagram" style="color:#e4405f;"></i> Instagram
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <form id="gateway-email-form" onsubmit="event.preventDefault(); handleGatewaySubmit();">
-                        <input type="text" id="gateway-name" class="gateway-input" placeholder="Your Name" required>
-                        <input type="email" id="gateway-email" class="gateway-input" placeholder="Your Email Address" required>
-                        <button type="submit" id="gateway-submit-btn" class="btn btn-primary" style="width:100%; justify-content:center;">
-                            <i class="fa-solid fa-unlock"></i> Unlock & Download Now
-                        </button>
-                    </form>
-                    <p style="font-size:0.75rem; color:#888; margin:12px 0 0 0;">🔒 Zero spam. <a href="unsubscribe.html" style="color:#666; text-decoration:underline;">Unsubscribe or delete your data</a> anytime.</p>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        modal = document.getElementById('btmc-gateway-modal');
-    }
-
-    document.getElementById('gateway-title').textContent = `Unlock: ${resourceTitle}`;
-    modal.style.display = 'flex';
-}
-
-function closeGatewayModal() {
-    const modal = document.getElementById('btmc-gateway-modal');
-    if (modal) modal.style.display = 'none';
-}
-
-function markSocialVerified(btnElement) {
-    socialStepVerified = true;
-    if (btnElement) btnElement.classList.add('clicked');
-
-    const row = document.getElementById('step-social-row');
-    const icon = document.getElementById('step-1-icon');
-    const subtext = document.getElementById('step-1-subtext');
-
-    if (row) row.classList.add('completed');
-    if (icon) icon.innerHTML = '<i class="fa-solid fa-check"></i>';
-    if (subtext) subtext.innerHTML = '<strong style="color:#007788;">Verified!</strong> You can follow both if you like.';
-}
-
-function handleGatewaySubmit() {
-    const name = document.getElementById('gateway-name').value.trim();
-    const email = document.getElementById('gateway-email').value.trim().toLowerCase();
-
-    if (!email || !email.includes('@')) {
-        showBtmcToast('Please enter a valid email address.', 'toast-error');
-        return;
-    }
-
-    if (!socialStepVerified) {
-        showBtmcToast('Please click Facebook or Instagram above to follow us before unlocking.', 'toast-info');
-        return;
-    }
-
-    // Submit payload silently through the Google Forms background bridge
-    const optinInput = document.getElementById('footer_gform_optin') || document.getElementById('dlp_gform_optin');
-    const contactInput = document.getElementById('footer_gform_contact') || document.getElementById('dlp_gform_contact');
-    const diaryInput = document.getElementById('footer_gform_diary') || document.getElementById('dlp_gform_diary');
-    const nativeForm = document.getElementById('native_footer_form') || document.getElementById('native_dlp_form');
-
-    if (optinInput && contactInput && diaryInput && nativeForm) {
-        optinInput.value = "Yes - Join Club";
-        contactInput.value = `${name || 'Parent'} (${email})`;
-        diaryInput.value = `Lead Magnet Download: ${gatewayTargetUrl}`;
-        nativeForm.submit();
-    }
-
-    // Save unlock status to prevent asking again on future downloads
-    localStorage.setItem('btmc_lead_unlocked', 'true');
-    closeGatewayModal();
-
-    showBtmcToast(`Thank you, ${name || 'friend'}! Your guide is opening.`);
-    if (gatewayTargetUrl) {
-        window.open(gatewayTargetUrl, '_blank');
-    }
-}
-/* --- 13. Universal Swiper Auto-Initializer --- */
-document.addEventListener('DOMContentLoaded', () => {
-    initSwiperGalleries();
-});
-
+/* --- 13. Swiper Carousel Auto-Initializer --- */
 function initSwiperGalleries() {
-    if (document.querySelector('.btmc-swiper') && typeof Swiper !== 'undefined') {
-        new Swiper('.btmc-swiper', {
-            loop: true,
-            slidesPerView: 1,
-            spaceBetween: 20,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-        });
+    if (typeof Swiper !== 'undefined') {
+        if (document.querySelector('.btmc-swiper')) {
+            new Swiper('.btmc-swiper', {
+                loop: true,
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+            });
+        }
+        if (document.querySelector('.review-swiper')) {
+            new Swiper('.review-swiper', {
+                loop: true,
+                slidesPerView: 1,
+                spaceBetween: 20,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+            });
+        }
     }
 }
