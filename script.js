@@ -715,6 +715,8 @@ function initGlobalFooter() {
     const currentYear = new Date().getFullYear();
     const domainUrl = "https://behindthemagiccurtain.co.uk";
     const emailAddress = "Hello@behindthemagiccurtain.co.uk";
+    const fbUrl = "https://www.facebook.com/share/1GMtoVD5PB/";
+    const instaUrl = "https://www.instagram.com/behind.the.magic.curtain";
 
     footerContainer.innerHTML = `
         <div class="footer-newsletter-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 30px 20px; max-width: 640px; margin: 0 auto 35px auto; text-align: center;">
@@ -735,31 +737,24 @@ function initGlobalFooter() {
             <input type="hidden" name="entry.1983797623" id="footer_gform_contact">
             <input type="hidden" name="entry.266837979" id="footer_gform_diary">
         </form>
+
+        <p class="footer-social-tagline">Follow us on social media</p>
+        <div class="footer-social-links">
+            <a href="${fbUrl}" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook page">
+                <i class="fa-brands fa-facebook" aria-hidden="true"></i>
+            </a>
+            <a href="${instaUrl}" target="_blank" rel="noopener noreferrer" aria-label="Visit our Instagram page">
+                <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+            </a>
+        </div>
+
         <div style="margin-bottom: 12px; font-size: 0.95rem;">
             <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}</a>
             <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk</a>
         </div>
-        <div style="font-size: 0.85rem; color: #777777;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
+        <div class="footer-copyright">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
     `;
 }
-
-function handleFooterNewsletterSubmit() {
-    const nameInput = document.getElementById('footer-user-name');
-    const emailInput = document.getElementById('footer-user-email');
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim().toLowerCase();
-    if (!email || !email.includes('@')) return;
-
-    document.getElementById('footer_gform_optin').value = "Yes - Join Club";
-    document.getElementById('footer_gform_contact').value = `${name || 'Friend'} (${email})`;
-    document.getElementById('footer_gform_diary').value = "General Website Footer Signup";
-    document.getElementById('native_footer_form').submit();
-
-    nameInput.value = '';
-    emailInput.value = '';
-    showBtmcToast(`Welcome ${name || ''}! Check your inbox for a welcome email.`);
-}
-
 /* --- 13. Swiper Carousel Auto-Initializer --- */
 function initSwiperGalleries() {
     if (typeof Swiper !== 'undefined') {
