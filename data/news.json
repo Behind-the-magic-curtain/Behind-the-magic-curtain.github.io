@@ -1,5 +1,24 @@
 [
   {
+    "id": "news_1788075856975",
+    "title": "Sweeney Todd Smashes Box Office Records at Birmingham Rep",
+    "slug": "sweeney-todd-birmingham-rep-box-office-record.html",
+    "category": "Theatre News",
+    "author": "Katy Rose Meaney",
+    "summary": "Stephen Sondheim’s musical masterpiece Sweeney Todd has become the most successful musical production in Birmingham Rep's history, taking nearly £1.4 million at the box office.",
+    "bodyHtml": "<p data-path-to-node=\"5\"><b>The Birmingham Rep</b> is celebrating a monumental achievement as its critically acclaimed, 5-star production of Stephen Sondheim’s musical masterpiece, <i data-path-to-node=\"5\" data-index-in-node=\"194\"><b>Sweeney Todd: The Demon Barber of Fleet Street</b></i>, officially became the theatre’s most successful musical production in history.</p><p data-path-to-node=\"6\">Playing to an impressive 82% capacity across its six-week run—which concluded on August 15th—the landmark production sold 31,283 tickets and grossed nearly £1.4 million at the box office.</p><p data-path-to-node=\"6\"><span class=\"tag tag-mature\">MATURE THEMES&nbsp;</span>&nbsp;</p><p data-path-to-node=\"7\">The dark, razor-sharp musical captured international attention, welcoming theatregoers from 53 different countries. The production also built an exceptionally dedicated following closer to home: 430 audience members returned to see the show more than once, with one super-fan attending an astonishing nineteen times.</p><p data-path-to-node=\"8\">Garnering more than twenty 5-star reviews from national and regional critics, the production featured a powerhouse cast led by West End and Broadway sensation Ramin Karimloo in the title role, Olivier Award-nominee and cabaret icon Meow Meow as Mrs Lovett, and three-time Olivier Award-winner David Bedella as Judge Turpin.</p><p data-path-to-node=\"9\">Proudly produced and crafted entirely in the West Midlands, the show's entire staging—from the intricate sets to the bespoke costumes and props—was built by The Rep’s in-house team of artisans and rehearsed on site.</p><p data-path-to-node=\"10\"><b>The Rep’s Artistic Director, Joe Murphy,</b> reflected on the milestone:</p><p data-path-to-node=\"11\">“When I decided to include Sweeney Todd in my first season here at The Rep I could never have imagined the reception it would get. That success is down to everyone who helped bring it to the stage, from the extraordinary company—led by Ramin, Meow and David—to the amazing creative team, and everyone at The Rep who works behind the scenes.</p><p data-path-to-node=\"12\">“I’m deeply proud that the show was made here in Birmingham. Everything, from the set, costumes and props, was created by our wonderfully talented craftspeople. And we rehearsed the production here too. I think that led to something really special.</p><p data-path-to-node=\"13\">“It’s brilliant that the show has been so popular, attracting people from across the globe to come to The Rep and Birmingham. Audiences truly took Sweeney to their hearts, and I’ve loved seeing how they responded to it with so much enthusiasm and delight.”</p>",
+    "detailsHtml": "<ul><li>Production: Sweeney Todd: The Demon Barber of Fleet Street&nbsp;</li><li>Venue: The Birmingham Rep (Main Stage)&nbsp;</li><li>Run: Ended 15 August&nbsp;</li><li>Box Office Milestone: Over 31,000 tickets sold &amp; £1.4M grossed&nbsp;</li><li>Starring: Ramin Karimloo, Meow Meow, David Bedella&nbsp;</li><li>Direction: Joe Murphy</li></ul>",
+    "mainImage": "sweeney-todd-rep.webp",
+    "galleryImages": [
+      "sweeney-todd-facts-rep.webp",
+      "sweeney-todd-rep.webp"
+    ],
+    "datePublished": "2026-08-30T07:44:13.018Z",
+    "dateModified": "2026-08-30T07:44:13.018Z",
+    "status": "published",
+    "rank": 1
+  },
+  {
     "id": "news_1788073741864",
     "title": "Stage Magic on Your Doorstep: Creative Burntwood Project Unveils Jam-Packed Year Two Season",
     "slug": "creative-burntwood-project-year-two.html",
@@ -13,7 +32,7 @@
     "datePublished": "2026-08-30T07:08:59.721Z",
     "dateModified": "2026-08-30T07:33:32.610Z",
     "status": "published",
-    "rank": 1
+    "rank": 2
   },
   {
     "id": "news_1787910327655",
@@ -38,7 +57,7 @@
     "datePublished": "2026-08-28T09:45:26.242Z",
     "dateModified": "2026-08-28T10:21:02.942Z",
     "status": "published",
-    "rank": 2
+    "rank": 3
   },
   {
     "id": "news_1787918274041",
@@ -54,7 +73,7 @@
     "datePublished": "2026-08-28T11:57:52.520Z",
     "dateModified": "2026-08-28T12:18:40.140Z",
     "status": "published",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "news_1787921601777",
@@ -70,6 +89,6 @@
     "datePublished": "2026-08-28T12:53:20.303Z",
     "dateModified": "2026-08-28T12:57:54.153Z",
     "status": "published",
-    "rank": 4
+    "rank": 5
   }
 ]
