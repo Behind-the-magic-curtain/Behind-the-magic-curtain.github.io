@@ -1,6 +1,6 @@
 /*
  * BEHIND THE MAGIC CURTAIN - ADMIN ENGINE (V3.3)
- * Automatic WebP Optimizer, Frictionless Queue & Reordering Management
+ * Master PIN: 3011 | Auto WebP Compression, Live Draggable Reordering & Full Multi-Tab CRUD
  */
 
 const MASTER_PIN = "3011";
@@ -243,7 +243,7 @@ function enterEditReview(id) {
     document.getElementById('rev-slug').value = item.slug || '';
     document.getElementById('rev-subtitle').value = item.subtitle || '';
     document.getElementById('rev-rating').value = item.rating || '5.0';
-    document.getElementById('rev-age').value = item.age || 'Ages 7+';
+    document.getElementById('rev-age').value = item.age || 'All Ages';
     document.getElementById('tag-adhd').checked = !!item.tags?.adhd;
     document.getElementById('tag-sensory').checked = !!item.tags?.sensory;
     document.getElementById('tag-mature').checked = !!item.tags?.mature;
@@ -283,7 +283,7 @@ function enterEditWhatsOn(id) {
     document.getElementById('wo-edit-id').value = item.id;
     document.getElementById('wo-title').value = item.title || '';
     document.getElementById('wo-venue').value = item.venue || '';
-    document.getElementById('wo-region').value = item.region || '';
+    document.getElementById('wo-region').value = item.region || 'West Midlands';
     document.getElementById('wo-dates').value = item.dates || '';
     document.getElementById('wo-expiry').value = item.expiryDate || '';
     document.getElementById('wo-runtime').value = item.runtime || '';
@@ -353,6 +353,31 @@ function enterEditNews(id) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function enterEditDisneyland(id) {
+    const item = currentCache.disneyland.find(d => d.id === id);
+    if (!item) return;
+
+    editMode = true;
+    document.getElementById('edit-banner').style.display = 'flex';
+    document.getElementById('edit-item-title').textContent = `DLP Attraction: ${item.name}`;
+
+    switchAdminTab('tab-disneyland', document.querySelectorAll('.admin-nav-tabs button')[4]);
+    document.getElementById('dlp-edit-id').value = item.id;
+    document.getElementById('dlp-name').value = item.name || '';
+    document.getElementById('dlp-park').value = item.park || 'Disneyland Park';
+    document.getElementById('dlp-land').value = item.land || '';
+    document.getElementById('dlp-type').value = item.type || 'Ride';
+    document.getElementById('dlp-height').value = item.minHeight || 'None';
+    document.getElementById('dlp-speed').value = item.thrillLevel || 3;
+    document.getElementById('dlp-fear').value = item.fearFactor || 3;
+    document.getElementById('dlp-noise').value = item.noiseLevel || 3;
+    document.getElementById('dlp-darkness').value = item.darkness || 3;
+    document.getElementById('dlp-notes').value = item.sensoryNotes || '';
+    document.getElementById('dlp-adhd').value = item.adhdTip || '';
+    document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Attraction Baseline';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function cancelEditMode() {
     editMode = false;
     document.getElementById('edit-banner').style.display = 'none';
@@ -362,11 +387,13 @@ function cancelEditMode() {
     document.getElementById('wo-edit-id').value = '';
     document.getElementById('th-edit-id').value = '';
     document.getElementById('news-edit-id').value = '';
+    document.getElementById('dlp-edit-id').value = '';
 
     document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Review';
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save What\'s On Show';
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry';
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story';
+    document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Disneyland Baseline';
 
     document.getElementById('wysiwyg-content').innerHTML = '';
     document.getElementById('rev-tips-wysiwyg').innerHTML = '';
@@ -418,7 +445,7 @@ async function handleReviewSubmit() {
             slug,
             subtitle: document.getElementById('rev-subtitle').value.trim(),
             rating: parseFloat(document.getElementById('rev-rating').value) || 5.0,
-            age: document.getElementById('rev-age').value,
+            age: document.getElementById('rev-age').value.trim() || 'All Ages',
             tags: {
                 adhd: document.getElementById('tag-adhd').checked,
                 sensory: document.getElementById('tag-sensory').checked,
@@ -487,7 +514,7 @@ async function handleNewsSubmit() {
             datePublished: existing ? existing.datePublished : nowIso,
             dateModified: nowIso,
             status: document.getElementById('news-published').checked ? 'published' : 'draft',
-            rank: editId ? existing.rank : 1
+            rank: editId ? (existing.rank || 1) : 1
         };
 
         const updated = editId ? newsList.map(n => n.id === editId ? entry : n) : [entry, ...newsList];
@@ -498,7 +525,7 @@ async function handleNewsSubmit() {
         const pageHtml = buildFullNewsPageHtml(entry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news page: ${title}`);
 
-        showToast(`🎉 News story & image carousel published live!`, 'status-success');
+        showToast(`🎉 News story published live!`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
@@ -532,7 +559,7 @@ async function handleWhatsOnSubmit() {
             dates: document.getElementById('wo-dates').value.trim(),
             expiryDate: document.getElementById('wo-expiry').value,
             runtime: document.getElementById('wo-runtime').value.trim(),
-            age: document.getElementById('wo-age').value,
+            age: document.getElementById('wo-age').value.trim() || 'Ages 4+',
             category: document.getElementById('wo-category').value,
             isTouring: document.getElementById('wo-is-touring').checked,
             image: primaryImage,
@@ -592,6 +619,44 @@ async function handleTheatreSubmit() {
         loadManagementDashboard();
     } catch (err) {
         showToast(`❌ Error: ${err.message}`, 'status-error');
+    }
+}
+
+async function handleDisneylandSubmit() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    const editId = document.getElementById('dlp-edit-id').value;
+    const name = document.getElementById('dlp-name').value.trim();
+    const idSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)+/g, '');
+
+    showToast('⏳ Updating Disneyland baseline...', 'status-loading');
+    try {
+        const attractions = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        
+        const entry = {
+            id: editId || `dlp_${idSlug}`,
+            name,
+            park: document.getElementById('dlp-park').value,
+            land: document.getElementById('dlp-land').value.trim(),
+            type: document.getElementById('dlp-type').value,
+            minHeight: document.getElementById('dlp-height').value.trim() || 'None',
+            thrillLevel: parseInt(document.getElementById('dlp-speed').value, 10) || 3,
+            fearFactor: parseInt(document.getElementById('dlp-fear').value, 10) || 3,
+            noiseLevel: parseInt(document.getElementById('dlp-noise').value, 10) || 3,
+            darkness: parseInt(document.getElementById('dlp-darkness').value, 10) || 3,
+            sensoryNotes: document.getElementById('dlp-notes').value.trim(),
+            adhdTip: document.getElementById('dlp-adhd').value.trim()
+        };
+
+        const updated = editId ? attractions.map(d => d.id === editId ? entry : d) : [...attractions, entry];
+
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Update Disneyland: ${name}`);
+        showToast(`✅ Attraction "${name}" saved!`, 'status-success');
+        cancelEditMode();
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ DLP Error: ${err.message}`, 'status-error');
     }
 }
 
@@ -829,26 +894,32 @@ async function loadManagementDashboard() {
 
     try {
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
-        currentCache.reviews = reviews.sort((a,b) => (a.rank||0) - (b.rank||0));
+        currentCache.reviews = reviews.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
         renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
     } catch (err) {}
 
     try {
         const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
-        currentCache.whatson = whatson.sort((a,b) => (a.rank||0) - (b.rank||0));
+        currentCache.whatson = whatson.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
         renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
     } catch (err) {}
 
     try {
         const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
-        currentCache.theatres = theatres.sort((a,b) => (a.rank||0) - (b.rank||0));
+        currentCache.theatres = theatres.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
         renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
     } catch (err) {}
 
     try {
         const news = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
-        currentCache.news = news.sort((a,b) => (a.rank||0) - (b.rank||0));
+        currentCache.news = news.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
         renderDraggableTable('news', 'manage-news-table-container', currentCache.news);
+    } catch (err) {}
+
+    try {
+        const dlp = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        currentCache.disneyland = dlp;
+        renderDisneylandTable('manage-disneyland-table-container', currentCache.disneyland);
     } catch (err) {}
 
     loadNavToggles();
@@ -907,6 +978,50 @@ function renderDraggableTable(type, containerId, items) {
     attachDragEventListeners(type);
 }
 
+function renderDisneylandTable(containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (items.length === 0) {
+        container.innerHTML = `<p style="color:#666; padding:15px 0;">No Disneyland attractions found.</p>`;
+        return;
+    }
+
+    let tableHtml = `
+        <table class="crud-table" id="table-disneyland">
+            <thead>
+                <tr>
+                    <th>Attraction Name</th>
+                    <th>Park</th>
+                    <th>Land</th>
+                    <th>Sensory (S / F / N / D)</th>
+                    <th style="width: 160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    items.forEach((item) => {
+        tableHtml += `
+            <tr>
+                <td><strong>${item.name}</strong></td>
+                <td>${item.park}</td>
+                <td>${item.land}</td>
+                <td>${item.thrillLevel} / ${item.fearFactor} / ${item.noiseLevel} / ${item.darkness}</td>
+                <td>
+                    <div style="display:flex; gap:6px;">
+                        <button type="button" class="btn-edit" onclick="enterEditDisneyland('${item.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                        <button type="button" class="btn-delete" onclick="deleteItem('disneyland', '${item.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHtml += `</tbody></table>`;
+    container.innerHTML = tableHtml;
+}
+
 function attachDragEventListeners(type) {
     const table = document.getElementById(`table-${type}`);
     if (!table) return;
@@ -914,7 +1029,7 @@ function attachDragEventListeners(type) {
     const rows = table.querySelectorAll('.draggable-row');
     rows.forEach(row => {
         row.addEventListener('dragstart', (e) => {
-            draggedRowIndex = parseInt(row.getAttribute('data-index'));
+            draggedRowIndex = parseInt(row.getAttribute('data-index'), 10);
             row.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
         });
@@ -936,7 +1051,7 @@ function attachDragEventListeners(type) {
         row.addEventListener('drop', async (e) => {
             e.preventDefault();
             row.classList.remove('drag-over');
-            const targetIndex = parseInt(row.getAttribute('data-index'));
+            const targetIndex = parseInt(row.getAttribute('data-index'), 10);
 
             if (draggedRowIndex !== null && draggedRowIndex !== targetIndex) {
                 const list = currentCache[type];
@@ -961,7 +1076,9 @@ async function deleteItem(type, id) {
     const file = `data/${type}.json`;
     let data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
     data = data.filter(item => item.id !== id);
-    data.forEach((item, idx) => item.rank = idx + 1);
+    if (type !== 'disneyland') {
+        data.forEach((item, idx) => item.rank = idx + 1);
+    }
     
     await commitGitHubFile(creds.owner, creds.repo, creds.token, file, btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), `Delete from ${type}`);
     showToast('✅ Entry deleted successfully!', 'status-success');
