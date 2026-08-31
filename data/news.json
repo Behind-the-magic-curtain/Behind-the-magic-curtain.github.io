@@ -1,5 +1,33 @@
 [
   {
+    "id": "news_1788189463276",
+    "title": "Mrs. Doubtfire Launches Major UK & Ireland Tour at Birmingham Hippodrome",
+    "slug": "mrs-doubtfire-uk-tour-birmingham-hippodrome.html",
+    "category": "Theatre News",
+    "author": "Katy Rose Meaney",
+    "summary": "Critically acclaimed comedy musical Mrs. Doubtfire chooses Birmingham Hippodrome to launch its very first UK and Ireland tour, bringing West End magic directly to the Midlands.",
+    "bodyHtml": "<p data-path-to-node=\"6\">Say <b>\"Helloooo, Birmingham!\"</b> — the West End and Broadway smash-hit musical comedy Mrs. Doubtfire is officially launching its very first UK and Ireland tour, choosing Birmingham Hippodrome as the proud launchpad for its nationwide journey.</p><p data-path-to-node=\"7\">Landing such a massive, critically acclaimed West End production is another huge badge of honour for the region. Over recent years, Birmingham Hippodrome has cemented itself as a cultural powerhouse for the West Midlands, regularly staging major UK tour launches and demonstrating the region's immense appetite for world-class theatre. Welcoming high-calibre productions of this scale not only fuels our booming local arts scene, but also ensures Midlands families and theatregoers get front-row access to the biggest titles in the country without needing a trip down to London.</p><p data-path-to-node=\"8\">The hilarious, heartfelt stage adaptation of the classic film will star<b> Olivier-nominated Gabriel Vick as Daniel Hillard / Euphegenia Doubtfire</b>, reprising the showstopping, transformative performance that captivated audiences and critics alike in London's West End.</p><p data-path-to-node=\"9\">Created by an award-winning transatlantic team including <b>Wayne Kirkpatrick, Karey Kirkpatrick, John O'Farrell,</b> and four-time Tony-winning director <b>Jerry Zaks,</b> Mrs. Doubtfire is packed with unforgettable film moments alongside infectious original songs. It tells the touching, laugh-out-loud story of out-of-work actor Daniel, who creates the alter ego of Scottish nanny Euphegenia Doubtfire in a desperate bid to stay close to his children after a messy custody battle.</p><p data-path-to-node=\"10\">With dazzling quick-changes, brilliant choreography, and plenty of laughs for the whole family, this West End favourite is set to bring pure joy to the Hippodrome stage this season.</p>",
+    "detailsHtml": "<p data-path-to-node=\"11\"><b>Production Details &amp; Booking:</b></p><ul data-path-to-node=\"12\"><li><p data-path-to-node=\"12,0,0\"><b>Venue: Birmingham Hippodrome</b>, Hurst Street, Southside, Birmingham, B5 4TB</p></li><li><p data-path-to-node=\"12,1,0\"><b>Dates:</b> Thursday 13 August 2026 – Saturday 19 September 2026</p></li><li><p data-path-to-node=\"12,2,0\"><b>Starring: </b>Gabriel Vick as Daniel Hillard / Mrs. Doubtfire</p></li><li><p data-path-to-node=\"12,3,0\"><b>Creative Team: </b>Music &amp; Lyrics by Wayne Kirkpatrick &amp; Karey Kirkpatrick, Book by Karey Kirkpatrick &amp; John O’Farrell, Direction by Jerry Zaks</p></li><li><p data-path-to-node=\"12,4,0\"><b>Box Office:</b> 0121 689 3000</p></li><li><p data-path-to-node=\"12,5,0\"><b>Online Booking:</b> <a href=\"https://www.birminghamhippodrome.com/calendar/mrs-doubtfire-the-musical/#performances\">birminghamhippodrome.com</a></p></li></ul>",
+    "mainImage": "md-tour-logo.webp",
+    "galleryImages": [
+      "the-cast-of-mrs-doubtfire-photo-credit-matt-crockett-1.webp",
+      "the-cast-of-mrs-doubtfire-photo-credit-matt-crockett-2.webp",
+      "the-cast-of-mrs-doubtfire-photo-credit-matt-crockett-3.webp",
+      "the-cast-of-mrs-doubtfire-photo-credit-matt-crockett-4.webp",
+      "the-cast-of-mrs-doubtfire-photo-credit-matt-crockett.webp",
+      "aaliya-mai-harly-gill-kara-lily-hayworth-and-dexter-pulling-in-mrs-doubtfire-photo-credit-matt-crockett.webp",
+      "cruz-troy-hunter-rhianne-alleyne-and-joshua-clayton-in-mrs-doubtfire-photo-credit-matt-crockett.webp",
+      "dexter-pulling-aaliya-mai-gabriel-vick-and-harly-gill-in-mrs-doubtfire-photo-credit-matt-crockett.webp",
+      "gabriel-vick-and-james-darch-in-mrs-doubtfire-photo-credit-matt-crockett.webp",
+      "gabriel-vick-in-mrs-doubtfire-photo-credit-matt-crockett.webp",
+      "kara-lily-hayworth-and-gabriel-vick-in-mrs-doubtfire-photo-credit-matt-crockett.webp"
+    ],
+    "datePublished": "2026-08-31T15:16:55.781Z",
+    "dateModified": "2026-08-31T15:16:55.781Z",
+    "status": "published",
+    "rank": 1
+  },
+  {
     "id": "news_1788073741864",
     "title": "Stage Magic on Your Doorstep: Creative Burntwood Project Unveils Jam-Packed Year Two Season",
     "slug": "creative-burntwood-project-year-two.html",
@@ -13,7 +41,7 @@
     "datePublished": "2026-08-30T07:08:59.721Z",
     "dateModified": "2026-08-30T07:33:32.610Z",
     "status": "published",
-    "rank": 1
+    "rank": 2
   },
   {
     "id": "news_1787910327655",
@@ -38,7 +66,7 @@
     "datePublished": "2026-08-28T09:45:26.242Z",
     "dateModified": "2026-08-28T10:21:02.942Z",
     "status": "published",
-    "rank": 2
+    "rank": 3
   },
   {
     "id": "news_1788075856975",
@@ -57,7 +85,7 @@
     "datePublished": "2026-08-30T07:44:13.018Z",
     "dateModified": "2026-08-30T07:44:13.018Z",
     "status": "published",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "news_1787918274041",
@@ -73,7 +101,7 @@
     "datePublished": "2026-08-28T11:57:52.520Z",
     "dateModified": "2026-08-28T12:18:40.140Z",
     "status": "published",
-    "rank": 4
+    "rank": 5
   },
   {
     "id": "news_1787921601777",
@@ -89,6 +117,6 @@
     "datePublished": "2026-08-28T12:53:20.303Z",
     "dateModified": "2026-08-28T12:57:54.153Z",
     "status": "published",
-    "rank": 5
+    "rank": 6
   }
 ]
