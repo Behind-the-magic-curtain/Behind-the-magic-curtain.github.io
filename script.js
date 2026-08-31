@@ -1,6 +1,6 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V3.3)
- * Dynamic Navigation, Floating Toasts, Search Tray, Universal Filtering & Dynamic Zero-Count Button Pruning
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V3.0)
+ * On-Brand Floating Toasts, Whole-Card Click Architecture, Global Search & Dynamic Renderers
  */
 
 let dlpAttractionsCache = [];
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSwiperGalleries();
 });
 
-/* --- 1. On-Brand Toast System --- */
+/* --- 1. On-Brand Toast System (Replaces window.alert) --- */
 function showBtmcToast(message, type = 'toast-success', duration = 4000) {
     let toast = document.getElementById('btmc-global-toast');
     if (!toast) {
@@ -182,7 +182,7 @@ async function handleGlobalSearchInput(e) {
             fetch('data/whatson.json').then(r => r.ok ? r.json() : []).catch(() => []),
             fetch('data/theatres.json').then(r => r.ok ? r.json() : []).catch(() => []),
             fetch('data/news.json').then(r => r.ok ? r.json() : []).catch(() => []),
-            fetch('data/disneyland.json').then(r => r.ok ? r.json() : []).catch(() => [])
+            fetch('data/disneyland.json').then(r => r.ok ? r.json() : [])
         ]);
 
         let matches = [];
@@ -359,7 +359,7 @@ function buildInteractiveRaterCard(item) {
 }
 
 function updateSliderRating(id, metric, value, baseVal) {
-    const intVal = parseInt(value, 10);
+    const intVal = parseInt(value);
     if (!userCustomRatings[id]) {
         const original = dlpAttractionsCache.find(a => a.id === id);
         userCustomRatings[id] = {
@@ -551,7 +551,7 @@ async function loadPantomimeDirectory() {
     }
 }
 
-/* --- 10. Reviews Directory, Universal Age Filtering & Top 3 --- */
+/* --- 10. Reviews Directory & Homepage Top 3 --- */
 async function loadFeaturedReviews() {
     const container = document.querySelector('.home-featured .card-grid') || document.getElementById('home-featured-grid');
     if (!container) return;
@@ -569,9 +569,8 @@ async function loadFeaturedReviews() {
 
 async function loadReviewsDirectory() {
     const container = document.getElementById('all-reviews-grid');
-    const filterButtons = document.querySelectorAll('.filter-section .filter-btn, .filter-buttons .filter-btn');
+    const filterButtons = document.querySelectorAll('.filter-btn');
     if (!container) return;
-
     try {
         const res = await fetch('data/reviews.json');
         if (!res.ok) return;
@@ -580,52 +579,28 @@ async function loadReviewsDirectory() {
             .filter(r => r.status === 'published')
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
-        // Universal condition evaluator supporting arbitrary age formats
-        const matchesCriteria = (r, filter) => {
-            if (filter === 'all') return true;
-            if (filter === 'adhd') return !!r.tags?.adhd;
-            if (filter === 'sensory') return !!r.tags?.sensory;
-            if (filter === 'mature') return !!r.tags?.mature;
-
-            const ageStr = (r.age || '').toLowerCase().trim();
-            const isAllAges = ageStr.includes('all') || ageStr.includes('family') || ageStr.includes('0+') || ageStr.includes('babies');
-            const numbers = (ageStr.match(/\d+/g) || []).map(n => parseInt(n, 10));
-            const minAge = numbers.length > 0 ? numbers[0] : null;
-            const maxAge = numbers.length > 1 ? numbers[1] : minAge;
-
-            if (filter === 'under5') {
-                if (isAllAges) return true;
-                return minAge !== null && minAge < 5;
-            }
-            if (filter === '5plus') {
-                if (minAge === null) return false;
-                return (minAge >= 5 && minAge <= 8) || (minAge < 5 && maxAge >= 5);
-            }
-            if (filter === 'older') {
-                if (minAge === null) return false;
-                return maxAge !== null ? maxAge >= 9 : minAge >= 9;
-            }
-            return true;
-        };
-
-        // 1. Audit active data and hide buttons that have 0 matching records
-        filterButtons.forEach(btn => {
-            const filterKey = btn.getAttribute('data-filter');
-            if (filterKey === 'all') {
-                btn.style.display = 'inline-flex';
-                return;
-            }
-
-            const matchCount = allReviews.filter(r => matchesCriteria(r, filterKey)).length;
-            btn.style.display = matchCount === 0 ? 'none' : 'inline-flex';
-        });
-
-        // 2. Render review grid
         const render = (filter = 'all') => {
-            const filtered = allReviews.filter(r => matchesCriteria(r, filter));
-            container.innerHTML = filtered.length > 0 
-                ? filtered.map(r => buildReviewCardHTML(r)).join('') 
-                : '<p style="text-align: center; color: var(--color-text-light); margin: 30px 0;">No reviews match this filter.</p>';
+            const filtered = allReviews.filter(r => {
+                if (filter === 'all') return true;
+                if (filter === 'adhd') return r.tags && r.tags.adhd;
+                if (filter === 'sensory') return r.tags && r.tags.sensory;
+
+                const numMatch = (r.age || '').match(/\d+/);
+                const ageNum = numMatch ? parseInt(numMatch[0], 10) : null;
+
+                if (filter === 'under5') {
+                    if (r.age && r.age.toLowerCase().includes('all')) return true;
+                    return ageNum !== null && ageNum < 5;
+                }
+                if (filter === '5plus') {
+                    return ageNum !== null && ageNum >= 5 && ageNum <= 8;
+                }
+                if (filter === 'older') {
+                    return ageNum !== null && ageNum >= 9;
+                }
+                return true;
+            });
+            container.innerHTML = filtered.length > 0 ? filtered.map(r => buildReviewCardHTML(r)).join('') : '<p style="text-align: center; color: var(--color-text-light); margin: 30px 0;">No reviews match this filter.</p>';
         };
 
         render('all');
@@ -637,9 +612,7 @@ async function loadReviewsDirectory() {
                 render(btn.getAttribute('data-filter'));
             });
         });
-    } catch (e) {
-        console.warn('Reviews directory load failure:', e);
-    }
+    } catch (e) {}
 }
 
 /* --- 11. HTML Builders (Clickable Card Architecture) --- */
@@ -714,7 +687,6 @@ function buildReviewCardHTML(r) {
     let tagsHTML = `<span class="tag tag-age">${r.age || 'All Ages'}</span>`;
     if (r.tags?.adhd) tagsHTML += `\n<span class="tag tag-adhd">Sensory Strategy</span>`;
     if (r.tags?.sensory) tagsHTML += `\n<span class="tag tag-sensory">Sensory Notes</span>`;
-    if (r.tags?.mature) tagsHTML += `\n<span class="tag tag-mature">Mature Themes</span>`;
 
     return `
     <a href="${r.slug}" class="card review-card clickable-card" aria-label="Read full sensory review: ${r.title}">
@@ -767,6 +739,14 @@ function initGlobalFooter() {
             <a href="mailto:${emailAddress}" style="color: #ffffff; text-decoration: none; font-weight: 600; margin-right: 20px; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-envelope" style="color: var(--color-secondary, #ffd700);"></i> ${emailAddress}</a>
             <a href="${domainUrl}" target="_blank" rel="noopener noreferrer" style="color: #ffffff; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><i class="fa-solid fa-globe" style="color: var(--color-secondary, #ffd700);"></i> behindthemagiccurtain.co.uk</a>
         </div>
+        <div class="footer-social-links" style="margin-top: 20px; margin-bottom: 20px;">
+            <a href="https://www.facebook.com/share/19HnVtGmn1/" target="_blank" rel="noopener noreferrer" aria-label="Visit our Facebook page">
+                <i class="fa-brands fa-facebook" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.instagram.com/behind.the.magic.curtain?igsi=MXVwdjZjeTZsZGZvNQ==" target="_blank" rel="noopener noreferrer" aria-label="Visit our Instagram page">
+                <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+            </a>
+        </div>
         <div style="font-size: 0.85rem; color: #777777;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
     `;
 }
@@ -785,7 +765,7 @@ function handleFooterNewsletterSubmit() {
 
     nameInput.value = '';
     emailInput.value = '';
-    showBtmcToast(`Welcome ${name || ''}! Check your inbox for updates.`);
+    showBtmcToast(`Welcome ${name || ''}! Check your inbox for a welcome email.`);
 }
 
 /* --- 13. Swiper Carousel Auto-Initializer --- */
