@@ -641,39 +641,39 @@ a.clickable-card {
     transform: translateY(-2px);
 }
 
-/* What's On Listing Card (Fixed Proportional Poster) */
+/* --- What's On Cards: Gallery Frame Layout --- */
 .listing-card {
     display: grid;
     grid-template-columns: 280px 1fr;
-    gap: 30px;
     background: var(--color-bg-white);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-card);
     margin-bottom: 30px;
-    align-items: start;
 }
 
 .listing-image {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    background-color: #1e293b;
-    overflow: hidden;
+    background-color: #f8fafc; /* Soft gallery backdrop */
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--color-border);
 }
 
 .listing-image img {
     width: 100%;
-    height: 100%;
-    max-height: 380px;
+    height: auto;
+    max-height: 340px;
     object-fit: contain;
-    object-position: center;
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Physical poster shadow */
     display: block;
 }
 
 .listing-content {
-    padding: 25px 25px 25px 0;
+    padding: 30px 25px;
     display: flex;
     flex-direction: column;
 }
@@ -706,15 +706,21 @@ a.clickable-card {
     text-align: center;
 }
 
-/* Theatre Guide Cards — Proportional Clean Alignment */
+/* --- Theatre Guide Cards: Vertical Grid Layout --- */
+.theatre-region-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
 .theatre-card {
     display: flex;
-    align-items: flex-start;
+    flex-direction: column;
     background: #ffffff;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-card);
-    margin-bottom: 30px;
+    margin-bottom: 0; /* Bottom margin is now handled by grid gap */
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -725,14 +731,10 @@ a.clickable-card {
 }
 
 .theatre-img-container {
-    flex: 0 0 340px;
-    width: 340px;
-    align-self: stretch;
-    min-height: 280px;
-    max-height: 380px;
-    position: relative;
-    overflow: hidden;
-    background-color: #1e293b;
+    width: 100%;
+    height: 220px; /* Fixed landscape height */
+    flex-shrink: 0;
+    background-color: #f8fafc;
 }
 
 .theatre-img-container img {
@@ -744,7 +746,7 @@ a.clickable-card {
 }
 
 .theatre-info {
-    padding: 28px;
+    padding: 25px;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -752,9 +754,10 @@ a.clickable-card {
 
 .theatre-info h2 {
     margin-top: 0;
-    font-size: 1.6rem;
+    font-size: 1.45rem;
     color: var(--color-primary);
     font-family: var(--font-heading);
+    margin-bottom: 8px;
 }
 
 .theatre-location {
@@ -762,7 +765,7 @@ a.clickable-card {
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--color-accent);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     display: block;
 }
 
@@ -781,7 +784,7 @@ a.clickable-card {
 
 .theatre-info .btn {
     align-self: flex-start;
-    margin-top: 10px;
+    margin-top: auto; /* Pushes button to bottom of card */
 }
 
 /* ---------------------------------- */
@@ -1021,25 +1024,17 @@ a.clickable-card {
         grid-template-columns: 1fr;
     }
 
-    .listing-content {
+    .listing-image {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
         padding: 20px;
     }
 
     .listing-image img {
-        height: 220px;
+        max-height: 280px;
     }
 
-    .theatre-card {
-        flex-direction: column;
-    }
-
-    .theatre-img-container {
-        flex: 0 0 220px;
-        width: 100%;
-        max-height: 240px;
-    }
-
-    .theatre-info {
+    .listing-content {
         padding: 22px;
     }
 
