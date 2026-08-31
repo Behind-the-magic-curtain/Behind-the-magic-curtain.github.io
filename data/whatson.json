@@ -34,6 +34,23 @@
     "rank": 2
   },
   {
+    "id": "wo_1788188779169",
+    "title": "Sleeping Beauty",
+    "venue": "Birmingham Hippodrome",
+    "region": "West Midlands",
+    "dates": "19 Dec 2026 – 31 Jan 2027",
+    "expiryDate": "2027-01-31",
+    "runtime": "Approx. 2hrs 15mins (incl. interval)",
+    "age": "Ages 4+",
+    "category": "panto",
+    "isTouring": false,
+    "image": "sleeping-beauty-hippodrome.webp",
+    "desc": "<p data-path-to-node=\"0\">A firm family favourite returns to the Hippodrome stage: <b>Birmingham pantomime legends Matt Slack and Andrew Ryan</b> return to bring spectacular festive laughs, magic, and show-stopping musical numbers to this brand-new production of <b>Sleeping Beauty.</b></p><p data-path-to-node=\"1\"><b>Key Accessible Performances &amp; Highlights:</b></p><ul data-path-to-node=\"2\"><li><p data-path-to-node=\"2,0,0\"><b>BSL Interpreted:</b> Sun 10 Jan (1pm &amp; 5.15pm) – Interpreted by Rachel Tipping &amp; Clare Edwards</p></li><li><p data-path-to-node=\"2,1,0\"><b>Captioned:</b> Sun 17 Jan (1pm &amp; 5.15pm)</p></li><li><p data-path-to-node=\"2,2,0\"><b>Audio Described:</b> Wed 13 Jan (2pm) &amp; Sat 16 Jan (2.30pm)</p></li><li><p data-path-to-node=\"2,3,0\"><b>Relaxed Performance: Thu 28 Jan (12:00 noon)</b></p></li></ul>",
+    "ticketLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/#performances",
+    "siteLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/",
+    "rank": 3
+  },
+  {
     "id": "wo_1787350698547",
     "title": "Dog Man: The Musical",
     "venue": "UK Tour",
@@ -48,7 +65,7 @@
     "desc": "With the head of a dog and the body of a policeman, Dog Man loves to fight crime and chew on furniture!.. Paw-sitively brilliant stage adaptation based on Dav Pilkey's worldwide bestselling Dog Man book series.",
     "ticketLink": "https://www.dogman.live/#dates",
     "siteLink": "https://www.dogman.live/",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "wo_paddington",
@@ -65,7 +82,7 @@
     "desc": "A small bear in a big city! Family-friendly stage show at London's Savoy Theatre that tells the story of a little lost bear who finds a new home with the Brown family.",
     "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
     "siteLink": "https://paddingtonthemusical.com/",
-    "rank": 4
+    "rank": 5
   },
   {
     "id": "wo_elf",
@@ -79,23 +96,6 @@
     "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 5
-  },
-  {
-    "id": "wo_1788188779169",
-    "title": "Sleeping Beauty",
-    "venue": "Birmingham Hippodrome",
-    "region": "West Midlands",
-    "dates": "19 Dec 2026 – 31 Jan 2027",
-    "expiryDate": "2027-01-31",
-    "runtime": "Approx. 2hrs 15mins (incl. interval)",
-    "age": "Ages 4+",
-    "category": "panto",
-    "isTouring": false,
-    "image": "sleeping-beauty-hippodrome.webp",
-    "desc": "<p data-path-to-node=\"0\">A firm family favourite returns to the Hippodrome stage: <b>Birmingham pantomime legends Matt Slack and Andrew Ryan</b> return to bring spectacular festive laughs, magic, and show-stopping musical numbers to this brand-new production of <b>Sleeping Beauty.</b></p><p data-path-to-node=\"1\"><b>Key Accessible Performances &amp; Highlights:</b></p><ul data-path-to-node=\"2\"><li><p data-path-to-node=\"2,0,0\"><b>BSL Interpreted:</b> Sun 10 Jan (1pm &amp; 5.15pm) – Interpreted by Rachel Tipping &amp; Clare Edwards</p></li><li><p data-path-to-node=\"2,1,0\"><b>Captioned:</b> Sun 17 Jan (1pm &amp; 5.15pm)</p></li><li><p data-path-to-node=\"2,2,0\"><b>Audio Described:</b> Wed 13 Jan (2pm) &amp; Sat 16 Jan (2.30pm)</p></li><li><p data-path-to-node=\"2,3,0\"><b>Relaxed Performance: Thu 28 Jan (12:00 noon)</b></p></li></ul>",
-    "ticketLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/#performances",
-    "siteLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/",
     "rank": 6
   }
 ]
