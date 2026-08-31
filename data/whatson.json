@@ -1,5 +1,22 @@
 [
   {
+    "id": "wo_1788189732792",
+    "title": "Mrs. Doubtfire the Musical",
+    "venue": "Birmingham Hippodrome",
+    "region": "West Midlands",
+    "dates": "Booking until 19th Sept",
+    "expiryDate": "2026-09-19",
+    "runtime": "Approx. 2hrs 35mins (incl. interval)",
+    "age": "Ages 6+",
+    "category": "musical",
+    "isTouring": true,
+    "image": "md-nanny-assets-1080x1350-generic.webp",
+    "desc": "Say \"Helloooo, Birmingham!\" The critically acclaimed West End and Broadway musical comedy Mrs. Doubtfire launches its very first UK and Ireland tour right here at Birmingham Hippodrome! Starring Gabriel Vick reprising his acclaimed West End role, this hilarious and heartwarming family show is packed with iconic moments, brilliant original songs, and spectacular quick-changes as Daniel Hillard goes to extraordinary lengths to stay in his children's lives.<div><br></div><div><p data-path-to-node=\"5\"><b>Key Accessible Performances:</b></p><ul data-path-to-node=\"6\"><li><p data-path-to-node=\"6,0,0\"><b>Captioned: </b>Thu 27 Aug &amp; Thu 10 Sep (7.30pm) – by Stevie Burrows</p></li><li><p data-path-to-node=\"6,1,0\"><b>BSL Interpreted: </b>Wed 26 Aug &amp; Wed 9 Sep (7.30pm)</p></li><li><p data-path-to-node=\"6,2,0\"><b>Audio Described:</b> Sat 29 Aug &amp; Sat 12 Sep (2.30pm) – by Jonathan Nash</p></li><li><p data-path-to-node=\"6,3,0\"><b>Touch Tour:</b> Sat 29 Aug &amp; Sat 12 Sep (1.15pm)</p></li></ul><p data-path-to-node=\"7\">Find full accessibility information <a href=\"https://www.birminghamhippodrome.com/calendar/mrs-doubtfire-the-musical/#accessible\">here </a>or contact the Hippodrome access team on 0121 689 1060.</p></div>",
+    "ticketLink": "https://www.birminghamhippodrome.com/calendar/mrs-doubtfire/",
+    "siteLink": "https://www.mrsdoubtfiremusical.co.uk/",
+    "rank": 1
+  },
+  {
     "id": "wo_1787865902228",
     "title": "Treasure Island",
     "venue": "Wolverhampton Grand Theatre, Wolverhampton",
@@ -14,7 +31,7 @@
     "desc": "Ahoy, Wolverhampton! A brand-new swashbuckling panto adventure for the 2026/27 festive season.\n\nFresh from clinching Best Panto in the UK at the UK Pantomime Awards, Wolverhampton Grand is premiering a never-before-seen pantomime adventure starring firm audience favourites Tam Ryan and Ian Adams. Expect high-seas slapstick, dazzling sets, and accessible festive fun for all ages.\n\nWolverhampton Grand provides dedicated relaxed and sensory-adapted performances featuring softened stage effects, lowered sound volume, and access to quiet breakout areas.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/treasure-island/#book",
     "siteLink": "https://www.grandtheatre.co.uk/whats-on/treasure-island",
-    "rank": 1
+    "rank": 2
   },
   {
     "id": "wo_1787350698547",
@@ -31,7 +48,7 @@
     "desc": "With the head of a dog and the body of a policeman, Dog Man loves to fight crime and chew on furniture!.. Paw-sitively brilliant stage adaptation based on Dav Pilkey's worldwide bestselling Dog Man book series.",
     "ticketLink": "https://www.dogman.live/#dates",
     "siteLink": "https://www.dogman.live/",
-    "rank": 2
+    "rank": 3
   },
   {
     "id": "wo_paddington",
@@ -48,7 +65,7 @@
     "desc": "A small bear in a big city! Family-friendly stage show at London's Savoy Theatre that tells the story of a little lost bear who finds a new home with the Brown family.",
     "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
     "siteLink": "https://paddingtonthemusical.com/",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "wo_elf",
@@ -62,7 +79,7 @@
     "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 4
+    "rank": 5
   },
   {
     "id": "wo_1788188779169",
@@ -79,23 +96,6 @@
     "desc": "<p data-path-to-node=\"0\">A firm family favourite returns to the Hippodrome stage: <b>Birmingham pantomime legends Matt Slack and Andrew Ryan</b> return to bring spectacular festive laughs, magic, and show-stopping musical numbers to this brand-new production of <b>Sleeping Beauty.</b></p><p data-path-to-node=\"1\"><b>Key Accessible Performances &amp; Highlights:</b></p><ul data-path-to-node=\"2\"><li><p data-path-to-node=\"2,0,0\"><b>BSL Interpreted:</b> Sun 10 Jan (1pm &amp; 5.15pm) – Interpreted by Rachel Tipping &amp; Clare Edwards</p></li><li><p data-path-to-node=\"2,1,0\"><b>Captioned:</b> Sun 17 Jan (1pm &amp; 5.15pm)</p></li><li><p data-path-to-node=\"2,2,0\"><b>Audio Described:</b> Wed 13 Jan (2pm) &amp; Sat 16 Jan (2.30pm)</p></li><li><p data-path-to-node=\"2,3,0\"><b>Relaxed Performance: Thu 28 Jan (12:00 noon)</b></p></li></ul>",
     "ticketLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/#performances",
     "siteLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/",
-    "rank": 5
-  },
-  {
-    "id": "wo_1788189732792",
-    "title": "Mrs. Doubtfire the Musical",
-    "venue": "Birmingham Hippodrome",
-    "region": "West Midlands",
-    "dates": "Booking until 19th Sept",
-    "expiryDate": "2026-09-19",
-    "runtime": "Approx. 2hrs 35mins (incl. interval)",
-    "age": "Ages 6+",
-    "category": "musical",
-    "isTouring": true,
-    "image": "md-nanny-assets-1080x1350-generic.webp",
-    "desc": "Say \"Helloooo, Birmingham!\" The critically acclaimed West End and Broadway musical comedy Mrs. Doubtfire launches its very first UK and Ireland tour right here at Birmingham Hippodrome! Starring Gabriel Vick reprising his acclaimed West End role, this hilarious and heartwarming family show is packed with iconic moments, brilliant original songs, and spectacular quick-changes as Daniel Hillard goes to extraordinary lengths to stay in his children's lives.<div><br></div><div><p data-path-to-node=\"5\"><b>Key Accessible Performances:</b></p><ul data-path-to-node=\"6\"><li><p data-path-to-node=\"6,0,0\"><b>Captioned: </b>Thu 27 Aug &amp; Thu 10 Sep (7.30pm) – by Stevie Burrows</p></li><li><p data-path-to-node=\"6,1,0\"><b>BSL Interpreted: </b>Wed 26 Aug &amp; Wed 9 Sep (7.30pm)</p></li><li><p data-path-to-node=\"6,2,0\"><b>Audio Described:</b> Sat 29 Aug &amp; Sat 12 Sep (2.30pm) – by Jonathan Nash</p></li><li><p data-path-to-node=\"6,3,0\"><b>Touch Tour:</b> Sat 29 Aug &amp; Sat 12 Sep (1.15pm)</p></li></ul><p data-path-to-node=\"7\">Find full accessibility information <a href=\"https://www.birminghamhippodrome.com/calendar/mrs-doubtfire-the-musical/#accessible\">here </a>or contact the Hippodrome access team on 0121 689 1060.</p></div>",
-    "ticketLink": "https://www.birminghamhippodrome.com/calendar/mrs-doubtfire/",
-    "siteLink": "https://www.mrsdoubtfiremusical.co.uk/",
     "rank": 6
   }
 ]
