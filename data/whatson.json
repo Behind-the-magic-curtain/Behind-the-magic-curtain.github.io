@@ -80,5 +80,22 @@
     "ticketLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/#performances",
     "siteLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/",
     "rank": 5
+  },
+  {
+    "id": "wo_1788189732792",
+    "title": "Mrs. Doubtfire the Musical",
+    "venue": "Birmingham Hippodrome",
+    "region": "West Midlands",
+    "dates": "Booking until 19th Sept",
+    "expiryDate": "2026-09-19",
+    "runtime": "Approx. 2hrs 35mins (incl. interval)",
+    "age": "Ages 6+",
+    "category": "musical",
+    "isTouring": true,
+    "image": "md-nanny-assets-1080x1350-generic.webp",
+    "desc": "Say \"Helloooo, Birmingham!\" The critically acclaimed West End and Broadway musical comedy Mrs. Doubtfire launches its very first UK and Ireland tour right here at Birmingham Hippodrome! Starring Gabriel Vick reprising his acclaimed West End role, this hilarious and heartwarming family show is packed with iconic moments, brilliant original songs, and spectacular quick-changes as Daniel Hillard goes to extraordinary lengths to stay in his children's lives.<div><br></div><div><p data-path-to-node=\"5\"><b>Key Accessible Performances:</b></p><ul data-path-to-node=\"6\"><li><p data-path-to-node=\"6,0,0\"><b>Captioned: </b>Thu 27 Aug &amp; Thu 10 Sep (7.30pm) – by Stevie Burrows</p></li><li><p data-path-to-node=\"6,1,0\"><b>BSL Interpreted: </b>Wed 26 Aug &amp; Wed 9 Sep (7.30pm)</p></li><li><p data-path-to-node=\"6,2,0\"><b>Audio Described:</b> Sat 29 Aug &amp; Sat 12 Sep (2.30pm) – by Jonathan Nash</p></li><li><p data-path-to-node=\"6,3,0\"><b>Touch Tour:</b> Sat 29 Aug &amp; Sat 12 Sep (1.15pm)</p></li></ul><p data-path-to-node=\"7\">Find full accessibility information <a href=\"https://www.birminghamhippodrome.com/calendar/mrs-doubtfire-the-musical/#accessible\">here </a>or contact the Hippodrome access team on 0121 689 1060.</p></div>",
+    "ticketLink": "https://www.birminghamhippodrome.com/calendar/mrs-doubtfire/",
+    "siteLink": "https://www.mrsdoubtfiremusical.co.uk/",
+    "rank": 6
   }
 ]
