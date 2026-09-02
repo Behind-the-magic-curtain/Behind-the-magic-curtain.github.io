@@ -774,6 +774,7 @@ function buildFullNewsPageHtml(d) {
 </html>`;
 }
 
+
 function buildFullReviewPageHtml(d) {
     const ratingPercent = (parseFloat(d.rating) / 5) * 100;
     let tags = `<span class="tag tag-age">${d.age}</span>`;
@@ -807,6 +808,11 @@ function buildFullReviewPageHtml(d) {
         </div>`;
     }
 
+    // AI Semantic Upgrade: Map UI tags to explicit Schema Accessibility Features
+    const accessFeatures = [];
+    if (d.tags?.adhd) accessFeatures.push("RelaxedPerformance", "NeurodivergentAccessible");
+    if (d.tags?.sensory) accessFeatures.push("SensoryFriendly");
+
     const reviewSchema = JSON.stringify({
         "@context": "https://schema.org",
         "@type": "Review",
@@ -819,7 +825,17 @@ function buildFullReviewPageHtml(d) {
         },
         "itemReviewed": {
             "@type": "TheaterEvent",
-            "name": d.title
+            "name": d.title,
+            "location": {
+                "@type": "Place",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressRegion": "West Midlands",
+                    "addressCountry": "UK"
+                }
+            },
+            // Only inject the accessibility array if features exist
+            ...(accessFeatures.length > 0 && { "accessibilityFeature": [...new Set(accessFeatures)] })
         },
         "reviewRating": {
             "@type": "Rating",
@@ -886,6 +902,7 @@ function buildFullReviewPageHtml(d) {
 </body>
 </html>`;
 }
+   
 
 /* --- 7. Table Rendering & Drag/Drop Reordering --- */
 async function loadManagementDashboard() {
