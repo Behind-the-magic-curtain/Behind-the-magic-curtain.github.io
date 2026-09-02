@@ -397,9 +397,42 @@ async function loadWhatsOnDirectory() {
         const shows = await res.json();
         const today = new Date().toISOString().split('T')[0];
 
+        // Filter and sort active shows
         const activeShows = shows
             .filter(s => !s.expiryDate || s.expiryDate >= today)
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
+
+        // --- NEW: AI SCHEMA INJECTION ---
+        // Dynamically build a structured data array for search engines
+        const schemaData = {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "itemListElement": activeShows.map((s, index) => ({
+                "@type": "ListItem",
+                "position": index + 1,
+                "item": {
+                    "@type": "TheaterEvent",
+                    "name": s.title,
+                    "description": s.desc,
+                    "url": s.siteLink || `https://behindthemagiccurtain.co.uk/whats-on.html?q=${encodeURIComponent(s.title)}`,
+                    "location": {
+                        "@type": "Place",
+                        "name": s.venue,
+                        "address": {
+                            "@type": "PostalAddress",
+                            "addressRegion": s.region || "West Midlands"
+                        }
+                    }
+                }
+            }))
+        };
+        
+        // Inject schema silently into the document head
+        const scriptTag = document.createElement('script');
+        scriptTag.type = 'application/ld+json';
+        scriptTag.text = JSON.stringify(schemaData);
+        document.head.appendChild(scriptTag);
+        // --------------------------------
 
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
@@ -433,7 +466,6 @@ async function loadWhatsOnDirectory() {
         console.warn('What\'s On fallback:', e);
     }
 }
-
 /* --- 7. Theatre Directory --- */
 async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
@@ -620,7 +652,7 @@ function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
         <div class="listing-image">
-            <img src="images/${s.image}" alt="${s.title}" loading="lazy" decoding="async">
+<img src="images/${s.image}" alt="Production poster for ${s.title}" loading="lazy" decoding="async">
         </div>
         <div class="listing-content">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
@@ -668,7 +700,7 @@ function buildTheatreCardHTML(t) {
     return `
     <article class="theatre-card">
         <div class="theatre-img-container">
-            <img src="images/${t.image}" alt="${t.name}" loading="lazy" decoding="async">
+<img src="images/${t.image}" alt="Exterior view of ${t.name}" loading="lazy" decoding="async">
         </div>
         <div class="theatre-info">
             <h2>${t.name}</h2>
