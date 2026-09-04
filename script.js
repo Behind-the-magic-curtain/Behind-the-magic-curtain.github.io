@@ -833,17 +833,18 @@ function initSwiperGalleries() {
                 },
             });
         }
+    }
+}
+
+/* --- 14. Global Gated Toolkit & Community Modal Handlers --- */
 let pendingTargetResource = null;
 
-// 1. Triggered when user clicks a gated download button
 function requestToolkitAccess(resourceType) {
     pendingTargetResource = resourceType;
     
-    // Check local memory system (if already unlocked previously)
     if (localStorage.getItem('btmc_toolkit_unlocked') === 'true') {
         openToolkitResource(pendingTargetResource);
     } else {
-        // Show signup modal
         const modal = document.getElementById('download-unlock-modal');
         if (modal) modal.style.display = 'flex';
     }
@@ -854,7 +855,6 @@ function closeUnlockModal() {
     if (modal) modal.style.display = 'none';
 }
 
-// 2. Process form input and transmit to Google Forms pipeline via hidden iframe
 function processUnlockSubmission() {
     const nameInput = document.getElementById('unlock-name');
     const emailInput = document.getElementById('unlock-email');
@@ -870,7 +870,6 @@ function processUnlockSubmission() {
     const optInStatus = "Opted In - DLP Toolkits & Newsletter";
     const payloadBody = `Toolkit Unlock Signup from Disneyland Paris page. Target: ${pendingTargetResource || 'General DLP Toolkit'}`;
 
-    // Populate existing native form elements for background submission if present
     const optinEl = document.getElementById('dlp_gform_optin');
     const contactEl = document.getElementById('dlp_gform_contact');
     const diaryEl = document.getElementById('dlp_gform_diary');
@@ -883,16 +882,11 @@ function processUnlockSubmission() {
         nativeForm.submit();
     }
 
-    // Save state in memory system so user isn't asked again on subsequent visits
     localStorage.setItem('btmc_toolkit_unlocked', 'true');
-
     closeUnlockModal();
-    
-    // Open the requested resource
     openToolkitResource(pendingTargetResource);
 }
 
-// 3. Opens the respective checklist/planner or triggers print view
 function openToolkitResource(type) {
     if (type === 'checklist') {
         window.open('dlp-rides-checklist.html', '_blank');
@@ -902,7 +896,33 @@ function openToolkitResource(type) {
         window.print();
     }
 }
-        
-        
-    }
+
+// Community Ratings Modal Triggers
+function openCommunityModal() {
+    const modal = document.getElementById('community-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCommunityModal() {
+    const modal = document.getElementById('community-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function handleCommunitySubmit() {
+    const name = document.getElementById('dlp-user-name').value.trim();
+    const email = document.getElementById('dlp-user-email').value.trim();
+    const optIn = document.getElementById('dlp-join-optin').checked;
+
+    const contactString = `${name || 'Anonymous'} (${email || 'No email provided'})`;
+    const optInStatus = optIn ? "Opted In - Community & News" : "Opted Out";
+    const ratingsSummary = JSON.stringify(userCustomRatings);
+    const payloadBody = `Community DLP Ratings Submission. Ratings: ${ratingsSummary}`;
+
+    document.getElementById('dlp_gform_optin').value = optInStatus;
+    document.getElementById('dlp_gform_contact').value = contactString;
+    document.getElementById('dlp_gform_diary').value = payloadBody;
+    
+    document.getElementById('native_dlp_form').submit();
+    closeCommunityModal();
+    showBtmcToast("Thank you! Your family sensory log has been submitted.");
 }
