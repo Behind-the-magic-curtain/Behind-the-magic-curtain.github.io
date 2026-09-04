@@ -833,5 +833,76 @@ function initSwiperGalleries() {
                 },
             });
         }
+let pendingTargetResource = null;
+
+// 1. Triggered when user clicks a gated download button
+function requestToolkitAccess(resourceType) {
+    pendingTargetResource = resourceType;
+    
+    // Check local memory system (if already unlocked previously)
+    if (localStorage.getItem('btmc_toolkit_unlocked') === 'true') {
+        openToolkitResource(pendingTargetResource);
+    } else {
+        // Show signup modal
+        const modal = document.getElementById('download-unlock-modal');
+        if (modal) modal.style.display = 'flex';
+    }
+}
+
+function closeUnlockModal() {
+    const modal = document.getElementById('download-unlock-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+// 2. Process form input and transmit to Google Forms pipeline via hidden iframe
+function processUnlockSubmission() {
+    const nameInput = document.getElementById('unlock-name');
+    const emailInput = document.getElementById('unlock-email');
+    
+    if (!nameInput || !emailInput) return;
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!name || !email) return;
+
+    const contactString = `${name} (${email})`;
+    const optInStatus = "Opted In - DLP Toolkits & Newsletter";
+    const payloadBody = `Toolkit Unlock Signup from Disneyland Paris page. Target: ${pendingTargetResource || 'General DLP Toolkit'}`;
+
+    // Populate existing native form elements for background submission if present
+    const optinEl = document.getElementById('dlp_gform_optin');
+    const contactEl = document.getElementById('dlp_gform_contact');
+    const diaryEl = document.getElementById('dlp_gform_diary');
+    const nativeForm = document.getElementById('native_dlp_form');
+
+    if (optinEl && contactEl && diaryEl && nativeForm) {
+        optinEl.value = optInStatus;
+        contactEl.value = contactString;
+        diaryEl.value = payloadBody;
+        nativeForm.submit();
+    }
+
+    // Save state in memory system so user isn't asked again on subsequent visits
+    localStorage.setItem('btmc_toolkit_unlocked', 'true');
+
+    closeUnlockModal();
+    
+    // Open the requested resource
+    openToolkitResource(pendingTargetResource);
+}
+
+// 3. Opens the respective checklist/planner or triggers print view
+function openToolkitResource(type) {
+    if (type === 'checklist') {
+        window.open('dlp-rides-checklist.html', '_blank');
+    } else if (type === 'shows') {
+        window.open('dlp-shows-guide.html', '_blank');
+    } else {
+        window.print();
+    }
+}
+        
+        
     }
 }
