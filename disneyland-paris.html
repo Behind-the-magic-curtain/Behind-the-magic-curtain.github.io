@@ -350,17 +350,17 @@
                         <i class="fa-solid fa-clipboard-check"></i>
                         <h3>Rides & Sensory Checklist</h3>
                         <p>Traffic-light sensory guide with minimum heights, thrill ratings, and dark ride indicators.</p>
-                        <button type="button" class="btn btn-secondary" onclick="triggerGatedDownload('dlp-rides-checklist.html', 'Disneyland Rides & Sensory Checklist')">
-                            <i class="fa-solid fa-download"></i> View & Print Checklist
-                        </button>
+                       <button type="button" class="btn btn-secondary" onclick="requestToolkitAccess('checklist')">
+    <i class="fa-solid fa-download"></i> View & Print Checklist
+</button>
                     </div>
                     <div class="dlp-tool-card">
                         <i class="fa-solid fa-masks-theater"></i>
                         <h3>Shows & Parades Planner</h3>
                         <p>Seasonal performance schedules, live acoustics advisories, and optimal quiet viewing spots.</p>
-                        <button type="button" class="btn btn-secondary" onclick="triggerGatedDownload('dlp-shows-guide.html', 'Disneyland Shows & Parades Planner')">
-                            <i class="fa-solid fa-download"></i> View & Print Shows
-                        </button>
+                       <button type="button" class="btn btn-secondary" onclick="requestToolkitAccess('shows')">
+    <i class="fa-solid fa-download"></i> View & Print Shows
+</button>
                     </div>
                     <div class="dlp-tool-card">
                         <i class="fa-solid fa-sliders"></i>
@@ -453,5 +453,40 @@
     </footer>
 
     <script src="script.js"></script>
+<!-- Free Downloadables Unlock Modal -->
+<div id="download-unlock-modal" class="dlp-modal-backdrop" style="display:none; align-items:center; justify-content:center;">
+    <div class="dlp-modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0; color:var(--color-primary);"><i class="fa-solid fa-wand-magic-sparkles"></i> Unlock Your Free Family Toolkits!</h3>
+            <button type="button" onclick="closeUnlockModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:#888;">&times;</button>
+        </div>
+        <p style="font-size:0.88rem; color:#555; margin-bottom:20px;">Join our neurodivergent theatre community by following us on social media and joining our newsletter to instantly access and print our exclusive Disneyland Paris planners.</p>
+
+        <!-- Social Follow Step -->
+        <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px; border:1px solid var(--color-border);">
+            <p style="font-weight:600; font-size:0.9rem; margin:0 0 10px 0; color:var(--color-text);">1. Follow Us on Social Media:</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <a href="https://facebook.com/behindthemagiccurtain" target="_blank" class="btn" style="background:#1877f2; color:#fff; font-size:0.85rem; padding:8px 12px; text-decoration:none; border-radius:4px;"><i class="fa-brands fa-facebook"></i> Facebook</a>
+                <a href="https://instagram.com/behindthemagiccurtain" target="_blank" class="btn" style="background:#e4405f; color:#fff; font-size:0.85rem; padding:8px 12px; text-decoration:none; border-radius:4px;"><i class="fa-brands fa-instagram"></i> Instagram</a>
+            </div>
+        </div>
+
+        <!-- Newsletter & Name Signup Form -->
+        <form id="unlock-signup-form" onsubmit="event.preventDefault(); processUnlockSubmission();">
+            <div class="form-group" style="margin-bottom:12px; display:flex; flex-direction:column; gap:6px;">
+                <label style="font-size:0.85rem; font-weight:600; color:#333;">Your Name *</label>
+                <input type="text" id="unlock-name" required placeholder="e.g. Katy Meaney" style="padding:10px 14px; border:1.5px solid var(--color-border); border-radius:8px; outline:none;">
+            </div>
+            <div class="form-group" style="margin-bottom:20px; display:flex; flex-direction:column; gap:6px;">
+                <label style="font-size:0.85rem; font-weight:600; color:#333;">Email Address (for Newsletter) *</label>
+                <input type="email" id="unlock-email" required placeholder="email@example.com" style="padding:10px 14px; border:1.5px solid var(--color-border); border-radius:8px; outline:none;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">
+                <i class="fa-solid fa-lock-open"></i> Unlock & View Toolkits Now
+            </button>
+        </form>
+    </div>
+</div>
+    
 </body>
 </html>
