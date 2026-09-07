@@ -1,5 +1,28 @@
 [
   {
+    "id": "news_1788815656033",
+    "title": "Ben Thornton, Ben Stock and Joe Feeney Lead Cast of Lichfield Garrick Pantomime, Robin Hood",
+    "slug": "lichfield-garrick-robin-hood-cast-2026.html",
+    "category": "Theatre News",
+    "author": "Katy Rose Meaney",
+    "summary": "The Lichfield Garrick has announced its star-studded cast led by Ben Thornton, Ben Stock, and Joe Feeney for Robin Hood, marking the theatre's first in-house-produced pantomime in over a decade.",
+    "bodyHtml": "<p data-path-to-node=\"5\"><b>The Lichfield Garrick</b> is transforming into Sherwood Forest this winter as it prepares to stage <b>Robin Hood</b> from 20 November 2026 to 10 January 2027. Marking the venue's first in-house-produced pantomime in over a decade, the festive spectacular arrives straight from the Garrick family to yours following a stellar milestone year that saw the venue produce its hit in-house musical Disenchanted! and secure its long-term future through an extended council lease.</p><p data-path-to-node=\"6\">We love a home-grown festive treat here at Behind the Magic Curtain, and the 2026 line-up promises double the laughter, double the fun, and double the Ben! Garrick veteran Ben Thornton takes on the titular role of Robin Hood, joined by Great British Pantomime Award winner Ben Stock, who is ready to delight family audiences as the iconic Nurse Nellie. They are joined by Joe Feeney as the dastardly Sheriff of Nottingham, alongside a wonderfully talented ensemble featuring Rosie Napper as Morgana, Eliza Waters as Maid Marian, Ashley Cavender as Merlin, and Anna Soden as Bluebell.</p><p data-path-to-node=\"7\">Helmed by CEO and Artistic Director Daniel Buckroyd with costume designs by John Brooking, this production is set to be an unmissable festive highlight packed with traditional cheer, live music, and magical panto mischief.</p>",
+    "detailsHtml": "<li><p data-path-to-node=\"1,0,0\"><b>Dates:</b> 20 November 2026 – 10 January 2027</p></li><li><p data-path-to-node=\"1,0,0\"><b>Relaxed Performance Sunday 29th November, 11am</b></p></li><li><p data-path-to-node=\"1,0,0\"><span style=\"font-size: 0.95rem;\"><b>BSL Signed Performances:&nbsp;</b>Thursday 17th December, 7pm / Sunday 3rd January, 11am</span></p></li><li><p data-path-to-node=\"1,1,0\"><b>Venue:</b> Lichfield Garrick Theatre &amp; Studio</p></li><li><p data-path-to-node=\"1,2,0\"><b>Key Cast: </b>Ben Thornton (Robin Hood), Ben Stock (Nurse Nellie), Joe Feeney (Sheriff of Nottingham), Rosie Napper (Morgana), Eliza Waters (Maid Marian), Ashley Cavender (Merlin), and Anna Soden (Bluebell).</p></li><li><p data-path-to-node=\"1,3,0\"><b>Tickets &amp; Info:</b> Available via <a href=\"lichfieldgarrick.com\">lichfieldgarrick.com</a> or by calling the Box Office on 01543 412121.</p></li>",
+    "mainImage": "rh-final-poster.webp",
+    "galleryImages": [
+      "anna-soden-bluebell.webp",
+      "ashley-cavender-merlin.webp",
+      "ben-stock-nurse-nellie.webp",
+      "eliza-waters-maid-marian.webp",
+      "joe-feeney-sheriff-of-nottingham.webp",
+      "rosie-napper-morgana.webp"
+    ],
+    "datePublished": "2026-09-07T21:14:04.115Z",
+    "dateModified": "2026-09-07T21:14:04.115Z",
+    "status": "published",
+    "rank": 1
+  },
+  {
     "id": "news_1788815019425",
     "title": "Rehearsal Images Released for Sylvia: A Musical Revolution UK Tour and Royal Albert Hall Run",
     "slug": "sylvia-rehearsal-images-uk-tour-2026.html",
@@ -24,7 +47,7 @@
     "datePublished": "2026-09-07T21:03:23.111Z",
     "dateModified": "2026-09-07T21:03:23.111Z",
     "status": "published",
-    "rank": 1
+    "rank": 2
   },
   {
     "id": "news_1788073741864",
@@ -40,7 +63,7 @@
     "datePublished": "2026-08-30T07:08:59.721Z",
     "dateModified": "2026-08-30T07:33:32.610Z",
     "status": "published",
-    "rank": 2
+    "rank": 3
   },
   {
     "id": "news_1787910327655",
@@ -65,7 +88,7 @@
     "datePublished": "2026-08-28T09:45:26.242Z",
     "dateModified": "2026-08-28T10:21:02.942Z",
     "status": "published",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "news_1788075856975",
@@ -84,7 +107,7 @@
     "datePublished": "2026-08-30T07:44:13.018Z",
     "dateModified": "2026-08-30T07:44:13.018Z",
     "status": "published",
-    "rank": 4
+    "rank": 5
   },
   {
     "id": "news_1787918274041",
@@ -100,7 +123,7 @@
     "datePublished": "2026-08-28T11:57:52.520Z",
     "dateModified": "2026-08-28T12:18:40.140Z",
     "status": "published",
-    "rank": 5
+    "rank": 6
   },
   {
     "id": "news_1787921601777",
@@ -116,6 +139,6 @@
     "datePublished": "2026-08-28T12:53:20.303Z",
     "dateModified": "2026-08-28T12:57:54.153Z",
     "status": "published",
-    "rank": 6
+    "rank": 7
   }
 ]
