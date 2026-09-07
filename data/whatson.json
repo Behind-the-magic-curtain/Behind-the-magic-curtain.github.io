@@ -17,6 +17,23 @@
     "rank": 1
   },
   {
+    "id": "wo_1788817740664",
+    "title": "Peter Pan",
+    "venue": "Birmingham Rep",
+    "region": "West Midlands",
+    "dates": "Wed 18 Nov 2026 – Sun 17 Jan 2027",
+    "expiryDate": "2027-01-17",
+    "runtime": "Approx 2hrs (incl. interval)",
+    "age": "Ages 7+",
+    "category": "theatre",
+    "isTouring": false,
+    "image": "b-rep-peter-pan-cover.webp",
+    "desc": "<b>Fly away to Neverland this festive season!&nbsp;</b><div><br></div><div>Adapted by Phil Porter with original music by Ruth Chan and directed by Joe Murphy, this faithful, enchanting re-telling of J M Barrie’s classic tale is a magical family show bursting with imagination, flying, and original songs.</div><div><b>Access performances</b> available include:</div><div><ul><li><b>Relaxed</b> (Sun 10 Jan 11am)</li><li><b>Audio Described</b> (Sat 12 Dec &amp; Sat 9 Jan at 2pm with pre-show Touch Tour at 12:30pm)</li><li><b>BSL Interpreted </b>(Thu 3 Dec at 10:15am &amp; 2:30pm, Fri 4 Dec at 6:30pm)</li><li><b>Captioned</b> dates across select November, December, and January performances.</li></ul></div>",
+    "ticketLink": "https://www.birmingham-rep.co.uk/whats-on/peter-pan/",
+    "siteLink": "http://birmingham-rep.co.uk/whats-on/peter-pan/",
+    "rank": 2
+  },
+  {
     "id": "wo_1787865902228",
     "title": "Treasure Island",
     "venue": "Wolverhampton Grand Theatre, Wolverhampton",
@@ -31,7 +48,7 @@
     "desc": "Ahoy, Wolverhampton! A brand-new swashbuckling panto adventure for the 2026/27 festive season.\n\nFresh from clinching Best Panto in the UK at the UK Pantomime Awards, Wolverhampton Grand is premiering a never-before-seen pantomime adventure starring firm audience favourites Tam Ryan and Ian Adams. Expect high-seas slapstick, dazzling sets, and accessible festive fun for all ages.\n\nWolverhampton Grand provides dedicated relaxed and sensory-adapted performances featuring softened stage effects, lowered sound volume, and access to quiet breakout areas.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/treasure-island/#book",
     "siteLink": "https://www.grandtheatre.co.uk/whats-on/treasure-island",
-    "rank": 2
+    "rank": 3
   },
   {
     "id": "wo_1788188779169",
@@ -48,7 +65,7 @@
     "desc": "<p data-path-to-node=\"0\">A firm family favourite returns to the Hippodrome stage: <b>Birmingham pantomime legends Matt Slack and Andrew Ryan</b> return to bring spectacular festive laughs, magic, and show-stopping musical numbers to this brand-new production of <b>Sleeping Beauty.</b></p><p data-path-to-node=\"1\"><b>Key Accessible Performances &amp; Highlights:</b></p><ul data-path-to-node=\"2\"><li><p data-path-to-node=\"2,0,0\"><b>BSL Interpreted:</b> Sun 10 Jan (1pm &amp; 5.15pm) – Interpreted by Rachel Tipping &amp; Clare Edwards</p></li><li><p data-path-to-node=\"2,1,0\"><b>Captioned:</b> Sun 17 Jan (1pm &amp; 5.15pm)</p></li><li><p data-path-to-node=\"2,2,0\"><b>Audio Described:</b> Wed 13 Jan (2pm) &amp; Sat 16 Jan (2.30pm)</p></li><li><p data-path-to-node=\"2,3,0\"><b>Relaxed Performance: Thu 28 Jan (12:00 noon)</b></p></li></ul>",
     "ticketLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/#performances",
     "siteLink": "https://www.birminghamhippodrome.com/calendar/sleeping-beauty/",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "wo_1787350698547",
@@ -65,7 +82,7 @@
     "desc": "With the head of a dog and the body of a policeman, Dog Man loves to fight crime and chew on furniture!.. Paw-sitively brilliant stage adaptation based on Dav Pilkey's worldwide bestselling Dog Man book series.",
     "ticketLink": "https://www.dogman.live/#dates",
     "siteLink": "https://www.dogman.live/",
-    "rank": 4
+    "rank": 5
   },
   {
     "id": "wo_elf",
@@ -79,7 +96,7 @@
     "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 5
+    "rank": 6
   },
   {
     "id": "wo_1788816077071",
@@ -96,23 +113,6 @@
     "desc": "<b>Arrow-right into pure panto perfection!</b>&nbsp;<div><br></div><div>Join our merry crew for double the laughter, double the fun, and double the Ben as the Lichfield Garrick presents its first in-house pantomime in over a decade.</div><div><ul><li><b>Relaxed Performance</b> on Sunday 29th November at 11am</li><li><b>BSL Signed Performances</b> on Thursday 17th December at 7pm and Sunday 3rd January at 11am.</li></ul><div><font color=\"#475569\">Read more about the upcoming show and full story on Lichfields Garricks first in-house panto in over a decade <a href=\"https://behindthemagiccurtain.co.uk/lichfield-garrick-robin-hood-cast-2026.html\">here</a></font></div></div>",
     "ticketLink": "https://www.lichfieldgarrick.com/events/robin-hood-2026#dates-and-times",
     "siteLink": "https://www.lichfieldgarrick.com/events/robin-hood-2026",
-    "rank": 6
-  },
-  {
-    "id": "wo_1788817740664",
-    "title": "Peter Pan",
-    "venue": "Birmingham Rep",
-    "region": "West Midlands",
-    "dates": "Wed 18 Nov 2026 – Sun 17 Jan 2027",
-    "expiryDate": "2027-01-17",
-    "runtime": "Approx 2hrs (incl. interval)",
-    "age": "Ages 7+",
-    "category": "theatre",
-    "isTouring": false,
-    "image": "b-rep-peter-pan-cover.webp",
-    "desc": "<b>Fly away to Neverland this festive season!&nbsp;</b><div><br></div><div>Adapted by Phil Porter with original music by Ruth Chan and directed by Joe Murphy, this faithful, enchanting re-telling of J M Barrie’s classic tale is a magical family show bursting with imagination, flying, and original songs.</div><div><b>Access performances</b> available include:</div><div><ul><li><b>Relaxed</b> (Sun 10 Jan 11am)</li><li><b>Audio Described</b> (Sat 12 Dec &amp; Sat 9 Jan at 2pm with pre-show Touch Tour at 12:30pm)</li><li><b>BSL Interpreted </b>(Thu 3 Dec at 10:15am &amp; 2:30pm, Fri 4 Dec at 6:30pm)</li><li><b>Captioned</b> dates across select November, December, and January performances.</li></ul></div>",
-    "ticketLink": "https://www.birmingham-rep.co.uk/whats-on/peter-pan/",
-    "siteLink": "http://birmingham-rep.co.uk/whats-on/peter-pan/",
     "rank": 7
   },
   {
