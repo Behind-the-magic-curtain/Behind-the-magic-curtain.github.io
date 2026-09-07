@@ -97,5 +97,22 @@
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
     "rank": 6
+  },
+  {
+    "id": "wo_1788816077071",
+    "title": "Robin Hood",
+    "venue": "Lichfield Garrick",
+    "region": "West Midlands",
+    "dates": "20 November 2026 – 10 January 2027",
+    "expiryDate": "2027-01-10",
+    "runtime": "2hrs 15mins (incl. interval)",
+    "age": "Ages 4+",
+    "category": "panto",
+    "isTouring": false,
+    "image": "rh-final-poster.webp",
+    "desc": "<b>Arrow-right into pure panto perfection!</b>&nbsp;<div><br></div><div>Join our merry crew for double the laughter, double the fun, and double the Ben as the Lichfield Garrick presents its first in-house pantomime in over a decade.</div><div><ul><li><b>Relaxed Performance</b> on Sunday 29th November at 11am</li><li><b>BSL Signed Performances</b> on Thursday 17th December at 7pm and Sunday 3rd January at 11am.</li></ul><div><font color=\"#475569\">Read more about the upcoming show and full story on Lichfields Garricks first in-house panto in over a decade <a href=\"https://behindthemagiccurtain.co.uk/lichfield-garrick-robin-hood-cast-2026.html\">here</a></font></div></div>",
+    "ticketLink": "https://www.lichfieldgarrick.com/events/robin-hood-2026#dates-and-times",
+    "siteLink": "https://www.lichfieldgarrick.com/events/robin-hood-2026",
+    "rank": 7
   }
 ]
