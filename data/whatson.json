@@ -68,23 +68,6 @@
     "rank": 4
   },
   {
-    "id": "wo_paddington",
-    "title": "Paddington The Musical",
-    "venue": "The Savoy Theatre, London",
-    "region": "London",
-    "dates": "Booking until Feb 2028",
-    "expiryDate": "2028-02-13",
-    "runtime": "2hrs 15mins (incl. interval)",
-    "age": "Ages 4+",
-    "category": "musical",
-    "isTouring": false,
-    "image": "paddington-the-musical.jpg",
-    "desc": "A small bear in a big city! Family-friendly stage show at London's Savoy Theatre that tells the story of a little lost bear who finds a new home with the Brown family.",
-    "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
-    "siteLink": "https://paddingtonthemusical.com/",
-    "rank": 5
-  },
-  {
     "id": "wo_elf",
     "title": "Elf The Musical",
     "venue": "Wolverhampton Grand Theatre",
@@ -96,7 +79,7 @@
     "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 6
+    "rank": 5
   },
   {
     "id": "wo_1788816077071",
@@ -113,7 +96,7 @@
     "desc": "<b>Arrow-right into pure panto perfection!</b>&nbsp;<div><br></div><div>Join our merry crew for double the laughter, double the fun, and double the Ben as the Lichfield Garrick presents its first in-house pantomime in over a decade.</div><div><ul><li><b>Relaxed Performance</b> on Sunday 29th November at 11am</li><li><b>BSL Signed Performances</b> on Thursday 17th December at 7pm and Sunday 3rd January at 11am.</li></ul><div><font color=\"#475569\">Read more about the upcoming show and full story on Lichfields Garricks first in-house panto in over a decade <a href=\"https://behindthemagiccurtain.co.uk/lichfield-garrick-robin-hood-cast-2026.html\">here</a></font></div></div>",
     "ticketLink": "https://www.lichfieldgarrick.com/events/robin-hood-2026#dates-and-times",
     "siteLink": "https://www.lichfieldgarrick.com/events/robin-hood-2026",
-    "rank": 7
+    "rank": 6
   },
   {
     "id": "wo_1788817740664",
@@ -130,6 +113,23 @@
     "desc": "<b>Fly away to Neverland this festive season!&nbsp;</b><div><br></div><div>Adapted by Phil Porter with original music by Ruth Chan and directed by Joe Murphy, this faithful, enchanting re-telling of J M Barrie’s classic tale is a magical family show bursting with imagination, flying, and original songs.</div><div><b>Access performances</b> available include:</div><div><ul><li><b>Relaxed</b> (Sun 10 Jan 11am)</li><li><b>Audio Described</b> (Sat 12 Dec &amp; Sat 9 Jan at 2pm with pre-show Touch Tour at 12:30pm)</li><li><b>BSL Interpreted </b>(Thu 3 Dec at 10:15am &amp; 2:30pm, Fri 4 Dec at 6:30pm)</li><li><b>Captioned</b> dates across select November, December, and January performances.</li></ul></div>",
     "ticketLink": "https://www.birmingham-rep.co.uk/whats-on/peter-pan/",
     "siteLink": "http://birmingham-rep.co.uk/whats-on/peter-pan/",
+    "rank": 7
+  },
+  {
+    "id": "wo_paddington",
+    "title": "Paddington The Musical",
+    "venue": "The Savoy Theatre, London",
+    "region": "London",
+    "dates": "Booking until Feb 2028",
+    "expiryDate": "2028-02-13",
+    "runtime": "2hrs 15mins (incl. interval)",
+    "age": "Ages 4+",
+    "category": "musical",
+    "isTouring": false,
+    "image": "paddington-the-musical.jpg",
+    "desc": "A small bear in a big city! Family-friendly stage show at London's Savoy Theatre that tells the story of a little lost bear who finds a new home with the Brown family.",
+    "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
+    "siteLink": "https://paddingtonthemusical.com/",
     "rank": 8
   }
 ]
