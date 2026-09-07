@@ -720,6 +720,15 @@ function buildFullNewsPageHtml(d) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${d.title} | Behind the Magic Curtain</title>
+    
+    <!-- BTMC Favicons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon.ico">
+
     <meta name="description" content="${d.summary}">
     <meta property="og:type" content="article">
     <meta property="og:title" content="${d.title} | Behind the Magic Curtain">
@@ -808,7 +817,6 @@ function buildFullReviewPageHtml(d) {
         </div>`;
     }
 
-    // AI Semantic Upgrade: Map UI tags to explicit Schema Accessibility Features
     const accessFeatures = [];
     if (d.tags?.adhd) accessFeatures.push("RelaxedPerformance", "NeurodivergentAccessible");
     if (d.tags?.sensory) accessFeatures.push("SensoryFriendly");
@@ -834,7 +842,6 @@ function buildFullReviewPageHtml(d) {
                     "addressCountry": "UK"
                 }
             },
-            // Only inject the accessibility array if features exist
             ...(accessFeatures.length > 0 && { "accessibilityFeature": [...new Set(accessFeatures)] })
         },
         "reviewRating": {
@@ -850,6 +857,15 @@ function buildFullReviewPageHtml(d) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${d.title} Review & Sensory Guide | Behind the Magic Curtain</title>
+    
+    <!-- BTMC Favicons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon.ico">
+
     <meta name="description" content="${d.summary}">
     <meta property="og:type" content="article">
     <meta property="og:title" content="${d.title} Review & Sensory Guide | Behind the Magic Curtain">
@@ -903,7 +919,6 @@ function buildFullReviewPageHtml(d) {
 </html>`;
 }
    
-
 /* --- 7. Table Rendering & Drag/Drop Reordering --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
