@@ -1,5 +1,5 @@
 /*
- * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V3.0)
+ * BEHIND THE MAGIC CURTAIN - CORE ENGINE (V3.3)
  * On-Brand Floating Toasts, Whole-Card Click Architecture, Global Search & Dynamic Renderers
  */
 
@@ -7,13 +7,63 @@ let dlpAttractionsCache = [];
 let userCustomRatings = JSON.parse(localStorage.getItem('btmc_user_dlp_ratings') || '{}');
 let btmcToastTimer = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+// --- 0. BTMC Cookie Consent & Analytics Governance Manager ---
+document.addEventListener("DOMContentLoaded", function () {
+    const consentStatus = localStorage.getItem("btmc_cookie_consent");
+
+    if (!consentStatus) {
+        showCookieBanner();
+    } else if (consentStatus === "accepted") {
+        loadGoogleAnalytics();
+    }
+
     initDynamicNavigation();
     initGlobalSearchTray();
     initGlobalFooter();
     initDynamicPages();
     initSwiperGalleries();
 });
+
+function showCookieBanner() {
+    const banner = document.createElement("div");
+    banner.id = "btmc-cookie-banner";
+    banner.innerHTML = `
+        <div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; color: #fff; padding: 15px 20px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; z-index: 9999; font-family: 'Poppins', sans-serif; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); border-top: 3px solid #00838f;">
+            <div style="flex: 1; min-width: 280px; margin-right: 15px; font-size: 0.9rem;">
+                We use cookies to enhance your experience and analyze site traffic. Read our <a href="privacy.html" style="color: #ffd700; text-decoration: underline;">Privacy & Cookie Policy</a>.
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button id="btmc-accept-cookies" style="background: #00838f; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">Accept All</button>
+                <button id="btmc-reject-cookies" style="background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">Reject</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(banner);
+
+    document.getElementById("btmc-accept-cookies").addEventListener("click", function () {
+        localStorage.setItem("btmc_cookie_consent", "accepted");
+        loadGoogleAnalytics();
+        banner.remove();
+    });
+
+    document.getElementById("btmc-reject-cookies").addEventListener("click", function () {
+        localStorage.setItem("btmc_cookie_consent", "rejected");
+        banner.remove();
+    });
+}
+
+function loadGoogleAnalytics() {
+    // Dynamically inject GA4 script safely after consent
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = "https://www.googletagmanager.com/gtag/js?id=G-CPHCSFHVJK";
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CPHCSFHVJK');
+}
 
 /* --- 1. On-Brand Toast System (Replaces window.alert) --- */
 function showBtmcToast(message, type = 'toast-success', duration = 4000) {
@@ -397,13 +447,10 @@ async function loadWhatsOnDirectory() {
         const shows = await res.json();
         const today = new Date().toISOString().split('T')[0];
 
-        // Filter and sort active shows
         const activeShows = shows
             .filter(s => !s.expiryDate || s.expiryDate >= today)
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
-        // --- NEW: AI SCHEMA INJECTION ---
-        // Dynamically build a structured data array for search engines
         const schemaData = {
             "@context": "https://schema.org",
             "@type": "ItemList",
@@ -427,12 +474,10 @@ async function loadWhatsOnDirectory() {
             }))
         };
         
-        // Inject schema silently into the document head
         const scriptTag = document.createElement('script');
         scriptTag.type = 'application/ld+json';
         scriptTag.text = JSON.stringify(schemaData);
         document.head.appendChild(scriptTag);
-        // --------------------------------
 
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
@@ -466,6 +511,7 @@ async function loadWhatsOnDirectory() {
         console.warn('What\'s On fallback:', e);
     }
 }
+
 /* --- 7. Theatre Directory --- */
 async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
@@ -652,7 +698,7 @@ function buildWhatsOnCardHTML(s) {
     return `
     <article class="listing-card">
         <div class="listing-image">
-<img src="images/${s.image}" alt="Production poster for ${s.title}" loading="lazy" decoding="async">
+            <img src="images/${s.image}" alt="Production poster for ${s.title}" loading="lazy" decoding="async">
         </div>
         <div class="listing-content">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
@@ -700,7 +746,7 @@ function buildTheatreCardHTML(t) {
     return `
     <article class="theatre-card">
         <div class="theatre-img-container">
-<img src="images/${t.image}" alt="Exterior view of ${t.name}" loading="lazy" decoding="async">
+            <img src="images/${t.image}" alt="Exterior view of ${t.name}" loading="lazy" decoding="async">
         </div>
         <div class="theatre-info">
             <h2>${t.name}</h2>
@@ -740,7 +786,7 @@ function buildReviewCardHTML(r) {
     </a>`;
 }
 
-/* --- 12. Global Footer --- */
+/* --- 12. Global Footer (Includes discreet Privacy Policy link) --- */
 function initGlobalFooter() {
     const footerContainer = document.querySelector('.site-footer .container');
     if (!footerContainer) return;
@@ -779,7 +825,11 @@ function initGlobalFooter() {
                 <i class="fa-brands fa-instagram" aria-hidden="true"></i>
             </a>
         </div>
-        <div style="font-size: 0.85rem; color: #777777;">&copy; ${currentYear} Behind the Magic Curtain. All rights reserved.</div>
+        <div style="font-size: 0.85rem; color: #777777;">
+            &copy; ${currentYear} Behind the Magic Curtain. All rights reserved. 
+            <span style="margin: 0 8px; color: #444;">|</span> 
+            <a href="privacy.html" style="color: #777777; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#ffd700'" onmouseout="this.style.color='#777777'">Privacy Policy</a>
+        </div>
     `;
 }
 
@@ -897,7 +947,6 @@ function openToolkitResource(type) {
     }
 }
 
-// Community Ratings Modal Triggers
 function openCommunityModal() {
     const modal = document.getElementById('community-modal');
     if (modal) modal.style.display = 'flex';
