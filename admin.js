@@ -131,6 +131,35 @@ function applyBadgeLabel(tagClass) {
     const badgeHtml = `<span class="tag ${tagClass}">${selectedText}</span>&nbsp;`;
     document.execCommand('insertHTML', false, badgeHtml);
 }
+/* --- Video Embed Engine --- */
+function insertVideoEmbed() {
+    const url = prompt('Enter a YouTube or Vimeo URL to embed:');
+    if (!url) return;
+
+    let embedUrl = '';
+    
+    // Parse YouTube URLs (handles standard watch?v= and youtu.be/ formats)
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let videoId = '';
+        if (url.includes('v=')) {
+            videoId = url.split('v=')[1].split('&')[0];
+        } else if (url.includes('youtu.be/')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        }
+        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0`;
+    } 
+    // Parse Vimeo URLs
+    else if (url.includes('vimeo.com')) {
+        const videoId = url.split('vimeo.com/')[1].split('?')[0];
+        embedUrl = `https://player.vimeo.com/video/${videoId}?color=bd2419&title=0&byline=0&portrait=0`;
+    } 
+    else {
+        alert('Unrecognized link format. Please provide a standard YouTube or Vimeo URL.');
+        return;
+    }
+
+    // Wrap the iframe in the BTMC responsive video container
+    // A
 
 /* --- 3. Seamless Auto-WebP Compression Engine --- */
 async function processAndCompressImage(file) {
