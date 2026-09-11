@@ -104,33 +104,34 @@ function showToast(msg, type = 'status-success') {
 
 /* --- 2. Inline WYSIWYG Ribbon --- */
 function applyInlineFormat(command, value = null) {
-    if (command === 'formatBlock') {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            document.execCommand('formatBlock', false, `<${value}>`);
-        }
-    } else {
-        document.execCommand(command, false, value);
-    }
+ if (command === 'formatBlock') {
+ const selection = window.getSelection();
+ if (selection.rangeCount > 0) {
+ document.execCommand('formatBlock', false, `<${value}>`);
+ }
+ } else {
+ document.execCommand(command, false, value);
+ }
 }
 
 function insertInlineLink() {
-    const url = prompt('Enter web link URL (https://...):');
-    if (url) {
-        document.execCommand('createLink', false, url);
-    }
+ const url = prompt('Enter web link URL (https://...):');
+ if (url) {
+ document.execCommand('createLink', false, url);
+ }
 }
 
 function applyBadgeLabel(tagClass) {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
-        alert('Please highlight text first to apply badge styling.');
-        return;
-    }
-    const selectedText = selection.toString();
-    const badgeHtml = `<span class="tag ${tagClass}">${selectedText}</span>&nbsp;`;
-    document.execCommand('insertHTML', false, badgeHtml);
+ const selection = window.getSelection();
+ if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
+ alert('Please highlight text first to apply badge styling.');
+ return;
+ }
+ const selectedText = selection.toString();
+ const badgeHtml = `${selectedText} `;
+ document.execCommand('insertHTML', false, badgeHtml);
 }
+
 /* --- Video Embed Engine --- */
 function insertVideoEmbed() {
     const url = prompt('Enter a YouTube or Vimeo URL to embed:');
