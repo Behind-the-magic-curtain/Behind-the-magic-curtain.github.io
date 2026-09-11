@@ -1,5 +1,28 @@
 [
   {
+    "id": "news_1789142148166",
+    "title": "Fabric Announces Autumn Season for THIS IS DANCE in Birmingham",
+    "slug": "fabric-this-is-dance-autumn-season.html",
+    "category": "Theatre News",
+    "author": "Katy Rose Meaney",
+    "summary": "Fabric’s THIS IS DANCE partnership returns to Birmingham this autumn, bringing together exceptional local and international dance talent across multiple city venues.",
+    "bodyHtml": "<p data-path-to-node=\"3\">Fabric, a strategic dance development organisation based in the Midlands, is delighted to announce incredible performances this autumn, presented as part of <b>THIS IS DANCE.</b></p><p data-path-to-node=\"4\">Now in its second year, THIS IS DANCE is a unique partnership which includes <a href=\"https://fabric.dance/\">Fabric</a>, <a href=\"https://www.birminghamhippodrome.com/\">Birmingham Hippodrome</a>, <a href=\"https://www.birmingham-rep.co.uk/\">Birmingham Repertory Theatre</a>, <a href=\"https://www.brb.org.uk/\">Birmingham Royal Ballet</a>, <a href=\"https://macbirmingham.co.uk/\">Midlands Arts Centre</a>, <a href=\"https://wearefierce.org/\">Fierce Festival</a> and <a href=\"https://sampad.org.uk/\">Sampad Arts</a>. The partners share an ambition to create more opportunity, supporting artists, and increasing engagement, making dance a vital part of Birmingham’s cultural identity.</p><p data-path-to-node=\"5\">With performances from 13 October through to 26 November, the latest programme brings together a local and international line-up of artists and companies from the UK, Italy, USA, Canada, Poland, the Netherlands, Germany and Benin. Fabric is also offering co-presented performances throughout the autumn season.</p><p data-path-to-node=\"5\"><br></p><p data-path-to-node=\"5\"><b>Photo Credits:&nbsp;</b></p><p data-path-to-node=\"5\"><i>The Dirty Work: Image by Paul Samuel White</i></p><p data-path-to-node=\"5\"><i>Weathering: Images by Kevin Monko and Angel Orrigi</i></p><p data-path-to-node=\"5\"><i>Anatomy of Survival: Images by Camilla Greenwell</i></p><p data-path-to-node=\"5\"><i>Graces: Images by Riccardo Panozzo and Pasquale Divicenzo</i></p>",
+    "detailsHtml": "<li><p data-path-to-node=\"7,0,0\">Weathering by Faye Driscoll at Midlands Arts Centre (MAC), Wed 14 Oct - Fri 16 Oct 2026.</p></li><li><p data-path-to-node=\"7,1,0\">The Dirty Work, a new solo performance by Jo Bannon at Patrick Studio, Birmingham Hippodrome, Sat 7 Nov 2026.</p></li><li><p data-path-to-node=\"7,2,0\">Silvia Gribaudi’s Graces at Patrick Studio, Birmingham Hippodrome, Fri 20 Nov 2026.</p></li><li><p data-path-to-node=\"7,3,0\">Anatomy of Survival a collaboration between award-winning playwright Vivienne Franzmann and choreographer and psychotherapist Frauke Requardt at Patrick Studio, Birmingham Hippodrome, Thu 26 Nov 2026.</p></li><li><p data-path-to-node=\"7,3,0\">For full details of the programme, visit <response-element class=\"no-md\" ng-version=\"0.0.0-PLACEHOLDER\"><a href=\"https://fabric.dance/project/this-is-dance/\"><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><link-block _nghost-ng-c4113592580=\"\" class=\"ng-star-inserted\"><!----><!---->Fabric</link-block></a></response-element></p></li>",
+    "mainImage": "jo-bannon-the-dirty-work-image-by-paul-samuel-white-1.webp",
+    "galleryImages": [
+      "weathering-by-faye-driscoll-image-by-kevin-monko-at-philadelphia-fringe-festival-2025.webp",
+      "weathering-fayedriscoll-image-by-angel-orrigi-at-redcat-2025.webp",
+      "anatomy-of-survival-photo-by-camilla-greenwell.webp",
+      "anatomyofsurvival-2903-camilla-greenwell-lr.webp",
+      "graces-image-by-riccardo-panozzo.webp",
+      "graces-image-by-pasquale-divicenzo.webp"
+    ],
+    "datePublished": "2026-09-11T15:55:36.709Z",
+    "dateModified": "2026-09-11T15:55:36.709Z",
+    "status": "published",
+    "rank": 1
+  },
+  {
     "id": "news_1788863127199",
     "title": "Birmingham Rep’s: A Thousand Splendid Suns to Tour in 2027",
     "slug": "thousand-splendid-suns-uk-tour-2027.html",
@@ -18,7 +41,7 @@
     "datePublished": "2026-09-08T10:25:19.941Z",
     "dateModified": "2026-09-08T10:25:19.941Z",
     "status": "published",
-    "rank": 1
+    "rank": 2
   },
   {
     "id": "news_1788815656033",
@@ -41,7 +64,7 @@
     "datePublished": "2026-09-07T21:14:04.115Z",
     "dateModified": "2026-09-07T21:14:04.115Z",
     "status": "published",
-    "rank": 2
+    "rank": 3
   },
   {
     "id": "news_1788815019425",
@@ -68,7 +91,7 @@
     "datePublished": "2026-09-07T21:03:23.111Z",
     "dateModified": "2026-09-07T21:03:23.111Z",
     "status": "published",
-    "rank": 3
+    "rank": 4
   },
   {
     "id": "news_1788073741864",
@@ -84,7 +107,7 @@
     "datePublished": "2026-08-30T07:08:59.721Z",
     "dateModified": "2026-08-30T07:33:32.610Z",
     "status": "published",
-    "rank": 4
+    "rank": 5
   },
   {
     "id": "news_1787910327655",
@@ -109,7 +132,7 @@
     "datePublished": "2026-08-28T09:45:26.242Z",
     "dateModified": "2026-08-28T10:21:02.942Z",
     "status": "published",
-    "rank": 5
+    "rank": 6
   },
   {
     "id": "news_1788075856975",
@@ -128,7 +151,7 @@
     "datePublished": "2026-08-30T07:44:13.018Z",
     "dateModified": "2026-08-30T07:44:13.018Z",
     "status": "published",
-    "rank": 6
+    "rank": 7
   },
   {
     "id": "news_1787918274041",
@@ -144,7 +167,7 @@
     "datePublished": "2026-08-28T11:57:52.520Z",
     "dateModified": "2026-08-28T12:18:40.140Z",
     "status": "published",
-    "rank": 7
+    "rank": 8
   },
   {
     "id": "news_1787921601777",
@@ -160,6 +183,6 @@
     "datePublished": "2026-08-28T12:53:20.303Z",
     "dateModified": "2026-08-28T12:57:54.153Z",
     "status": "published",
-    "rank": 8
+    "rank": 9
   }
 ]
