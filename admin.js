@@ -161,6 +161,7 @@ function insertVideoEmbed() {
 
     // Wrap the iframe in the BTMC responsive video container
     // A
+}
 
 /* --- 3. Seamless Auto-WebP Compression Engine --- */
 async function processAndCompressImage(file) {
