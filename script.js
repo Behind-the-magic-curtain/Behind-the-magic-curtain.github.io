@@ -947,15 +947,33 @@ function openToolkitResource(type) {
     }
 }
 
+function saveRatingsToDevice() {
+    try {
+        localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
+        const count = Object.keys(userCustomRatings).length;
+        if (count > 0) {
+            showBtmcToast(`Saved ${count} custom rating${count === 1 ? '' : 's'} to your device!`, 'toast-success');
+        } else {
+            showBtmcToast("Disneyland Paris sensory ratings saved to your device!", 'toast-success');
+        }
+    } catch (e) {
+        console.error('Failed saving ratings to localStorage:', e);
+        showBtmcToast("Could not save ratings. Please check storage permissions.", "toast-error");
+    }
+}
+window.saveRatingsToDevice = saveRatingsToDevice;
+
 function openCommunityModal() {
     const modal = document.getElementById('community-modal');
     if (modal) modal.style.display = 'flex';
 }
+window.openCommunityModal = openCommunityModal;
 
 function closeCommunityModal() {
     const modal = document.getElementById('community-modal');
     if (modal) modal.style.display = 'none';
 }
+window.closeCommunityModal = closeCommunityModal;
 
 function handleCommunitySubmit() {
     const name = document.getElementById('dlp-user-name').value.trim();
@@ -974,4 +992,72 @@ function handleCommunitySubmit() {
     document.getElementById('native_dlp_form').submit();
     closeCommunityModal();
     showBtmcToast("Thank you! Your family sensory log has been submitted.");
+}
+window.handleCommunitySubmit = handleCommunitySubmit;
+
+/* -------------------------------------------------- */
+/* Floating Back to Top Button Engine                 */
+/* -------------------------------------------------- */
+function initBackToTopButton() {
+    let btn = document.getElementById('back-to-top-btn');
+    if (!btn) {
+        btn = document.createElement('button');
+        btn.id = 'back-to-top-btn';
+        btn.type = 'button';
+        btn.setAttribute('aria-label', 'Back to top');
+        btn.title = 'Back to top';
+        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;pointer-events:none;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+        document.body.appendChild(btn);
+    }
+
+    const getScrollY = () => {
+        return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    };
+
+    const updatePositionAndVisibility = () => {
+        const scrollY = getScrollY();
+        if (scrollY > 120) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+
+        // Check for Disneyland Paris sticky bottom bar
+        const stickyBar = document.getElementById('sticky-rater-bar') || document.querySelector('.sticky-rater-bar');
+        if (stickyBar) {
+            const barHeight = stickyBar.offsetHeight || 65;
+            btn.style.setProperty('bottom', `${barHeight + 18}px`, 'important');
+            return;
+        }
+
+        // Adjust position if cookie banner is actively visible
+        const cookieBanner = document.getElementById('cookie-banner');
+        if (cookieBanner && cookieBanner.style.display !== 'none' && cookieBanner.offsetHeight > 0) {
+            const bannerHeight = cookieBanner.offsetHeight;
+            btn.style.bottom = `${bannerHeight + 16}px`;
+        } else {
+            btn.style.bottom = '';
+        }
+    };
+
+    window.addEventListener('scroll', updatePositionAndVisibility, { passive: true });
+    document.addEventListener('scroll', updatePositionAndVisibility, { passive: true });
+    window.addEventListener('resize', updatePositionAndVisibility, { passive: true });
+
+    // Initial check
+    updatePositionAndVisibility();
+
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackToTopButton);
+} else {
+    initBackToTopButton();
 }

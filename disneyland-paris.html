@@ -318,9 +318,22 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* Float Back to Top button above the sticky rater bar */
+        #back-to-top-btn {
+            bottom: 84px !important;
+            right: 24px !important;
+            z-index: 1005 !important;
+        }
+        @media (max-width: 768px) {
+            #back-to-top-btn {
+                bottom: 80px !important;
+                right: 16px !important;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="page-disneyland-paris">
     <header class="site-header">
         <div class="container">
             <div class="logo"><a href="index.html">Behind the Magic Curtain</a></div>
@@ -419,6 +432,10 @@
             <button type="button" onclick="openCommunityModal()" class="btn btn-primary" style="background:var(--color-secondary); color:#111;"><i class="fa-solid fa-cloud-arrow-up"></i> Submit Ratings</button>
         </div>
     </div>
+
+    <button id="back-to-top-btn" type="button" aria-label="Back to top" title="Back to top">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display:block;pointer-events:none;"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
 
     <!-- Community Modal -->
     <div id="community-modal" class="dlp-modal-backdrop">
