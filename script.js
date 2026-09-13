@@ -714,7 +714,7 @@ function buildWhatsOnCardHTML(s) {
                 <li><i class="fa-solid fa-calendar-days"></i> <span>${s.dates}</span></li>
                 ${s.runtime ? `<li><i class="fa-solid fa-clock"></i> <span>${s.runtime}</span></li>` : ''}
             </ul>
-            <p>${s.desc}</p>
+            <div class="listing-desc">${s.desc}</div>
             <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap;">
                 ${s.ticketLink ? `<a href="${s.ticketLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>` : ''}
                 ${s.siteLink ? `<a href="${s.siteLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>` : ''}

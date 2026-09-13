@@ -133,34 +133,80 @@ function applyBadgeLabel(tagClass) {
 }
 
 /* --- Video Embed Engine --- */
-function insertVideoEmbed() {
+// Track the last focused editor container so ribbon clicks insert at the correct location
+let lastActiveEditor = null;
+document.addEventListener('focusin', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('editor-content-area')) {
+        lastActiveEditor = e.target;
+    }
+});
+
+function parseVideoEmbedUrl(url) {
+    if (!url) return null;
+    const cleanUrl = url.trim();
+
+    // YouTube: handles watch?v=, youtu.be/, shorts/, embed/
+    const ytMatch = cleanUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+    if (ytMatch && ytMatch[1]) {
+        return `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?rel=0`;
+    }
+
+    // Vimeo: handles standard and channel URLs
+    const vimeoMatch = cleanUrl.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i);
+    if (vimeoMatch && (vimeoMatch[3] || vimeoMatch[2])) {
+        const id = vimeoMatch[3] || vimeoMatch[2];
+        return `https://player.vimeo.com/video/${id}?color=bd2419&title=0&byline=0&portrait=0`;
+    }
+
+    return null;
+}
+
+function insertVideoEmbed(triggerElement = null) {
     const url = prompt('Enter a YouTube or Vimeo URL to embed:');
     if (!url) return;
 
-    let embedUrl = '';
-    
-    // Parse YouTube URLs (handles standard watch?v= and youtu.be/ formats)
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        let videoId = '';
-        if (url.includes('v=')) {
-            videoId = url.split('v=')[1].split('&')[0];
-        } else if (url.includes('youtu.be/')) {
-            videoId = url.split('youtu.be/')[1].split('?')[0];
-        }
-        embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0`;
-    } 
-    // Parse Vimeo URLs
-    else if (url.includes('vimeo.com')) {
-        const videoId = url.split('vimeo.com/')[1].split('?')[0];
-        embedUrl = `https://player.vimeo.com/video/${videoId}?color=bd2419&title=0&byline=0&portrait=0`;
-    } 
-    else {
+    const embedUrl = parseVideoEmbedUrl(url);
+    if (!embedUrl) {
         alert('Unrecognized link format. Please provide a standard YouTube or Vimeo URL.');
         return;
     }
 
-    // Wrap the iframe in the BTMC responsive video container
-    // A
+    // Find the relevant editor container
+    let targetEditor = null;
+    if (triggerElement && triggerElement.closest) {
+        const parentContainer = triggerElement.closest('.editor-container');
+        if (parentContainer) {
+            targetEditor = parentContainer.querySelector('.editor-content-area');
+        }
+    }
+
+    if (!targetEditor && lastActiveEditor && document.body.contains(lastActiveEditor)) {
+        targetEditor = lastActiveEditor;
+    }
+
+    if (!targetEditor) {
+        const activeTab = Array.from(document.querySelectorAll('.tab-content')).find(t => t.style.display !== 'none');
+        if (activeTab) {
+            targetEditor = activeTab.querySelector('.editor-content-area');
+        }
+    }
+
+    if (!targetEditor) {
+        targetEditor = document.getElementById('wysiwyg-content');
+    }
+
+    // Responsive BTMC video container with clean fallback break
+    const videoHtml = `<div class="btmc-video-container"><iframe src="${embedUrl}" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div><p><br></p>`;
+
+    if (targetEditor) {
+        targetEditor.focus();
+        const success = document.execCommand('insertHTML', false, videoHtml);
+        if (!success) {
+            targetEditor.insertAdjacentHTML('beforeend', videoHtml);
+        }
+    } else {
+        document.execCommand('insertHTML', false, videoHtml);
+    }
 }
 
 /* --- 3. Seamless Auto-WebP Compression Engine --- */

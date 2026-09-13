@@ -1366,6 +1366,27 @@ a.clickable-card {
 /* 15. Disneyland Paris Modal Backdrops & Dialogs    */
 /* -------------------------------------------------- */
 
+.listing-desc {
+    font-size: 0.95rem;
+    color: var(--color-text);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.listing-desc p {
+    margin: 0 0 12px 0;
+}
+
+.listing-desc p:last-child {
+    margin-bottom: 0;
+}
+
+.editor-content-area .btmc-video-container {
+    max-width: 500px;
+    margin: 14px 0;
+    pointer-events: auto;
+}
+
 .dlp-modal-backdrop {
     position: fixed;
     inset: 0;
