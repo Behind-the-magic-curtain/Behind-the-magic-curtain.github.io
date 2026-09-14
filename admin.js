@@ -103,43 +103,176 @@ function showToast(msg, type = 'status-success') {
 }
 
 /* --- 2. Inline WYSIWYG Ribbon --- */
-function applyInlineFormat(command, value = null) {
- if (command === 'formatBlock') {
- const selection = window.getSelection();
- if (selection.rangeCount > 0) {
- document.execCommand('formatBlock', false, `<${value}>`);
- }
- } else {
- document.execCommand(command, false, value);
- }
-}
-
-function insertInlineLink() {
- const url = prompt('Enter web link URL (https://...):');
- if (url) {
- document.execCommand('createLink', false, url);
- }
-}
-
-function applyBadgeLabel(tagClass) {
- const selection = window.getSelection();
- if (!selection || selection.rangeCount === 0 || selection.toString().trim() === '') {
- alert('Please highlight text first to apply badge styling.');
- return;
- }
- const selectedText = selection.toString();
- const badgeHtml = `${selectedText} `;
- document.execCommand('insertHTML', false, badgeHtml);
-}
-
-/* --- Video Embed Engine --- */
-// Track the last focused editor container so ribbon clicks insert at the correct location
+// Track selection and focused editor container so ribbon controls and dropdowns insert accurately
 let lastActiveEditor = null;
+let lastActiveRange = null;
+let lastActiveSelectedText = '';
+
+function saveActiveEditorSelection() {
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        let container = range.commonAncestorContainer;
+        if (container.nodeType === Node.TEXT_NODE) container = container.parentElement;
+        const editor = container ? container.closest('.editor-content-area') : null;
+        if (editor) {
+            lastActiveEditor = editor;
+            lastActiveRange = range.cloneRange();
+            lastActiveSelectedText = sel.toString();
+        }
+    }
+}
+
+document.addEventListener('selectionchange', saveActiveEditorSelection);
+document.addEventListener('mouseup', saveActiveEditorSelection);
+document.addEventListener('keyup', saveActiveEditorSelection);
 document.addEventListener('focusin', (e) => {
     if (e.target && e.target.classList && e.target.classList.contains('editor-content-area')) {
         lastActiveEditor = e.target;
+        saveActiveEditorSelection();
     }
 });
+// Save selection on mousedown before ribbon controls (buttons or selects) take focus
+document.addEventListener('mousedown', (e) => {
+    if (e.target && e.target.closest && e.target.closest('.editor-ribbon')) {
+        saveActiveEditorSelection();
+    }
+}, true);
+
+function applyInlineFormat(command, value = null) {
+    if (command === 'formatBlock') {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            document.execCommand('formatBlock', false, `<${value}>`);
+        }
+    } else {
+        document.execCommand(command, false, value);
+    }
+}
+
+function insertInlineLink() {
+    const url = prompt('Enter web link URL (https://...):');
+    if (url) {
+        document.execCommand('createLink', false, url);
+    }
+}
+
+function applyBadgeLabel(type, triggerElement = null) {
+    if (!type) return;
+
+    // 1. Resolve target editor
+    let targetEditor = null;
+    if (triggerElement && triggerElement.closest) {
+        const parentContainer = triggerElement.closest('.editor-container');
+        if (parentContainer) {
+            targetEditor = parentContainer.querySelector('.editor-content-area');
+        }
+    }
+    if (!targetEditor && lastActiveEditor && document.body.contains(lastActiveEditor)) {
+        targetEditor = lastActiveEditor;
+    }
+    if (!targetEditor) {
+        const activeTab = Array.from(document.querySelectorAll('.tab-content')).find(t => t.style.display !== 'none');
+        if (activeTab) {
+            targetEditor = activeTab.querySelector('.editor-content-area');
+        }
+    }
+    if (!targetEditor) {
+        targetEditor = document.getElementById('wysiwyg-content');
+    }
+
+    // 2. Resolve text and range
+    let targetRange = null;
+    let selectedText = '';
+
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && sel.toString().trim() !== '') {
+        const testRange = sel.getRangeAt(0);
+        let cont = testRange.commonAncestorContainer;
+        if (cont.nodeType === Node.TEXT_NODE) cont = cont.parentElement;
+        if (cont && cont.closest && cont.closest('.editor-content-area') === targetEditor) {
+            targetRange = testRange;
+            selectedText = sel.toString().trim();
+        }
+    }
+
+    if (!selectedText && lastActiveRange && lastActiveSelectedText && lastActiveEditor === targetEditor) {
+        targetRange = lastActiveRange;
+        selectedText = lastActiveSelectedText.trim();
+    }
+
+    const isButton = type.startsWith('btn');
+
+    // If no text was highlighted, ask user for the text label
+    if (!selectedText) {
+        const promptMsg = isButton ? 'Enter button text (e.g. Book Tickets, Official Site):' : 'Enter badge text (e.g. Ages 7+, Sensory Friendly):';
+        const entered = prompt(promptMsg);
+        if (!entered || !entered.trim()) return;
+        selectedText = entered.trim();
+    }
+
+    // 3. Construct HTML
+    let snippetHtml = '';
+    if (isButton) {
+        const destUrl = prompt('Enter button destination link URL (https://...):', 'https://');
+        if (destUrl === null) return; // User cancelled prompt
+        const cleanUrl = destUrl.trim() || '#';
+        snippetHtml = `<a href="${cleanUrl}" class="btn ${type}" target="_blank" rel="noopener noreferrer">${selectedText}</a>&nbsp;`;
+    } else {
+        snippetHtml = `<span class="tag ${type}">${selectedText}</span>&nbsp;`;
+    }
+
+    // 4. Focus and insert into the target editor
+    if (targetEditor) {
+        targetEditor.focus();
+    }
+
+    if (targetRange) {
+        try {
+            targetRange.deleteContents();
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = snippetHtml;
+            const frag = document.createDocumentFragment();
+            let child, lastNode;
+            while ((child = tempDiv.firstChild)) {
+                lastNode = frag.appendChild(child);
+            }
+            targetRange.insertNode(frag);
+
+            if (lastNode) {
+                const newRange = document.createRange();
+                newRange.setStartAfter(lastNode);
+                newRange.collapse(true);
+                const currentSel = window.getSelection();
+                currentSel.removeAllRanges();
+                currentSel.addRange(newRange);
+                lastActiveRange = newRange.cloneRange();
+                lastActiveSelectedText = '';
+            }
+            return;
+        } catch (err) {
+            console.warn('Direct range insertion fallback:', err);
+        }
+    }
+
+    // Fallback: document.execCommand insertHTML
+    const success = document.execCommand('insertHTML', false, snippetHtml);
+    if (!success && targetEditor) {
+        targetEditor.innerHTML += snippetHtml;
+    }
+}
+
+function insertInlineButton(triggerElement = null) {
+    applyBadgeLabel('btn-primary', triggerElement);
+}
+
+// Global exposure for inline HTML event handlers
+window.applyInlineFormat = applyInlineFormat;
+window.insertInlineLink = insertInlineLink;
+window.applyBadgeLabel = applyBadgeLabel;
+window.insertInlineButton = insertInlineButton;
+
+/* --- Video Embed Engine --- */
 
 function parseVideoEmbedUrl(url) {
     if (!url) return null;
