@@ -102,6 +102,23 @@
     "rank": 6
   },
   {
+    "id": "wo_1788904686953",
+    "title": "Beauty and the Beast",
+    "venue": "Belgrade Theatre",
+    "region": "West Midlands",
+    "dates": "Wed 18 Nov 2026 - Sat 2 Jan 2027",
+    "expiryDate": "2027-01-02",
+    "runtime": "TBC",
+    "age": "Ages 0+",
+    "category": "panto",
+    "isTouring": false,
+    "image": "beauty-and-the-beast-belgrade.webp",
+    "desc": "<p data-path-to-node=\"5,11,1,0\">For Christmas 2026, the Belgrade presents the most enchanting tale of all, <b data-path-to-node=\"5,11,1,0\" data-index-in-node=\"75\">Beauty and the Beast</b>!&nbsp;</p><p data-path-to-node=\"5,11,1,0\">One of the most popular panto titles ever, this production is guaranteed to bring a touch of magic, mayhem and monstrous fun to your festive celebrations.</p><p data-path-to-node=\"5,11,1,3\">Written by and starring Coventry’s favourite dame, <b data-path-to-node=\"5,11,1,3\" data-index-in-node=\"52\">Iain Lauchlan</b>, Beauty and the Beast features breathtaking sets, crazy costumes, and seasonal silliness.</p><ul data-path-to-node=\"5,11,1,6\"><li><p data-path-to-node=\"5,11,1,6,0,0\"><b data-path-to-node=\"5,11,1,6,0,0\" data-index-in-node=\"0\">Accessible &amp; Special Performances:</b>&nbsp;</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Touch Tour available on Sat 5 Dec (11:30am)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Audio Described (AD) &amp; BSL on Sat 5 Dec (2pm)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Captioned (CAP) on Thu 17 Dec (6:30pm)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Captioned &amp; Relaxed Performance (CAP/RP) on Wed 30 Dec (2pm)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Lap seat tickets and free booster seats available via the box office (Booster seats limited).</p></li></ul>",
+    "ticketLink": "https://www.belgrade.co.uk/events/beauty-and-the-beast/",
+    "siteLink": "https://www.belgrade.co.uk/events/beauty-and-the-beast/",
+    "rank": 7
+  },
+  {
     "id": "wo_1787350698547",
     "title": "Dog Man: The Musical",
     "venue": "UK Tour",
@@ -116,7 +133,7 @@
     "desc": "With the head of a dog and the body of a policeman, Dog Man loves to fight crime and chew on furniture!.. Paw-sitively brilliant stage adaptation based on Dav Pilkey's worldwide bestselling Dog Man book series.",
     "ticketLink": "https://www.dogman.live/#dates",
     "siteLink": "https://www.dogman.live/",
-    "rank": 7
+    "rank": 8
   },
   {
     "id": "wo_elf",
@@ -130,7 +147,7 @@
     "desc": "“You’d have to be a cotton-headed ninny muggins” to miss Buddy the elf this festive season.",
     "ticketLink": "https://www.grandtheatre.co.uk/whats-on/elf-the-musical/",
     "siteLink": "https://elfthemusicaluk.com/",
-    "rank": 8
+    "rank": 9
   },
   {
     "id": "wo_paddington",
@@ -147,23 +164,6 @@
     "desc": "A small bear in a big city! Family-friendly stage show at London's Savoy Theatre that tells the story of a little lost bear who finds a new home with the Brown family.",
     "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
     "siteLink": "https://paddingtonthemusical.com/",
-    "rank": 9
-  },
-  {
-    "id": "wo_1788904686953",
-    "title": "Beauty and the Beast",
-    "venue": "Belgrade Theatre",
-    "region": "West Midlands",
-    "dates": "Wed 18 Nov 2026 - Sat 2 Jan 2027",
-    "expiryDate": "2027-01-02",
-    "runtime": "TBC",
-    "age": "Ages 0+",
-    "category": "panto",
-    "isTouring": false,
-    "image": "beauty-and-the-beast-belgrade.webp",
-    "desc": "<p data-path-to-node=\"5,11,1,0\">For Christmas 2026, the Belgrade presents the most enchanting tale of all, <b data-path-to-node=\"5,11,1,0\" data-index-in-node=\"75\">Beauty and the Beast</b>!&nbsp;</p><p data-path-to-node=\"5,11,1,0\">One of the most popular panto titles ever, this production is guaranteed to bring a touch of magic, mayhem and monstrous fun to your festive celebrations.</p><p data-path-to-node=\"5,11,1,3\">Written by and starring Coventry’s favourite dame, <b data-path-to-node=\"5,11,1,3\" data-index-in-node=\"52\">Iain Lauchlan</b>, Beauty and the Beast features breathtaking sets, crazy costumes, and seasonal silliness.</p><ul data-path-to-node=\"5,11,1,6\"><li><p data-path-to-node=\"5,11,1,6,0,0\"><b data-path-to-node=\"5,11,1,6,0,0\" data-index-in-node=\"0\">Accessible &amp; Special Performances:</b>&nbsp;</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Touch Tour available on Sat 5 Dec (11:30am)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Audio Described (AD) &amp; BSL on Sat 5 Dec (2pm)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Captioned (CAP) on Thu 17 Dec (6:30pm)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Captioned &amp; Relaxed Performance (CAP/RP) on Wed 30 Dec (2pm)</p></li><li><p data-path-to-node=\"5,11,1,6,0,0\">Lap seat tickets and free booster seats available via the box office (Booster seats limited).</p></li></ul>",
-    "ticketLink": "https://www.belgrade.co.uk/events/beauty-and-the-beast/",
-    "siteLink": "https://www.belgrade.co.uk/events/beauty-and-the-beast/",
     "rank": 10
   }
 ]
