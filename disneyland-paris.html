@@ -25,6 +25,24 @@
     <meta property="og:description" content="Rate attractions, customize sensory profiles, and download free printable Disneyland Paris planners.">
     <meta property="og:image" content="images/dlp-castle.webp">
     
+    <script>
+        window.saveRatingsToDevice = window.saveRatingsToDevice || function() {
+            try {
+                const raw = localStorage.getItem('btmc_user_dlp_ratings') || '{}';
+                localStorage.setItem('btmc_user_dlp_ratings', raw);
+                if (typeof showBtmcToast === 'function') {
+                    showBtmcToast("Disneyland Paris sensory ratings saved to your device!", "toast-success");
+                }
+            } catch(e) {
+                console.warn(e);
+            }
+        };
+        window.openCommunityModal = window.openCommunityModal || function() {
+            const modal = document.getElementById('community-modal');
+            if (modal) modal.style.display = 'flex';
+        };
+    </script>
+
     <style>
         .dlp-hero {
             background: linear-gradient(135deg, #005587 0%, #002244 100%);

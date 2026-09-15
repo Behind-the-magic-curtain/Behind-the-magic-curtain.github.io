@@ -11,6 +11,7 @@ let whatsonImages = [];
 let newsImages = [];
 let editMode = false;
 let currentCache = { reviews: [], whatson: [], theatres: [], news: [], disneyland: [], nav: [] };
+window.currentCache = currentCache;
 let draggedRowIndex = null;
 let toastTimeout = null;
 
@@ -55,6 +56,10 @@ function switchAdminTab(tabId, btn) {
     toggleSidebar(false);
     const mainWrap = document.querySelector('.admin-main-wrap');
     if (mainWrap) mainWrap.scrollTop = 0;
+
+    if (tabId === 'tab-newsletter' && window.initNewsletterTab) {
+        window.initNewsletterTab();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -107,6 +112,8 @@ function showToast(msg, type = 'status-success') {
 let lastActiveEditor = null;
 let lastActiveRange = null;
 let lastActiveSelectedText = '';
+let lastSavedHighlightRange = null;
+let lastSavedHighlightText = '';
 
 function saveActiveEditorSelection() {
     const sel = window.getSelection();
@@ -118,10 +125,16 @@ function saveActiveEditorSelection() {
         if (editor) {
             lastActiveEditor = editor;
             lastActiveRange = range.cloneRange();
-            lastActiveSelectedText = sel.toString();
+            const text = sel.toString();
+            if (text && text.trim() !== '') {
+                lastActiveSelectedText = text;
+                lastSavedHighlightText = text;
+                lastSavedHighlightRange = range.cloneRange();
+            }
         }
     }
 }
+window.saveActiveEditorSelection = saveActiveEditorSelection;
 
 document.addEventListener('selectionchange', saveActiveEditorSelection);
 document.addEventListener('mouseup', saveActiveEditorSelection);
@@ -157,6 +170,15 @@ function insertInlineLink() {
     }
 }
 
+function escapeHtmlSnippet(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
 function applyBadgeLabel(type, triggerElement = null) {
     if (!type) return;
 
@@ -180,6 +202,7 @@ function applyBadgeLabel(type, triggerElement = null) {
     if (!targetEditor) {
         targetEditor = document.getElementById('wysiwyg-content');
     }
+    if (!targetEditor) return;
 
     // 2. Resolve text and range
     let targetRange = null;
@@ -196,38 +219,77 @@ function applyBadgeLabel(type, triggerElement = null) {
         }
     }
 
-    if (!selectedText && lastActiveRange && lastActiveSelectedText && lastActiveEditor === targetEditor) {
-        targetRange = lastActiveRange;
-        selectedText = lastActiveSelectedText.trim();
+    if (!selectedText && lastSavedHighlightText && lastSavedHighlightRange) {
+        try {
+            if (targetEditor.contains(lastSavedHighlightRange.commonAncestorContainer)) {
+                targetRange = lastSavedHighlightRange;
+                selectedText = lastSavedHighlightText.trim();
+            }
+        } catch (e) {}
+    }
+
+    if (!selectedText && lastActiveRange && lastActiveSelectedText) {
+        try {
+            if (targetEditor.contains(lastActiveRange.commonAncestorContainer)) {
+                targetRange = lastActiveRange;
+                selectedText = lastActiveSelectedText.trim();
+            }
+        } catch (e) {}
     }
 
     const isButton = type.startsWith('btn');
 
-    // If no text was highlighted, ask user for the text label
+    // If no text was highlighted, prompt with safe fallback
     if (!selectedText) {
-        const promptMsg = isButton ? 'Enter button text (e.g. Book Tickets, Official Site):' : 'Enter badge text (e.g. Ages 7+, Sensory Friendly):';
-        const entered = prompt(promptMsg);
-        if (!entered || !entered.trim()) return;
-        selectedText = entered.trim();
+        let entered = null;
+        try {
+            const promptMsg = isButton ? 'Enter button text (e.g. Book Tickets, Official Site):' : 'Enter badge text (e.g. Ages 7+, Sensory Friendly):';
+            entered = prompt(promptMsg);
+        } catch (e) {
+            console.warn('Prompt not available or cancelled:', e);
+        }
+
+        if (entered && entered.trim()) {
+            selectedText = entered.trim();
+        } else {
+            if (isButton) {
+                selectedText = type === 'btn-primary' ? 'Book Tickets' : 'Official Site';
+            } else {
+                const defaultBadges = {
+                    'tag-age': 'Ages 7+',
+                    'tag-adhd': 'Sensory Friendly',
+                    'tag-sensory': 'Sensory Notes',
+                    'tag-touring': 'UK Tour',
+                    'tag-mature': 'Mature Themes'
+                };
+                selectedText = defaultBadges[type] || 'Label';
+            }
+        }
     }
 
     // 3. Construct HTML
     let snippetHtml = '';
     if (isButton) {
-        const destUrl = prompt('Enter button destination link URL (https://...):', 'https://');
-        if (destUrl === null) return; // User cancelled prompt
-        const cleanUrl = destUrl.trim() || '#';
-        snippetHtml = `<a href="${cleanUrl}" class="btn ${type}" target="_blank" rel="noopener noreferrer">${selectedText}</a>&nbsp;`;
+        let destUrl = 'https://';
+        try {
+            const promptedUrl = prompt('Enter button destination link URL (https://...):', 'https://');
+            if (promptedUrl !== null && promptedUrl.trim() !== '') {
+                destUrl = promptedUrl.trim();
+            }
+        } catch (e) {
+            console.warn('URL prompt not available:', e);
+        }
+        if (!destUrl || destUrl === 'https://') destUrl = '#';
+        snippetHtml = `<a href="${destUrl}" class="btn ${type}" target="_blank" rel="noopener noreferrer">${escapeHtmlSnippet(selectedText)}</a>&nbsp;`;
     } else {
-        snippetHtml = `<span class="tag ${type}">${selectedText}</span>&nbsp;`;
+        snippetHtml = `<span class="tag ${type}">${escapeHtmlSnippet(selectedText)}</span>&nbsp;`;
     }
 
     // 4. Focus and insert into the target editor
-    if (targetEditor) {
-        targetEditor.focus();
-    }
+    targetEditor.focus();
 
-    if (targetRange) {
+    let inserted = false;
+    if (targetRange && targetEditor.contains(targetRange.commonAncestorContainer)) {
         try {
             targetRange.deleteContents();
             const tempDiv = document.createElement('div');
@@ -247,19 +309,28 @@ function applyBadgeLabel(type, triggerElement = null) {
                 currentSel.removeAllRanges();
                 currentSel.addRange(newRange);
                 lastActiveRange = newRange.cloneRange();
-                lastActiveSelectedText = '';
+                lastSavedHighlightRange = null;
+                lastSavedHighlightText = '';
             }
-            return;
+            inserted = true;
         } catch (err) {
-            console.warn('Direct range insertion fallback:', err);
+            console.warn('Direct range insertion failed:', err);
         }
     }
 
-    // Fallback: document.execCommand insertHTML
-    const success = document.execCommand('insertHTML', false, snippetHtml);
-    if (!success && targetEditor) {
-        targetEditor.innerHTML += snippetHtml;
+    if (!inserted) {
+        try {
+            inserted = document.execCommand('insertHTML', false, snippetHtml);
+        } catch (e) {}
     }
+
+    if (!inserted) {
+        targetEditor.insertAdjacentHTML('beforeend', snippetHtml);
+        inserted = true;
+    }
+
+    targetEditor.dispatchEvent(new Event('input', { bubbles: true }));
+    showToast(`Inserted ${isButton ? 'Button' : 'Badge'}: "${selectedText}"`, 'status-success');
 }
 
 function insertInlineButton(triggerElement = null) {

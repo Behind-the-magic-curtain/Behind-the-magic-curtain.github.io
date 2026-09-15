@@ -4,7 +4,14 @@
  */
 
 let dlpAttractionsCache = [];
-let userCustomRatings = JSON.parse(localStorage.getItem('btmc_user_dlp_ratings') || '{}');
+let userCustomRatings = {};
+try {
+    const rawRatings = localStorage.getItem('btmc_user_dlp_ratings');
+    userCustomRatings = rawRatings ? JSON.parse(rawRatings) : {};
+} catch (e) {
+    console.warn('Could not read user ratings from localStorage:', e);
+    userCustomRatings = {};
+}
 let btmcToastTimer = null;
 
 // --- 0. BTMC Cookie Consent & Analytics Governance Manager ---
@@ -87,6 +94,26 @@ function showBtmcToast(message, type = 'toast-success', duration = 4000) {
         toast.classList.remove('show');
     }, duration);
 }
+window.showBtmcToast = showBtmcToast;
+
+function saveRatingsToDevice() {
+    try {
+        if (!userCustomRatings || typeof userCustomRatings !== 'object') {
+            userCustomRatings = {};
+        }
+        localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
+        const count = Object.keys(userCustomRatings).length;
+        if (count > 0) {
+            showBtmcToast(`Saved ${count} custom sensory rating${count === 1 ? '' : 's'} to your device!`, 'toast-success');
+        } else {
+            showBtmcToast("Disneyland Paris sensory ratings saved to your device!", 'toast-success');
+        }
+    } catch (e) {
+        console.error('Failed saving ratings to localStorage:', e);
+        showBtmcToast("Could not save ratings. Please check storage permissions.", "toast-error");
+    }
+}
+window.saveRatingsToDevice = saveRatingsToDevice;
 
 /* --- 2. Dynamic Nav Controller --- */
 async function initDynamicNavigation() {

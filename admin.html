@@ -19,12 +19,6 @@
  <link rel="stylesheet" href="style.css">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
  <style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500;600;700&family=Raleway:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <style>
         body { 
             background-color: #f4f6f9; 
             margin: 0;
@@ -318,6 +312,560 @@
             .form-grid { grid-template-columns: 1fr; }
             .form-group.full { grid-column: span 1; }
         }
+
+        /* --- Newsletter Studio Styles --- */
+        .nl-workbench-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 1080px) {
+            .nl-workbench-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .nl-preset-ribbon {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--color-border);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 24px;
+        }
+        .nl-preset-ribbon span {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--color-text-light);
+            margin-right: 4px;
+        }
+        .nl-preset-btn {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nl-preset-btn:hover {
+            background: #f1f5f9;
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        .nl-preset-btn.active {
+            background: var(--color-primary);
+            color: #ffffff;
+            border-color: var(--color-primary);
+            box-shadow: 0 2px 8px rgba(189, 36, 25, 0.25);
+            font-weight: 700;
+        }
+        .nl-preset-btn.active i {
+            color: var(--color-secondary, #ffd700);
+        }
+        .nl-flow-strip {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 20px;
+        }
+        .nl-flow-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .nl-flow-row {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .nl-flow-row:hover {
+            border-color: #cbd5e1;
+            background: #fafafa;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .nl-flow-row.active {
+            border-color: var(--color-primary);
+            background: #fff8f8;
+        }
+        .nl-flow-row-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+        .nl-flow-rank-badge {
+            background: var(--color-primary);
+            color: #ffffff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .nl-flow-icon {
+            font-size: 0.95rem;
+            color: var(--color-primary);
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .nl-flow-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .nl-flow-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .nl-flow-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .nl-flow-tag {
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 500;
+        }
+        .nl-flow-row-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .nl-flow-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .nl-flow-btn:hover:not(:disabled) {
+            background: var(--color-primary);
+            color: #ffffff;
+            border-color: var(--color-primary);
+        }
+        .nl-flow-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .nl-flow-jump-btn {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .nl-flow-jump-btn:hover {
+            color: var(--color-primary);
+            background: #ffffff;
+            border-color: var(--color-primary);
+        }
+        .nl-flow-empty {
+            padding: 20px 16px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.85rem;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+        .nl-tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 18px;
+            padding-bottom: 2px;
+        }
+        .nl-tab-item {
+            background: transparent;
+            border: none;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s;
+        }
+        .nl-tab-item:hover {
+            color: var(--color-primary);
+            background: #f8fafc;
+        }
+        .nl-tab-item.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+            background: #fff;
+        }
+        .nl-badge-count {
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+        .nl-tab-item.active .nl-badge-count {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        .nl-search-input {
+            width: 100%;
+            padding: 9px 12px;
+            font-size: 0.88rem;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .nl-search-input:focus {
+            border-color: var(--color-accent);
+        }
+        .nl-item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .nl-item-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            transition: all 0.2s ease;
+        }
+        .nl-item-card:hover {
+            border-color: #cbd5e1;
+            background: #fbfcfe;
+        }
+        .nl-item-card.selected {
+            border-color: var(--color-accent);
+            background: #f0fdfa;
+        }
+        .nl-item-drag-handle {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .nl-item-thumb {
+            width: 58px;
+            height: 58px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        .nl-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .nl-item-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 3px;
+        }
+        .nl-item-title-row strong {
+            font-size: 0.92rem;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .nl-item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        .nl-meta-pill {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 3px;
+        }
+        .nl-meta-pill.age { background: #e0f2fe; color: #0369a1; }
+        .nl-meta-pill.adhd { background: #fef3c7; color: #b45309; }
+        .nl-meta-pill.sensory { background: #ccfbf1; color: #0f766e; }
+        .nl-item-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin: 0;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .nl-item-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .nl-check-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .nl-check-wrap input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--color-primary);
+            cursor: pointer;
+        }
+        .nl-btn-hero {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 3px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nl-btn-hero:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .nl-btn-hero.active {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #b45309;
+        }
+        .nl-rating-badge {
+            color: #d97706;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        .nl-empty-state {
+            text-align: center;
+            padding: 35px 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .nl-sticky-preview {
+            position: sticky;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .nl-preview-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: #1e293b;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+        .nl-device-btns, .nl-mode-btns {
+            display: inline-flex;
+            gap: 4px;
+            background: #334155;
+            padding: 3px;
+            border-radius: 6px;
+        }
+        .nl-tool-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .nl-tool-btn:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+        .nl-tool-btn.active {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        .nl-preview-frame-container {
+            background: #cbd5e1;
+            border: 1.5px solid #1e293b;
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            padding: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 580px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        #nl-preview-frame {
+            background: #fff;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            height: 720px;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+        .nl-export-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .nl-btn-export {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 14px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .nl-btn-export.primary {
+            background: var(--color-primary);
+            color: #fff;
+        }
+        .nl-btn-export.primary:hover {
+            background: #941c13;
+        }
+        .nl-btn-export.accent {
+            background: var(--color-accent);
+            color: #fff;
+        }
+        .nl-btn-export.accent:hover {
+            background: #006064;
+        }
+        .nl-btn-export.secondary {
+            background: #fff;
+            color: #334155;
+            border: 1.5px solid #cbd5e1;
+        }
+        .nl-btn-export.secondary:hover {
+            background: #f1f5f9;
+        }
+        .nl-token-pill {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .nl-token-pill:hover {
+            background: #e2e8f0;
+            border-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+        .nl-component-pane {
+            display: none;
+        }
+        .nl-component-pane.active {
+            display: block;
+        }
+        /* Ribbon badge & button selector styling */
+        .editor-ribbon select.ribbon-badge-select {
+            background-color: #f0fdf4;
+            border: 1.5px solid #059669;
+            color: #065f46;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        .editor-ribbon select.ribbon-badge-select:hover,
+        .editor-ribbon select.ribbon-badge-select:focus {
+            background-color: #d1fae5;
+            border-color: #047857;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -345,6 +893,7 @@
                 <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-theatres', this)"><i class="fa-solid fa-landmark"></i> Theatre Guide</button></li>
                 <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-news', this)"><i class="fa-solid fa-newspaper"></i> News Stories</button></li>
                 <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-disneyland', this)"><i class="fa-solid fa-wand-magic-sparkles"></i> Disneyland Paris</button></li>
+                <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-newsletter', this)"><i class="fa-solid fa-paper-plane"></i> Newsletter</button></li>
                 <li><button type="button" class="tab-btn" onclick="switchAdminTab('tab-navigation', this)"><i class="fa-solid fa-bars"></i> Nav Switchboard</button></li>
             </ul>
             <div class="sidebar-footer">
@@ -426,7 +975,7 @@
                                                 <option value="h2">Heading 2 (Brand Red)</option>
                                                 <option value="h3">Heading 3 (Subheading)</option>
                                             </select>
-                                            <select onchange="applyBadgeLabel(this.value, this); this.selectedIndex=0;">
+                                            <select class="ribbon-badge-select" onmousedown="saveActiveEditorSelection()" onchange="applyBadgeLabel(this.value, this); this.selectedIndex=0;">
                                                 <option value="" disabled selected>🏷️ Insert Badge / Button</option>
                                                 <optgroup label="Badges & Labels">
                                                     <option value="tag-age">Age / General (Plum)</option>
@@ -706,7 +1255,7 @@
                                                 <option value="h2">Heading 2 (Brand Red)</option>
                                                 <option value="h3">Heading 3 (Subheading)</option>
                                             </select>
-                                            <select onchange="applyBadgeLabel(this.value, this); this.selectedIndex=0;">
+                                            <select class="ribbon-badge-select" onmousedown="saveActiveEditorSelection()" onchange="applyBadgeLabel(this.value, this); this.selectedIndex=0;">
                                                 <option value="" disabled selected>🏷️ Insert Badge / Button</option>
                                                 <optgroup label="Badges & Labels">
                                                     <option value="tag-age">Age / General (Plum)</option>
@@ -835,6 +1384,300 @@
                     </div>
                 </section>
 
+                <!-- Tab: Newsletter Studio & Email Compiler -->
+                <section id="tab-newsletter" class="tab-content" style="display:none;">
+                    <div class="admin-card" style="margin-bottom: 20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+                            <div>
+                                <h2 style="margin:0 0 6px 0; border-bottom:none; padding-bottom:0;"><i class="fa-solid fa-paper-plane" style="color:var(--color-primary); margin-right:8px;"></i> Newsletter Studio</h2>
+                                <p style="margin:0; color:var(--color-text-light); font-size:0.92rem;">
+                                    Assemble responsive, inline-styled HTML email campaigns using live website content. Optimized for HubSpot, Google Workspace Mail Merge, or any ESP.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Presets Bar -->
+                        <div class="nl-preset-ribbon" style="margin-top: 18px; margin-bottom: 0;">
+                            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Presets:</span>
+                            <button type="button" class="nl-preset-btn active" id="btn-preset-digest" onclick="applyPreset('digest')"><i class="fa-solid fa-star"></i> Monthly Family Digest</button>
+                            <button type="button" class="nl-preset-btn" id="btn-preset-sensory" onclick="applyPreset('sensory')"><i class="fa-solid fa-universal-access"></i> Sensory Guide Special</button>
+                            <button type="button" class="nl-preset-btn" id="btn-preset-whatson" onclick="applyPreset('whatson')"><i class="fa-solid fa-calendar-days"></i> What's On Stage</button>
+                            <button type="button" class="nl-preset-btn" id="btn-preset-disneyland" onclick="applyPreset('disneyland')"><i class="fa-solid fa-wand-magic-sparkles"></i> Disneyland Paris Dispatch</button>
+                            <button type="button" class="nl-preset-btn" id="btn-preset-clear" onclick="applyPreset('clear')" style="color:#ef4444;"><i class="fa-solid fa-rotate-left"></i> Clear All</button>
+                        </div>
+                    </div>
+
+                    <!-- Workbench 2-Column Grid -->
+                    <div class="nl-workbench-grid">
+                        
+                        <!-- Left Column: Settings & Content Pickers -->
+                        <div class="nl-workbench-left">
+                            
+                            <!-- Card 1: Campaign Metadata & Intro -->
+                            <div class="admin-card">
+                                <h2>1. Campaign &amp; Header Settings</h2>
+                                
+                                <div class="form-group full">
+                                    <label for="nl-subject">Email Subject Line</label>
+                                    <div style="display:flex; gap:8px;">
+                                        <input type="text" id="nl-subject" oninput="handleNlInputChange('subject', this.value)" placeholder="e.g. ✨ Behind the Magic Curtain: New Reviews & What's On">
+                                        <button type="button" class="btn btn-secondary" onclick="copySubjectLine()" style="white-space:nowrap; padding:8px 14px; font-size:0.85rem;"><i class="fa-regular fa-copy"></i> Copy</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full">
+                                    <label for="nl-preheader">Preheader Preview Text <span style="font-weight:normal; color:#64748b; font-size:0.8rem;">(Shown in user's inbox line)</span></label>
+                                    <input type="text" id="nl-preheader" oninput="handleNlInputChange('preheader', this.value)" placeholder="e.g. Discover our latest sensory-friendly reviews and upcoming stage dates...">
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="nl-platform">Platform / Mail Merge Format</label>
+                                        <select id="nl-platform" onchange="handleNlInputChange('platform', this.value)">
+                                            <option value="hubspot">HubSpot ({{ contact.firstname }})</option>
+                                            <option value="google">Google Workspace / Gmail Mail Merge ({{First Name}})</option>
+                                            <option value="generic">Generic / Clean ("Dear Friends")</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-theme">Design Color Theme</label>
+                                        <select id="nl-theme" onchange="handleNlInputChange('theme', this.value)">
+                                            <option value="btmc-crimson">Signature Burgundy &amp; Teal</option>
+                                            <option value="sensory-teal">Sensory Calm (Teal &amp; Navy)</option>
+                                            <option value="editorial-dark">Editorial Slate &amp; Gold</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-issue-tag">Issue / Edition Tag</label>
+                                        <input type="text" id="nl-issue-tag" oninput="handleNlInputChange('issueTag', this.value)" placeholder="e.g. Issue #14 • Autumn / Festive Guide">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-base-url">Website Base URL</label>
+                                        <input type="url" id="nl-base-url" oninput="handleNlInputChange('baseUrl', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-header-title">Header Title</label>
+                                        <input type="text" id="nl-header-title" oninput="handleNlInputChange('headerTitle', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-header-subtitle">Header Tagline</label>
+                                        <input type="text" id="nl-header-subtitle" oninput="handleNlInputChange('headerSubtitle', this.value)">
+                                    </div>
+                                </div>
+
+                                <div class="form-group full" style="margin-top:10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                        <label for="nl-intro-note" style="margin:0;">Welcome Letter / Editorial Note</label>
+                                        <div style="display:flex; gap:6px;">
+                                            <button type="button" class="nl-token-pill" onclick="insertNlToken('name')" title="Insert recipient name token"><i class="fa-solid fa-user-tag"></i> + Name Token</button>
+                                            <button type="button" class="nl-token-pill" onclick="insertNlToken('email')" title="Insert recipient email token"><i class="fa-solid fa-at"></i> + Email Token</button>
+                                        </div>
+                                    </div>
+                                    <textarea id="nl-intro-note" rows="4" oninput="handleNlInputChange('introNote', this.value)" placeholder="Write your introductory note here..."></textarea>
+                                    <div id="nl-platform-hint" style="font-size:0.8rem; color:#64748b; margin-top:4px;">
+                                        <strong>HubSpot mode:</strong> Uses <code>{{ contact.firstname | default('Theatre Friend') }}</code> and <code>{{ unsubscribe_link }}</code>.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Live Content Component Pickers -->
+                            <div class="admin-card">
+                                <h2>2. Select Content Components</h2>
+                                <p style="color:var(--color-text-light); font-size:0.88rem; margin-top:-12px; margin-bottom:14px;">
+                                    Choose which items to include in this edition. Selecting a preset directly updates surfaced components and their priority order.
+                                </p>
+
+                                <!-- Component Flow & Priority Box (Vertically Stacked) -->
+                                <div class="nl-flow-strip" id="nl-flow-strip">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <span style="font-size:0.82rem; font-weight:700; color:var(--color-primary); text-transform:uppercase; letter-spacing:0.5px;">
+                                                <i class="fa-solid fa-arrow-down-short-wide"></i> Section Flow &amp; Priority
+                                            </span>
+                                            <span id="nl-flow-count-label" style="font-size:0.75rem; color:#64748b; font-weight:600;">(0 active sections)</span>
+                                        </div>
+                                        <span style="font-size:0.74rem; color:#64748b; font-weight:600;" id="nl-preset-status-label">Preset: Monthly Family Digest</span>
+                                    </div>
+                                    <p style="font-size:0.78rem; color:#64748b; margin:0 0 10px 0; line-height:1.4;">
+                                        Sections are delivered in the top-to-bottom order below. Only sections with selected content appear in this list. When content is added to a category, it appends at the bottom of priority and can be moved up or down.
+                                    </p>
+                                    <div class="nl-flow-list" id="nl-flow-list">
+                                        <!-- Vertically stacked list populated dynamically -->
+                                    </div>
+                                </div>
+
+                                <!-- Component Picker Subnav Tabs -->
+                                <div class="nl-tab-nav" id="nl-tab-nav">
+                                    <button type="button" class="nl-tab-item active" id="nl-tab-btn-reviews" onclick="switchNlPickerTab('reviews', this)">
+                                        <i class="fa-solid fa-star"></i> Reviews <span class="nl-badge-count" id="badge-count-reviews">0</span>
+                                    </button>
+                                    <button type="button" class="nl-tab-item" id="nl-tab-btn-whatson" onclick="switchNlPickerTab('whatson', this)">
+                                        <i class="fa-solid fa-calendar-days"></i> What's On <span class="nl-badge-count" id="badge-count-whatson">0</span>
+                                    </button>
+                                    <button type="button" class="nl-tab-item" id="nl-tab-btn-theatres" onclick="switchNlPickerTab('theatres', this)">
+                                        <i class="fa-solid fa-landmark"></i> Theatres <span class="nl-badge-count" id="badge-count-theatres">0</span>
+                                    </button>
+                                    <button type="button" class="nl-tab-item" id="nl-tab-btn-news" onclick="switchNlPickerTab('news', this)">
+                                        <i class="fa-solid fa-newspaper"></i> News Stories <span class="nl-badge-count" id="badge-count-news">0</span>
+                                    </button>
+                                    <button type="button" class="nl-tab-item" id="nl-tab-btn-disneyland" onclick="switchNlPickerTab('disneyland', this)">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> Disneyland <span class="nl-badge-count" id="badge-count-disneyland">0</span>
+                                    </button>
+                                </div>
+
+                                <!-- Tab Pane 1: Reviews -->
+                                <div id="nl-pane-reviews" class="nl-component-pane active">
+                                    <input type="text" id="nl-search-reviews" class="nl-search-input" placeholder="Search reviews by show title or keyword..." oninput="filterPicker('reviews', this.value)">
+                                    <div id="nl-reviews-list" class="nl-item-list"></div>
+                                </div>
+
+                                <!-- Tab Pane 2: What's On -->
+                                <div id="nl-pane-whatson" class="nl-component-pane">
+                                    <input type="text" id="nl-search-whatson" class="nl-search-input" placeholder="Search shows by title, venue, or dates..." oninput="filterPicker('whatson', this.value)">
+                                    <div id="nl-whatson-list" class="nl-item-list"></div>
+                                </div>
+
+                                <!-- Tab Pane 3: Theatre Guide -->
+                                <div id="nl-pane-theatres" class="nl-component-pane">
+                                    <input type="text" id="nl-search-theatres" class="nl-search-input" placeholder="Search theatres by venue name or location..." oninput="filterPicker('theatres', this.value)">
+                                    <div id="nl-theatres-list" class="nl-item-list"></div>
+                                </div>
+
+                                <!-- Tab Pane 4: News Stories -->
+                                <div id="nl-pane-news" class="nl-component-pane">
+                                    <input type="text" id="nl-search-news" class="nl-search-input" placeholder="Search news stories by headline..." oninput="filterPicker('news', this.value)">
+                                    <div id="nl-news-list" class="nl-item-list"></div>
+                                </div>
+
+                                <!-- Tab Pane 5: Disneyland Paris -->
+                                <div id="nl-pane-disneyland" class="nl-component-pane">
+                                    <input type="text" id="nl-search-disneyland" class="nl-search-input" placeholder="Search attractions by name, land, or sensory note..." oninput="filterPicker('disneyland', this.value)">
+                                    <div id="nl-disneyland-list" class="nl-item-list"></div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Highlighted Callout Banner -->
+                            <div class="admin-card" id="nl-card-callout">
+                                <h2>3. Highlighted Callout Banner</h2>
+
+                                <div class="form-group full">
+                                    <label class="toggle-badge-control" style="margin-bottom:12px;">
+                                        <input type="checkbox" id="nl-show-callout" onchange="handleNlInputChange('showCallout', this.checked)">
+                                        <span>Include Highlighted Callout Banner</span>
+                                    </label>
+                                </div>
+
+                                <div class="form-grid" id="nl-callout-fields">
+                                    <div class="form-group full">
+                                        <label for="nl-callout-title">Callout Headline</label>
+                                        <input type="text" id="nl-callout-title" oninput="handleNlInputChange('calloutTitle', this.value)">
+                                    </div>
+                                    <div class="form-group full">
+                                        <label for="nl-callout-text">Callout Message</label>
+                                        <textarea id="nl-callout-text" rows="2" oninput="handleNlInputChange('calloutText', this.value)"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-callout-btn-text">Button Text</label>
+                                        <input type="text" id="nl-callout-btn-text" oninput="handleNlInputChange('calloutBtnText', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-callout-btn-url">Button URL</label>
+                                        <input type="url" id="nl-callout-btn-url" oninput="handleNlInputChange('calloutBtnUrl', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 4: Closing Note -->
+                            <div class="admin-card" id="nl-card-closing">
+                                <h2>4. Closing Note</h2>
+                                <p style="color:var(--color-text-light); font-size:0.88rem; margin-top:-12px; margin-bottom:14px;">
+                                    This closing note displays above your editorial sign-off, remaining active even if the callout banner is toggled off.
+                                </p>
+                                <div class="form-group full">
+                                    <label for="nl-closing-note">Closing Note</label>
+                                    <textarea id="nl-closing-note" rows="3" oninput="handleNlInputChange('closingNote', this.value)"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Card 5: Sign-Off -->
+                            <div class="admin-card" id="nl-card-signoff">
+                                <h2>5. Sign-Off</h2>
+                                <p style="color:var(--color-text-light); font-size:0.88rem; margin-top:-12px; margin-bottom:14px;">
+                                    Editorial signature details appearing at the bottom of every dispatch.
+                                </p>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="nl-signoff-name">Sign-Off Name</label>
+                                        <input type="text" id="nl-signoff-name" oninput="handleNlInputChange('signoffName', this.value)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="nl-signoff-title">Sign-Off Subtitle / Role</label>
+                                        <input type="text" id="nl-signoff-title" oninput="handleNlInputChange('signoffTitle', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Sticky Interactive Live Preview & Export Toolbar -->
+                        <div class="nl-workbench-right">
+                            <div class="nl-sticky-preview">
+                                
+                                <div class="nl-preview-toolbar">
+                                    <div class="nl-device-btns">
+                                        <button type="button" class="nl-tool-btn active" id="btn-prev-desktop" onclick="setPreviewDevice('desktop')" title="Desktop View (600px)"><i class="fa-solid fa-desktop"></i> Desktop</button>
+                                        <button type="button" class="nl-tool-btn" id="btn-prev-mobile" onclick="setPreviewDevice('mobile')" title="Mobile View (375px)"><i class="fa-solid fa-mobile-screen"></i> Mobile</button>
+                                    </div>
+                                    <div class="nl-mode-btns">
+                                        <button type="button" class="nl-tool-btn active" id="btn-mode-visual" onclick="setPreviewMode('visual')"><i class="fa-solid fa-eye"></i> Visual</button>
+                                        <button type="button" class="nl-tool-btn" id="btn-mode-code" onclick="setPreviewMode('code')"><i class="fa-solid fa-code"></i> HTML Code</button>
+                                    </div>
+                                </div>
+
+                                <!-- Visual Preview Iframe -->
+                                <div class="nl-preview-frame-container" id="nl-visual-preview-wrap">
+                                    <iframe id="nl-preview-frame" title="Live Newsletter Email Preview"></iframe>
+                                </div>
+
+                                <!-- Raw HTML Code View -->
+                                <div id="nl-code-preview-wrap" style="display:none; background:#1e293b; padding:14px; border-radius: 0 0 var(--radius-md) var(--radius-md);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                        <span style="color:#94a3b8; font-size:0.8rem; font-weight:600;"><i class="fa-solid fa-file-code"></i> Ready for HubSpot HTML Module or Email Service</span>
+                                        <button type="button" class="btn btn-secondary" onclick="copyNewsletterHtml()" style="padding:4px 10px; font-size:0.75rem;"><i class="fa-regular fa-copy"></i> Copy Code</button>
+                                    </div>
+                                    <textarea id="nl-raw-code-output" readonly style="width:100%; height:620px; box-sizing:border-box; background:#0f172a; color:#7dd3fc; font-family:monospace; font-size:0.8rem; line-height:1.5; border:1px solid #334155; border-radius:6px; padding:12px; outline:none;"></textarea>
+                                </div>
+
+                                <!-- Action / Export Buttons -->
+                                <div class="nl-export-actions">
+                                    <button type="button" class="nl-btn-export primary" onclick="copyNewsletterHtml()" title="Copy raw HTML for HubSpot or HTML email builder">
+                                        <i class="fa-solid fa-code"></i> Copy Clean HTML (HubSpot)
+                                    </button>
+                                    <button type="button" class="nl-btn-export accent" onclick="copyNewsletterRichText()" title="Copy rich formatted email to paste directly into Gmail or WYSIWYG">
+                                        <i class="fa-solid fa-paste"></i> Copy Formatted (Gmail / Rich Text)
+                                    </button>
+                                    <button type="button" class="nl-btn-export secondary" onclick="downloadNewsletterHtml()" title="Download standalone .html email file">
+                                        <i class="fa-solid fa-download"></i> Download .html
+                                    </button>
+                                    <button type="button" class="nl-btn-export secondary" onclick="openNewsletterPreviewTab()" title="Open preview in new browser tab">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> New Tab
+                                    </button>
+                                </div>
+
+                                <div style="background:#fff; border:1px solid var(--color-border); border-radius:var(--radius-sm); padding:12px 16px; font-size:0.82rem; color:#64748b; line-height:1.5;">
+                                    <strong style="color:#334155;"><i class="fa-solid fa-lightbulb" style="color:var(--color-secondary);"></i> Quick Tips:</strong>
+                                    <ul style="margin:6px 0 0 0; padding-left:18px;">
+                                        <li><strong>HubSpot:</strong> Click <em>Copy Clean HTML</em> and paste into an HTML / Code email module.</li>
+                                        <li><strong>Google Workspace:</strong> Click <em>Copy Formatted</em>, open a Gmail compose window, and press <code>Ctrl+V</code> / <code>Cmd+V</code>.</li>
+                                        <li>All production photos and reviews link to live pages on your domain.</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
                 <!-- Tab 6: Navigation Switchboard -->
                 <section id="tab-navigation" class="tab-content" style="display:none;">
                     <div class="admin-card">
@@ -864,5 +1707,6 @@
 
     <div id="status-toast"></div>
     <script src="admin.js"></script>
+    <script src="newsletter.js"></script>
 </body>
 </html>
