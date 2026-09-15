@@ -729,7 +729,7 @@ function buildWhatsOnCardHTML(s) {
         </div>
         <div class="listing-content">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-                <h3 style="margin:0;">${s.title}</h3>
+                <h3 class="listing-title" style="margin:0;">${s.title}</h3>
                 ${s.isTouring ? '<span class="tag tag-touring"><i class="fa-solid fa-route"></i> UK Tour</span>' : ''}
             </div>
             <div class="card-tags" style="margin:8px 0 12px 0;">

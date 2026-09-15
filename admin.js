@@ -152,11 +152,190 @@ document.addEventListener('mousedown', (e) => {
     }
 }, true);
 
+function cleanEditorBlockElement(blockEl) {
+    if (!blockEl) return;
+    // Strip inline font-family, font-size, and color overrides so class styles apply uniformly
+    blockEl.style.removeProperty('font-family');
+    blockEl.style.removeProperty('font-size');
+    blockEl.style.removeProperty('color');
+    blockEl.style.removeProperty('line-height');
+    blockEl.style.removeProperty('margin-top');
+    blockEl.style.removeProperty('margin-bottom');
+    if (blockEl.getAttribute('style') === '') blockEl.removeAttribute('style');
+
+    // Remove any leading or trailing <br> elements or empty text nodes inside the heading
+    while (blockEl.firstChild && (blockEl.firstChild.nodeName === 'BR' || (blockEl.firstChild.nodeType === 3 && !blockEl.firstChild.textContent.trim()))) {
+        blockEl.removeChild(blockEl.firstChild);
+    }
+    while (blockEl.lastChild && (blockEl.lastChild.nodeName === 'BR' || (blockEl.lastChild.nodeType === 3 && !blockEl.lastChild.textContent.trim()))) {
+        blockEl.removeChild(blockEl.lastChild);
+    }
+
+    // Clean child nodes inside the heading
+    const children = Array.from(blockEl.querySelectorAll('*'));
+    children.forEach(el => {
+        el.style.removeProperty('font-family');
+        el.style.removeProperty('font-size');
+        el.style.removeProperty('color');
+        el.style.removeProperty('line-height');
+        el.style.removeProperty('background-color');
+        if (el.getAttribute('style') === '') el.removeAttribute('style');
+
+        // If span or font has no attributes, unwrap it
+        if ((el.tagName === 'SPAN' || el.tagName === 'FONT') && el.attributes.length === 0) {
+            const parent = el.parentNode;
+            if (parent) {
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el);
+            }
+        }
+    });
+
+    // If the entire heading is wrapped in a single <b> or <strong>, unwrap it since <h3> is already bold
+    if (blockEl.tagName === 'H3' || blockEl.tagName === 'H2') {
+        if (blockEl.childNodes.length === 1 && (blockEl.firstChild.nodeName === 'B' || blockEl.firstChild.nodeName === 'STRONG')) {
+            const inner = blockEl.firstChild;
+            while (inner.firstChild) blockEl.insertBefore(inner.firstChild, inner);
+            blockEl.removeChild(inner);
+        }
+    }
+}
+
+function sanitizeEditorHtml(html) {
+    if (!html || typeof html !== 'string') return '';
+    
+    const div = document.createElement('div');
+    div.innerHTML = html.trim();
+
+    // 1. Remove scraping/framework junk elements
+    const junkSelectors = [
+        'sources-carousel-inline',
+        'source-inline-chip',
+        'source-footnote',
+        'sup.superscript'
+    ];
+    junkSelectors.forEach(sel => {
+        div.querySelectorAll(sel).forEach(el => el.remove());
+    });
+
+    // 2. Remove Google/Angular attributes and junk styles
+    const allElements = div.querySelectorAll('*');
+    allElements.forEach(el => {
+        const attrsToRemove = [];
+        for (let i = 0; i < el.attributes.length; i++) {
+            const attrName = el.attributes[i].name;
+            if (
+                attrName.startsWith('data-path-to-node') ||
+                attrName.startsWith('data-index-in-node') ||
+                attrName.startsWith('ng-') ||
+                attrName.startsWith('_ng') ||
+                attrName === 'ng-version' ||
+                (attrName === 'id' && el.id.startsWith('p-rc_'))
+            ) {
+                attrsToRemove.push(attrName);
+            }
+        }
+        attrsToRemove.forEach(a => el.removeAttribute(a));
+
+        // Clean font overrides from style attribute
+        if (el.hasAttribute('style')) {
+            el.style.removeProperty('font-family');
+            el.style.removeProperty('font-size');
+            el.style.removeProperty('line-height');
+            if (el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'P' || el.tagName === 'LI') {
+                el.style.removeProperty('color');
+            }
+            if (!el.getAttribute('style') || el.getAttribute('style').trim() === '') {
+                el.removeAttribute('style');
+            }
+        }
+
+        // Unwrap deprecated <font> tags
+        if (el.tagName === 'FONT') {
+            const parent = el.parentNode;
+            if (parent) {
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el);
+            }
+            return;
+        }
+
+        // Unwrap span tags with no attributes
+        if (el.tagName === 'SPAN' && el.attributes.length === 0) {
+            const parent = el.parentNode;
+            if (parent) {
+                while (el.firstChild) parent.insertBefore(el.firstChild, el);
+                parent.removeChild(el);
+            }
+            return;
+        }
+
+        // Clean heading internal junk
+        if (el.tagName === 'H2' || el.tagName === 'H3') {
+            while (el.firstChild && (el.firstChild.nodeName === 'BR' || (el.firstChild.nodeType === 3 && !el.firstChild.textContent.trim()))) {
+                el.removeChild(el.firstChild);
+            }
+            while (el.lastChild && (el.lastChild.nodeName === 'BR' || (el.lastChild.nodeType === 3 && !el.lastChild.textContent.trim()))) {
+                el.removeChild(el.lastChild);
+            }
+            if (el.childNodes.length === 1 && (el.firstChild.nodeName === 'B' || el.firstChild.nodeName === 'STRONG')) {
+                const inner = el.firstChild;
+                while (inner.firstChild) el.insertBefore(inner.firstChild, inner);
+                el.removeChild(inner);
+            }
+        }
+    });
+
+    // 3. Remove completely empty headings
+    div.querySelectorAll('h1, h2, h3, h4').forEach(h => {
+        if (!h.textContent.trim()) {
+            h.remove();
+        }
+    });
+
+    // 4. Clean up redundant empty container divs/paragraphs directly adjacent to headings
+    div.querySelectorAll('div, p').forEach(p => {
+        if (!p.textContent.trim() && p.querySelectorAll('img, iframe, video').length === 0) {
+            const prev = p.previousElementSibling;
+            const next = p.nextElementSibling;
+            if ((prev && /^H[1-6]$/.test(prev.tagName)) || (next && /^H[1-6]$/.test(next.tagName))) {
+                p.remove();
+            }
+        }
+    });
+
+    return div.innerHTML.trim();
+}
+
+// Global paste listener for editor content areas to sanitize external clipboard markup
+document.addEventListener('paste', (e) => {
+    const editor = e.target && e.target.closest ? e.target.closest('.editor-content-area') : null;
+    if (!editor) return;
+
+    const htmlData = e.clipboardData ? e.clipboardData.getData('text/html') : '';
+    if (htmlData) {
+        e.preventDefault();
+        const clean = sanitizeEditorHtml(htmlData);
+        document.execCommand('insertHTML', false, clean);
+    }
+});
+
 function applyInlineFormat(command, value = null) {
     if (command === 'formatBlock') {
         const selection = window.getSelection();
         if (selection.rangeCount > 0) {
             document.execCommand('formatBlock', false, `<${value}>`);
+            try {
+                const range = selection.getRangeAt(0);
+                let node = range.commonAncestorContainer;
+                if (node && node.nodeType === 3) node = node.parentElement;
+                const blockEl = node && node.closest ? node.closest(value) : null;
+                if (blockEl) {
+                    cleanEditorBlockElement(blockEl);
+                }
+            } catch (err) {
+                console.warn('Formatting cleanup notice:', err);
+            }
         }
     } else {
         document.execCommand(command, false, value);
@@ -736,8 +915,8 @@ async function handleReviewSubmit() {
             galleryImages: carouselImages,
             altText: document.getElementById('rev-image-alt').value.trim() || title,
             summary: document.getElementById('rev-summary').value.trim(),
-            bodyHtml: document.getElementById('wysiwyg-content').innerHTML,
-            tipsHtml: tipsHtmlContent,
+            bodyHtml: sanitizeEditorHtml(document.getElementById('wysiwyg-content').innerHTML),
+            tipsHtml: sanitizeEditorHtml(tipsHtmlContent),
             rank: existingItem ? (Number(existingItem.rank) || 1) : (reviews.length + 1),
             status: isPublished ? 'published' : 'draft'
         };
@@ -788,8 +967,8 @@ async function handleNewsSubmit() {
             category: document.getElementById('news-category').value.trim(),
             author: document.getElementById('news-author').value.trim() || 'Katy Rose Meaney',
             summary: document.getElementById('news-summary').value.trim(),
-            bodyHtml: document.getElementById('news-body-wysiwyg').innerHTML,
-            detailsHtml: document.getElementById('news-details-wysiwyg').innerHTML,
+            bodyHtml: sanitizeEditorHtml(document.getElementById('news-body-wysiwyg').innerHTML),
+            detailsHtml: sanitizeEditorHtml(document.getElementById('news-details-wysiwyg').innerHTML),
             mainImage: primaryImage,
             galleryImages: carouselImages,
             datePublished: existing ? existing.datePublished : nowIso,
@@ -844,7 +1023,7 @@ async function handleWhatsOnSubmit() {
             category: document.getElementById('wo-category').value,
             isTouring: document.getElementById('wo-is-touring').checked,
             image: primaryImage,
-            desc: document.getElementById('wo-desc-wysiwyg').innerHTML,
+            desc: sanitizeEditorHtml(document.getElementById('wo-desc-wysiwyg').innerHTML),
             ticketLink: document.getElementById('wo-ticket-link').value.trim(),
             siteLink: document.getElementById('wo-site-link').value.trim(),
             rank: editId ? (shows.find(w => w.id === editId)?.rank || 1) : shows.length + 1
@@ -886,8 +1065,8 @@ async function handleTheatreSubmit() {
             location: document.getElementById('th-location').value.trim(),
             image: primaryImage,
             website: document.getElementById('th-website').value.trim(),
-            accessibility: document.getElementById('th-access-wysiwyg').innerHTML,
-            relaxed: document.getElementById('th-relaxed-wysiwyg').innerHTML,
+            accessibility: sanitizeEditorHtml(document.getElementById('th-access-wysiwyg').innerHTML),
+            relaxed: sanitizeEditorHtml(document.getElementById('th-relaxed-wysiwyg').innerHTML),
             rank: editId ? (theatres.find(t => t.id === editId)?.rank || 1) : theatres.length + 1
         };
 
