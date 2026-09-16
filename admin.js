@@ -719,8 +719,15 @@ function enterEditReview(id) {
         document.getElementById('rev-tips-wysiwyg').innerHTML = '';
     }
 
-    document.getElementById('rev-published').checked = item.status === 'published';
-    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Review';
+    const isDraft = item.status === 'draft';
+    document.getElementById('rev-published').checked = !isDraft;
+    document.getElementById('rev-submit-btn').innerHTML = isDraft 
+        ? '<i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish Live' 
+        : '<i class="fa-solid fa-floppy-disk"></i> Overwrite Review';
+    const revDraftBtn = document.getElementById('rev-draft-btn');
+    if (revDraftBtn) {
+        revDraftBtn.innerHTML = isDraft ? '<i class="fa-solid fa-file-pen"></i> Update Draft' : '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+    }
 
     reviewImages = [];
     if (item.mainImage) reviewImages.push({ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` });
@@ -750,6 +757,18 @@ function enterEditWhatsOn(id) {
     document.getElementById('wo-age').value = item.age || 'Ages 4+';
     document.getElementById('wo-category').value = item.category || 'theatre';
     document.getElementById('wo-is-touring').checked = !!item.isTouring;
+
+    // Accessibility filter tags
+    const descLower = (item.desc || '').toLowerCase();
+    const relaxedCb = document.getElementById('wo-tag-relaxed');
+    const bslCb = document.getElementById('wo-tag-bsl');
+    const capCb = document.getElementById('wo-tag-captioned');
+    const audioCb = document.getElementById('wo-tag-audio');
+    if (relaxedCb) relaxedCb.checked = !!(item.tags?.relaxed || item.hasRelaxed || descLower.includes('relaxed'));
+    if (bslCb) bslCb.checked = !!(item.tags?.bsl || descLower.includes('bsl'));
+    if (capCb) capCb.checked = !!(item.tags?.captioned || descLower.includes('captioned'));
+    if (audioCb) audioCb.checked = !!(item.tags?.audioDescribed || descLower.includes('audio described'));
+
     document.getElementById('wo-desc-wysiwyg').innerHTML = item.desc || '';
     document.getElementById('wo-ticket-link').value = item.ticketLink || '';
     document.getElementById('wo-site-link').value = item.siteLink || '';
@@ -801,8 +820,15 @@ function enterEditNews(id) {
     document.getElementById('news-summary').value = item.summary || '';
     document.getElementById('news-body-wysiwyg').innerHTML = item.bodyHtml || '';
     document.getElementById('news-details-wysiwyg').innerHTML = item.detailsHtml || '';
-    document.getElementById('news-published').checked = item.status === 'published';
-    document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story';
+    const isDraft = item.status === 'draft';
+    document.getElementById('news-published').checked = !isDraft;
+    document.getElementById('news-submit-btn').innerHTML = isDraft 
+        ? '<i class="fa-solid fa-cloud-arrow-up"></i> Publish Live' 
+        : '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story';
+    const newsDraftBtn = document.getElementById('news-draft-btn');
+    if (newsDraftBtn) {
+        newsDraftBtn.innerHTML = isDraft ? '<i class="fa-solid fa-file-pen"></i> Update Draft' : '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+    }
 
     newsImages = [];
     if (item.mainImage) newsImages.push({ base64: null, name: item.mainImage, preview: `images/${item.mainImage}` });
@@ -849,10 +875,21 @@ function cancelEditMode() {
     document.getElementById('news-edit-id').value = '';
     document.getElementById('dlp-edit-id').value = '';
 
-    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Review';
+    document.getElementById('rev-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish Live';
+    const revDraftBtn = document.getElementById('rev-draft-btn');
+    if (revDraftBtn) revDraftBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+    const revPubCb = document.getElementById('rev-published');
+    if (revPubCb) revPubCb.checked = true;
+
     document.getElementById('wo-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save What\'s On Show';
     document.getElementById('th-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Theatre Entry';
+    
     document.getElementById('news-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story';
+    const newsDraftBtn = document.getElementById('news-draft-btn');
+    if (newsDraftBtn) newsDraftBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+    const newsPubCb = document.getElementById('news-published');
+    if (newsPubCb) newsPubCb.checked = true;
+
     document.getElementById('dlp-submit-btn').innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Save Disneyland Baseline';
 
     document.getElementById('wysiwyg-content').innerHTML = '';
@@ -871,19 +908,95 @@ function cancelEditMode() {
     renderImagePreviews('theatre');
     renderImagePreviews('whatson');
     renderImagePreviews('news');
+
+    // Reset What's On specific tags
+    ['wo-tag-relaxed', 'wo-tag-bsl', 'wo-tag-captioned', 'wo-tag-audio', 'wo-is-touring'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
+    });
 }
 
-/* --- 5. Publishing Handlers --- */
-async function handleReviewSubmit() {
+/* --- 5. Publishing Handlers & Draft Architecture --- */
+function handlePublishCheckboxToggle(type, isChecked) {
+    if (type === 'review') {
+        const submitBtn = document.getElementById('rev-submit-btn');
+        const draftBtn = document.getElementById('rev-draft-btn');
+        const isEditing = !!document.getElementById('rev-edit-id').value;
+        if (isChecked) {
+            submitBtn.innerHTML = isEditing ? '<i class="fa-solid fa-floppy-disk"></i> Overwrite Review' : '<i class="fa-solid fa-cloud-arrow-up"></i> Save & Publish Live';
+            if (draftBtn) draftBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+        } else {
+            submitBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+            if (draftBtn) draftBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+        }
+    } else if (type === 'news') {
+        const submitBtn = document.getElementById('news-submit-btn');
+        const draftBtn = document.getElementById('news-draft-btn');
+        const isEditing = !!document.getElementById('news-edit-id').value;
+        if (isChecked) {
+            submitBtn.innerHTML = isEditing ? '<i class="fa-solid fa-floppy-disk"></i> Overwrite Story' : '<i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story';
+            if (draftBtn) draftBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+        } else {
+            submitBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+            if (draftBtn) draftBtn.innerHTML = '<i class="fa-solid fa-file-pen"></i> Save as Draft';
+        }
+    }
+}
+
+async function saveReviewAsDraft() {
+    const pubCb = document.getElementById('rev-published');
+    if (pubCb) pubCb.checked = false;
+    handlePublishCheckboxToggle('review', false);
+    const title = document.getElementById('rev-title').value.trim();
+    if (!title) {
+        showToast('⚠️ Please enter a show title before saving as draft.', 'status-error');
+        document.getElementById('rev-title').focus();
+        return;
+    }
+    const slugInput = document.getElementById('rev-slug');
+    if (!slugInput.value.trim()) {
+        syncReviewSlug();
+    }
+    await handleReviewSubmit(true);
+}
+
+async function saveNewsAsDraft() {
+    const pubCb = document.getElementById('news-published');
+    if (pubCb) pubCb.checked = false;
+    handlePublishCheckboxToggle('news', false);
+    const title = document.getElementById('news-title').value.trim();
+    if (!title) {
+        showToast('⚠️ Please enter a headline before saving as draft.', 'status-error');
+        document.getElementById('news-title').focus();
+        return;
+    }
+    const slugInput = document.getElementById('news-slug');
+    if (!slugInput.value.trim()) {
+        syncNewsSlug();
+    }
+    await handleNewsSubmit(true);
+}
+
+async function handleReviewSubmit(forceDraft = false) {
     const creds = getCredentials();
     if (!creds) return;
 
     const title = document.getElementById('rev-title').value.trim();
-    const slug = document.getElementById('rev-slug').value.trim();
+    if (!title) {
+        showToast('⚠️ Please enter a show title.', 'status-error');
+        document.getElementById('rev-title').focus();
+        return;
+    }
+    const slugInput = document.getElementById('rev-slug');
+    if (!slugInput.value.trim()) {
+        syncReviewSlug();
+    }
+    const slug = document.getElementById('rev-slug').value.trim() || 'review.html';
     const editId = document.getElementById('rev-edit-id').value;
-    const isPublished = document.getElementById('rev-published').checked;
+    const isPublished = forceDraft ? false : document.getElementById('rev-published').checked;
+    const nowIso = new Date().toISOString();
 
-    showToast('⏳ Uploading images and compiling review...', 'status-loading');
+    showToast(isPublished ? '⏳ Uploading images and compiling live review...' : '⏳ Saving review draft...', 'status-loading');
 
     try {
         for (let item of reviewImages) {
@@ -917,19 +1030,35 @@ async function handleReviewSubmit() {
             summary: document.getElementById('rev-summary').value.trim(),
             bodyHtml: sanitizeEditorHtml(document.getElementById('wysiwyg-content').innerHTML),
             tipsHtml: sanitizeEditorHtml(tipsHtmlContent),
-            rank: existingItem ? (Number(existingItem.rank) || 1) : (reviews.length + 1),
-            status: isPublished ? 'published' : 'draft'
+            order: existingItem && existingItem.order !== undefined ? existingItem.order : 1,
+            rank: existingItem ? (Number(existingItem.rank) || 1) : 1,
+            status: isPublished ? 'published' : 'draft',
+            dateDrafted: existingItem?.dateDrafted || nowIso,
+            dateModified: nowIso
         };
 
         const updatedReviews = editId ? reviews.map(r => r.id === editId ? reviewEntry : r) : [reviewEntry, ...reviews];
-        updatedReviews.forEach((r, idx) => r.rank = idx + 1);
+        
+        // Re-calculate ranks and orders:
+        // Published items receive consecutive ranks 1, 2, 3...
+        // Draft items receive ranks 1000+ so they never displace published ranks 1 or 2!
+        let publishedRank = 1;
+        let draftRank = 1000;
+        updatedReviews.forEach((r, idx) => {
+            r.order = idx + 1;
+            if (r.status === 'published') {
+                r.rank = publishedRank++;
+            } else {
+                r.rank = draftRank++;
+            }
+        });
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/reviews.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedReviews, null, 2)))), `Update reviews (${title})`);
 
         const pageHtml = buildFullReviewPageHtml(reviewEntry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish review page: ${title}`);
 
-        showToast(`🎉 Successfully saved "${title}"!`, 'status-success');
+        showToast(isPublished ? `🎉 Successfully published "${title}" live!` : `💾 Saved draft for "${title}"! (Hidden from live site)`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
@@ -937,16 +1066,26 @@ async function handleReviewSubmit() {
     }
 }
 
-async function handleNewsSubmit() {
+async function handleNewsSubmit(forceDraft = false) {
     const creds = getCredentials();
     if (!creds) return;
 
     const editId = document.getElementById('news-edit-id').value;
     const title = document.getElementById('news-title').value.trim();
-    const slug = document.getElementById('news-slug').value.trim();
+    if (!title) {
+        showToast('⚠️ Please enter a headline.', 'status-error');
+        document.getElementById('news-title').focus();
+        return;
+    }
+    const slugInput = document.getElementById('news-slug');
+    if (!slugInput.value.trim()) {
+        syncNewsSlug();
+    }
+    const slug = document.getElementById('news-slug').value.trim() || 'news.html';
+    const isPublished = forceDraft ? false : document.getElementById('news-published').checked;
     const nowIso = new Date().toISOString();
 
-    showToast('⏳ Uploading images and compiling news article...', 'status-loading');
+    showToast(isPublished ? '⏳ Uploading images and compiling news article...' : '⏳ Saving news story draft...', 'status-loading');
     try {
         for (let item of newsImages) {
             if (item.base64) {
@@ -960,32 +1099,61 @@ async function handleNewsSubmit() {
         const primaryImage = newsImages.length > 0 ? newsImages[0].name : (existing?.mainImage || 'news-default.webp');
         const carouselImages = newsImages.slice(1).map(img => img.name);
 
+        // Date logic:
+        // On news stories the date shown on the HTML should be the date that it's published, not the draft date.
+        // This is updated based on when it's published for the first time, as opposed to when it was drafted.
+        let finalDatePublished = null;
+        if (isPublished) {
+            const wasAlreadyPublished = existing && existing.status === 'published' && existing.datePublished;
+            if (wasAlreadyPublished) {
+                finalDatePublished = existing.datePublished;
+            } else {
+                finalDatePublished = nowIso; // First time published live!
+            }
+        } else {
+            // Draft status - datePublished remains null
+            finalDatePublished = null;
+        }
+
         const entry = {
             id: editId || 'news_' + Date.now(),
             title,
             slug,
-            category: document.getElementById('news-category').value.trim(),
+            category: document.getElementById('news-category').value.trim() || 'Theatre News',
             author: document.getElementById('news-author').value.trim() || 'Katy Rose Meaney',
             summary: document.getElementById('news-summary').value.trim(),
             bodyHtml: sanitizeEditorHtml(document.getElementById('news-body-wysiwyg').innerHTML),
             detailsHtml: sanitizeEditorHtml(document.getElementById('news-details-wysiwyg').innerHTML),
             mainImage: primaryImage,
             galleryImages: carouselImages,
-            datePublished: existing ? existing.datePublished : nowIso,
+            dateDrafted: existing?.dateDrafted || (existing ? existing.datePublished : null) || nowIso,
+            datePublished: finalDatePublished,
             dateModified: nowIso,
-            status: document.getElementById('news-published').checked ? 'published' : 'draft',
-            rank: editId ? (existing.rank || 1) : 1
+            status: isPublished ? 'published' : 'draft',
+            order: existing && existing.order !== undefined ? existing.order : 1,
+            rank: existing ? (Number(existing.rank) || 1) : 1
         };
 
         const updated = editId ? newsList.map(n => n.id === editId ? entry : n) : [entry, ...newsList];
-        updated.forEach((n, idx) => n.rank = idx + 1);
+
+        // Re-calculate ranks and orders:
+        let publishedRank = 1;
+        let draftRank = 1000;
+        updated.forEach((n, idx) => {
+            n.order = idx + 1;
+            if (n.status === 'published') {
+                n.rank = publishedRank++;
+            } else {
+                n.rank = draftRank++;
+            }
+        });
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/news.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save news story: ${title}`);
         
         const pageHtml = buildFullNewsPageHtml(entry);
         await commitGitHubFile(creds.owner, creds.repo, creds.token, slug, btoa(unescape(encodeURIComponent(pageHtml))), `Publish news page: ${title}`);
 
-        showToast(`🎉 News story published live!`, 'status-success');
+        showToast(isPublished ? `🎉 News story published live!` : `💾 Saved news story as draft! (Hidden from live site)`, 'status-success');
         cancelEditMode();
         loadManagementDashboard();
     } catch (err) {
@@ -1011,6 +1179,11 @@ async function handleWhatsOnSubmit() {
         const shows = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
         const primaryImage = whatsonImages.length > 0 ? whatsonImages[0].name : (editId ? shows.find(w => w.id === editId)?.image || 'show-default.webp' : 'show-default.webp');
 
+        const relaxedChecked = document.getElementById('wo-tag-relaxed')?.checked || false;
+        const bslChecked = document.getElementById('wo-tag-bsl')?.checked || false;
+        const capChecked = document.getElementById('wo-tag-captioned')?.checked || false;
+        const audioChecked = document.getElementById('wo-tag-audio')?.checked || false;
+
         const entry = {
             id: editId || 'wo_' + Date.now(),
             title,
@@ -1022,6 +1195,12 @@ async function handleWhatsOnSubmit() {
             age: document.getElementById('wo-age').value.trim() || 'Ages 4+',
             category: document.getElementById('wo-category').value,
             isTouring: document.getElementById('wo-is-touring').checked,
+            tags: {
+                relaxed: relaxedChecked,
+                bsl: bslChecked,
+                captioned: capChecked,
+                audioDescribed: audioChecked
+            },
             image: primaryImage,
             desc: sanitizeEditorHtml(document.getElementById('wo-desc-wysiwyg').innerHTML),
             ticketLink: document.getElementById('wo-ticket-link').value.trim(),
@@ -1122,7 +1301,9 @@ async function handleDisneylandSubmit() {
 
 /* --- 6. HTML Template Generators --- */
 function buildFullNewsPageHtml(d) {
-    const formattedDate = new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    const formattedDate = d.datePublished 
+        ? new Date(d.datePublished).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : 'Draft (Not Published)';
     
     let gallerySection = '';
     if (d.galleryImages && Array.isArray(d.galleryImages) && d.galleryImages.length > 0) {
@@ -1386,7 +1567,7 @@ async function loadManagementDashboard() {
 
     try {
         const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
-        currentCache.reviews = reviews.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
+        currentCache.reviews = reviews.sort((a,b) => ((a.order !== undefined ? Number(a.order) : Number(a.rank)) || 0) - ((b.order !== undefined ? Number(b.order) : Number(b.rank)) || 0));
         renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
     } catch (err) {}
 
@@ -1404,7 +1585,7 @@ async function loadManagementDashboard() {
 
     try {
         const news = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
-        currentCache.news = news.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
+        currentCache.news = news.sort((a,b) => ((a.order !== undefined ? Number(a.order) : Number(a.rank)) || 0) - ((b.order !== undefined ? Number(b.order) : Number(b.rank)) || 0));
         renderDraggableTable('news', 'manage-news-table-container', currentCache.news);
     } catch (err) {}
 
@@ -1430,30 +1611,77 @@ function renderDraggableTable(type, containerId, items) {
         <table class="crud-table" id="table-${type}">
             <thead>
                 <tr>
-                    <th style="width: 80px;">Rank</th>
+                    <th style="width: 85px;">Rank</th>
                     <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
                     ${type === 'reviews' ? '<th style="width: 160px;">Slot</th>' : ''}
-                    ${type === 'whatson' ? '<th>Venue</th><th>End Date</th>' : ''}
+                    ${type === 'whatson' ? '<th>Venue</th><th style="min-width: 170px;">Filter Tags</th><th>End Date</th>' : ''}
                     ${type === 'theatres' ? '<th>Location</th>' : ''}
-                    ${type === 'news' ? '<th>Category</th><th>Date</th>' : ''}
+                    ${type === 'news' ? '<th>Category</th><th>Publication Date</th>' : ''}
                     <th style="width: 180px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
     `;
 
+    let publishedCount = 0;
     items.forEach((item, index) => {
+        const isDraft = item.status === 'draft';
+        let rankBadgeHtml = '';
+        if (isDraft) {
+            rankBadgeHtml = `<span class="rank-badge rank-badge-draft">Draft</span>`;
+        } else {
+            if (type === 'reviews' || type === 'news') {
+                publishedCount++;
+                rankBadgeHtml = `<span class="rank-badge">#${publishedCount}</span>`;
+            } else {
+                rankBadgeHtml = `<span class="rank-badge">#${index + 1}</span>`;
+            }
+        }
+
+        let titleContent = `<strong>${item.title || item.name}</strong>`;
+        if (isDraft) {
+            titleContent += ` <span class="badge-status-draft"><i class="fa-solid fa-file-pen"></i> Draft</span>`;
+        }
+
+        let slotHtml = '';
+        if (type === 'reviews') {
+            if (isDraft) {
+                slotHtml = `<td><span class="badge-draft-slot"><i class="fa-solid fa-eye-slash"></i> Hidden (Draft)</span></td>`;
+            } else {
+                slotHtml = `<td>${publishedCount <= 3 ? `<span class="badge-featured">Homepage #${publishedCount}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory</span>'}</td>`;
+            }
+        }
+
+        let newsMetaHtml = '';
+        if (type === 'news') {
+            const dateStr = item.datePublished 
+                ? (item.datePublished.substring(0, 10)) 
+                : '<span style="color:#64748b; font-style:italic; font-size:0.85rem;"><i class="fa-solid fa-clock"></i> Draft (Not Published)</span>';
+            newsMetaHtml = `<td>${item.category || 'News'}</td><td>${dateStr}</td>`;
+        }
+
         tableHtml += `
             <tr class="draggable-row" draggable="true" data-type="${type}" data-index="${index}">
                 <td>
                     <span class="grab-handle"><i class="fa-solid fa-bars"></i></span>
-                    <span class="rank-badge">#${index + 1}</span>
+                    ${rankBadgeHtml}
                 </td>
-                <td><strong>${item.title || item.name}</strong></td>
-                ${type === 'reviews' ? `<td>${index < 3 ? `<span class="badge-featured">Homepage #${index+1}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory</span>'}</td>` : ''}
-                ${type === 'whatson' ? `<td>${item.venue}</td><td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>` : ''}
+                <td>${titleContent}</td>
+                ${slotHtml}
+                ${type === 'whatson' ? `
+                    <td>${item.venue}</td>
+                    <td>
+                        <div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+                            <span class="tag" style="font-size:0.72rem; background:#f1f5f9; color:#334155; margin:0;">${item.category || 'theatre'}</span>
+                            <span class="tag" style="font-size:0.72rem; background:#e0f2fe; color:#0369a1; margin:0;">${item.region || 'West Midlands'}</span>
+                            <span class="tag tag-age" style="font-size:0.72rem; margin:0;">${item.age || 'All Ages'}</span>
+                            ${item.isTouring ? '<span class="tag tag-touring" style="font-size:0.7rem; margin:0;"><i class="fa-solid fa-route"></i> Tour</span>' : ''}
+                        </div>
+                    </td>
+                    <td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>
+                ` : ''}
                 ${type === 'theatres' ? `<td>${item.location}</td>` : ''}
-                ${type === 'news' ? `<td>${item.category || 'News'}</td><td>${(item.datePublished || '').substring(0, 10)}</td>` : ''}
+                ${newsMetaHtml}
                 <td>
                     <div style="display:flex; gap:6px;">
                         <button type="button" class="btn-edit" onclick="${type === 'reviews' ? `enterEditReview('${item.id}')` : (type === 'whatson' ? `enterEditWhatsOn('${item.id}')` : (type === 'theatres' ? `enterEditTheatre('${item.id}')` : `enterEditNews('${item.id}')`))}"><i class="fa-solid fa-pen"></i> Edit</button>
@@ -1550,7 +1778,20 @@ function attachDragEventListeners(type) {
                 const [movedItem] = list.splice(draggedRowIndex, 1);
                 list.splice(targetIndex, 0, movedItem);
 
-                list.forEach((item, idx) => item.rank = idx + 1);
+                if (type === 'reviews' || type === 'news') {
+                    let publishedRank = 1;
+                    let draftRank = 1000;
+                    list.forEach((item, idx) => {
+                        item.order = idx + 1;
+                        if (item.status === 'published') {
+                            item.rank = publishedRank++;
+                        } else {
+                            item.rank = draftRank++;
+                        }
+                    });
+                } else {
+                    list.forEach((item, idx) => item.rank = idx + 1);
+                }
                 
                 showToast(`⏳ Saving new ${type} order...`, 'status-loading');
                 const creds = getCredentials();
@@ -1568,7 +1809,18 @@ async function deleteItem(type, id) {
     const file = `data/${type}.json`;
     let data = await fetchJsonFile(creds.owner, creds.repo, creds.token, file);
     data = data.filter(item => item.id !== id);
-    if (type !== 'disneyland') {
+    if (type === 'reviews' || type === 'news') {
+        let publishedRank = 1;
+        let draftRank = 1000;
+        data.forEach((item, idx) => {
+            item.order = idx + 1;
+            if (item.status === 'published') {
+                item.rank = publishedRank++;
+            } else {
+                item.rank = draftRank++;
+            }
+        });
+    } else if (type !== 'disneyland') {
         data.forEach((item, idx) => item.rank = idx + 1);
     }
     

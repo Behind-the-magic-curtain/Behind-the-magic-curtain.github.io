@@ -265,6 +265,7 @@ async function handleGlobalSearchInput(e) {
         let matches = [];
 
         reviews.forEach(r => {
+            if (r.status === 'draft') return;
             if (`${r.title} ${r.summary} ${r.subtitle || ''}`.toLowerCase().includes(query)) {
                 matches.push({ type: 'Review', title: r.title, desc: r.summary, url: r.slug, badge: `${r.rating}★ Review` });
             }
@@ -283,6 +284,7 @@ async function handleGlobalSearchInput(e) {
         });
 
         news.forEach(n => {
+            if (n.status === 'draft') return;
             if (`${n.title} ${n.summary} ${n.category || ''}`.toLowerCase().includes(query)) {
                 matches.push({ type: 'News', title: n.title, desc: n.summary, url: n.slug, badge: n.category || 'News' });
             }
@@ -316,7 +318,9 @@ async function handleGlobalSearchInput(e) {
 
 /* --- 4. Dynamic Page Switcher --- */
 function initDynamicPages() {
-    if (document.querySelector('.home-featured .card-grid') || document.getElementById('home-featured-grid')) loadFeaturedReviews();
+    if (document.getElementById('home-featured-grid') || document.querySelector('.home-featured #home-featured-grid')) loadFeaturedReviews();
+    if (document.getElementById('home-featured-whatson-grid')) loadFeaturedWhatsOn();
+    if (document.getElementById('home-featured-news-grid')) loadFeaturedNews();
     if (document.querySelector('#all-reviews-grid')) loadReviewsDirectory();
     if (document.querySelector('#whatson-list')) loadWhatsOnDirectory();
     if (document.querySelector('#theatre-list')) loadTheatreGuideDirectory();
@@ -465,7 +469,21 @@ function updateCustomRatedCount() {
 async function loadWhatsOnDirectory() {
     const container = document.getElementById('whatson-list');
     const searchInput = document.getElementById('whatson-search-input');
-    const typeFilter = document.getElementById('whatson-type-filter');
+    const searchClearBtn = document.getElementById('whatson-search-clear');
+    const filterSection = document.getElementById('whatson-filter-section');
+    const toggleBtn = document.getElementById('whatson-filter-toggle');
+    const filterPanel = document.getElementById('whatson-filter-panel');
+    const activeBadge = document.getElementById('whatson-active-badge');
+    const activeChipsContainer = document.getElementById('whatson-active-chips');
+    const panelCloseBtn = document.getElementById('whatson-panel-close-btn');
+    const panelResetBtn = document.getElementById('whatson-panel-reset-btn');
+    const collapsedCount = document.getElementById('whatson-collapsed-count');
+    const typeButtons = document.querySelectorAll('#whatson-type-buttons .filter-btn');
+    const locationButtons = document.querySelectorAll('#whatson-location-buttons .filter-btn');
+    const ageButtons = document.querySelectorAll('#whatson-age-buttons .filter-btn');
+    const resultsCount = document.getElementById('whatson-results-count');
+    const clearAllBtn = document.getElementById('whatson-clear-all');
+
     if (!container) return;
 
     try {
@@ -475,7 +493,7 @@ async function loadWhatsOnDirectory() {
         const today = new Date().toISOString().split('T')[0];
 
         const activeShows = shows
-            .filter(s => !s.expiryDate || s.expiryDate >= today)
+            .filter(s => s.status !== 'draft' && (!s.expiryDate || s.expiryDate >= today))
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
         const schemaData = {
@@ -487,7 +505,7 @@ async function loadWhatsOnDirectory() {
                 "item": {
                     "@type": "TheaterEvent",
                     "name": s.title,
-                    "description": s.desc,
+                    "description": (s.desc || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
                     "url": s.siteLink || `https://behindthemagiccurtain.co.uk/whats-on.html?q=${encodeURIComponent(s.title)}`,
                     "location": {
                         "@type": "Place",
@@ -506,33 +524,361 @@ async function loadWhatsOnDirectory() {
         scriptTag.text = JSON.stringify(schemaData);
         document.head.appendChild(scriptTag);
 
+        let selectedType = 'all';
+        let selectedLocation = 'all';
+        let selectedAge = 'all';
+
+        // Collapsible Drawer State & Controls
+        let isPinnedOpen = false;
+        let hoverTimeout = null;
+
+        const openPanel = (pinned = false) => {
+            if (hoverTimeout) clearTimeout(hoverTimeout);
+            if (filterPanel) filterPanel.classList.add('open');
+            if (toggleBtn) {
+                toggleBtn.classList.add('open');
+                toggleBtn.setAttribute('aria-expanded', 'true');
+            }
+            if (pinned) isPinnedOpen = true;
+        };
+
+        const closePanel = () => {
+            if (hoverTimeout) clearTimeout(hoverTimeout);
+            if (filterPanel) filterPanel.classList.remove('open');
+            if (toggleBtn) {
+                toggleBtn.classList.remove('open');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+            }
+            isPinnedOpen = false;
+        };
+
+        // Click to Toggle / Pin Open
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (filterPanel && filterPanel.classList.contains('open')) {
+                    closePanel();
+                } else {
+                    openPanel(true);
+                }
+            });
+        }
+
+        // Close on "Done" button
+        if (panelCloseBtn) {
+            panelCloseBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closePanel();
+            });
+        }
+
+        // Hover Behavior for Desktop
+        const canHover = window.matchMedia('(hover: hover)').matches;
+        if (canHover && filterSection && filterPanel) {
+            const handleMouseEnter = () => {
+                if (hoverTimeout) clearTimeout(hoverTimeout);
+                openPanel(false);
+            };
+
+            const handleMouseLeave = () => {
+                if (!isPinnedOpen) {
+                    hoverTimeout = setTimeout(() => {
+                        if (!isPinnedOpen) closePanel();
+                    }, 350);
+                }
+            };
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('mouseenter', handleMouseEnter);
+                toggleBtn.addEventListener('mouseleave', handleMouseLeave);
+            }
+            filterPanel.addEventListener('mouseenter', handleMouseEnter);
+            filterPanel.addEventListener('mouseleave', handleMouseLeave);
+        }
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (filterPanel && filterPanel.classList.contains('open')) {
+                if (filterSection && !filterSection.contains(e.target)) {
+                    closePanel();
+                }
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && filterPanel && filterPanel.classList.contains('open')) {
+                closePanel();
+            }
+        });
+
+        // Search clear button
+        if (searchClearBtn && searchInput) {
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClearBtn.style.display = 'none';
+                searchInput.focus();
+                render();
+            });
+        }
+
+        // Read URL query parameters
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
-        if (queryParam && searchInput) searchInput.value = queryParam;
+        if (queryParam && searchInput) {
+            searchInput.value = queryParam;
+        }
+        const typeParam = urlParams.get('type');
+        if (typeParam) {
+            selectedType = typeParam;
+            typeButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-type') === typeParam));
+        }
+        const locParam = urlParams.get('location');
+        if (locParam) {
+            selectedLocation = locParam;
+            locationButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-location') === locParam));
+        }
+        const ageParam = urlParams.get('age');
+        if (ageParam) {
+            selectedAge = ageParam;
+            ageButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-age') === ageParam));
+        }
 
         const render = () => {
             const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
-            const filterType = typeFilter ? typeFilter.value : 'all';
+
+            // Toggle clear search button visibility
+            if (searchClearBtn) {
+                searchClearBtn.style.display = q.length > 0 ? 'inline-flex' : 'none';
+            }
 
             const filtered = activeShows.filter(s => {
-                const matchesText = `${s.title} ${s.venue} ${s.desc}`.toLowerCase().includes(q);
-                let matchesType = true;
-                if (filterType === 'touring') matchesType = !!s.isTouring;
-                if (filterType === 'west-midlands') matchesType = (s.region || '').toLowerCase().includes('midlands') || (s.venue || '').toLowerCase().includes('birmingham') || (s.venue || '').toLowerCase().includes('wolverhampton');
-                if (filterType === 'london') matchesType = (s.region || '').toLowerCase().includes('london') || (s.venue || '').toLowerCase().includes('london');
-                if (filterType === 'panto') matchesType = (s.category || '').toLowerCase() === 'panto';
-                return matchesText && matchesType;
+                // 1. Text Search Filter
+                if (q) {
+                    const text = `${s.title} ${s.venue} ${s.dates} ${s.region || ''} ${s.desc || ''}`.toLowerCase();
+                    if (!text.includes(q)) return false;
+                }
+
+                // 2. Type of Performance Filter
+                if (selectedType !== 'all') {
+                    const cat = (s.category || '').toLowerCase();
+                    const title = (s.title || '').toLowerCase();
+                    const desc = (s.desc || '').toLowerCase();
+                    if (selectedType === 'panto') {
+                        const isPanto = cat === 'panto' || title.includes('panto') || desc.includes('pantomime');
+                        if (!isPanto) return false;
+                    } else if (selectedType === 'musical') {
+                        const isMusical = cat === 'musical' || title.includes('musical') || desc.includes('musical');
+                        if (!isMusical) return false;
+                    } else if (selectedType === 'theatre') {
+                        const isOtherSpecialty = ['panto', 'musical', 'dance', 'circus'].includes(cat);
+                        if (isOtherSpecialty) return false;
+                    } else if (selectedType === 'dance') {
+                        const isDance = ['dance', 'circus', 'ballet'].includes(cat) || desc.includes('dance') || desc.includes('ballet') || desc.includes('circus');
+                        if (!isDance) return false;
+                    }
+                }
+
+                // 3. Location Filter
+                if (selectedLocation !== 'all') {
+                    const reg = (s.region || '').toLowerCase();
+                    const ven = (s.venue || '').toLowerCase();
+                    if (selectedLocation === 'midlands') {
+                        const isMidlands = reg.includes('midlands') || ['birmingham', 'wolverhampton', 'lichfield', 'belgrade', 'coventry', 'stafford'].some(c => ven.includes(c));
+                        if (!isMidlands) return false;
+                    } else if (selectedLocation === 'london') {
+                        const isLondon = reg.includes('london') || ['london', 'west end', 'savoy'].some(c => ven.includes(c));
+                        if (!isLondon) return false;
+                    } else if (selectedLocation === 'tour') {
+                        const isTour = s.isTouring === true || reg.includes('tour') || ven.includes('tour');
+                        if (!isTour) return false;
+                    }
+                }
+
+                // 4. Age Rating Filter
+                if (selectedAge !== 'all') {
+                    const ageStr = (s.age || '').toLowerCase();
+                    const numMatch = ageStr.match(/\d+/);
+                    const ageNum = numMatch ? parseInt(numMatch[0], 10) : 0;
+                    if (selectedAge === 'under5') {
+                        const isUnder5 = ageStr.includes('all') || ageNum < 5;
+                        if (!isUnder5) return false;
+                    } else if (selectedAge === '4plus') {
+                        const is4to6 = ageNum >= 4 && ageNum <= 6;
+                        if (!is4to6) return false;
+                    } else if (selectedAge === '7plus') {
+                        const is7plus = ageNum >= 7;
+                        if (!is7plus) return false;
+                    }
+                }
+
+                return true;
             });
 
-            container.innerHTML = filtered.length > 0
-                ? filtered.map(s => buildWhatsOnCardHTML(s)).join('')
-                : '<p style="text-align:center; color:#777; margin:30px 0;">No shows match your search criteria. Check back soon!</p>';
+            // Calculate active filter count & chips
+            let activeCount = 0;
+            const activeChips = [];
+
+            if (selectedType !== 'all') {
+                activeCount++;
+                const activeBtn = document.querySelector(`#whatson-type-buttons .filter-btn[data-type="${selectedType}"]`);
+                activeChips.push({ key: 'type', label: activeBtn ? activeBtn.textContent : selectedType });
+            }
+            if (selectedLocation !== 'all') {
+                activeCount++;
+                const activeBtn = document.querySelector(`#whatson-location-buttons .filter-btn[data-location="${selectedLocation}"]`);
+                activeChips.push({ key: 'location', label: activeBtn ? activeBtn.textContent : selectedLocation });
+            }
+            if (selectedAge !== 'all') {
+                activeCount++;
+                const activeBtn = document.querySelector(`#whatson-age-buttons .filter-btn[data-age="${selectedAge}"]`);
+                activeChips.push({ key: 'age', label: activeBtn ? activeBtn.textContent : selectedAge });
+            }
+            if (q.length > 0) {
+                activeCount++;
+                activeChips.push({ key: 'query', label: `"${q}"` });
+            }
+
+            // Update badge on toggle button
+            if (activeBadge) {
+                if (activeCount > 0) {
+                    activeBadge.textContent = activeCount;
+                    activeBadge.style.display = 'inline-block';
+                    if (toggleBtn) toggleBtn.classList.add('has-active');
+                } else {
+                    activeBadge.style.display = 'none';
+                    if (toggleBtn) toggleBtn.classList.remove('has-active');
+                }
+            }
+
+            // Update active chips summary bar
+            if (activeChipsContainer) {
+                if (activeChips.length > 0) {
+                    activeChipsContainer.innerHTML = activeChips.map(chip => `
+                        <div class="active-chip">
+                            <span>${chip.label}</span>
+                            <button type="button" data-clear-key="${chip.key}" aria-label="Remove filter ${chip.label}">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    `).join('') + `
+                        <button type="button" id="whatson-chips-clear-all" style="background:none; border:none; color:var(--color-primary); font-size:0.8rem; font-weight:600; cursor:pointer; text-decoration:underline; padding:4px 6px;">Clear all</button>
+                    `;
+                    activeChipsContainer.style.display = 'flex';
+
+                    // Attach clear single chip listeners
+                    activeChipsContainer.querySelectorAll('[data-clear-key]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const key = btn.getAttribute('data-clear-key');
+                            if (key === 'type') {
+                                selectedType = 'all';
+                                typeButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-type') === 'all'));
+                            } else if (key === 'location') {
+                                selectedLocation = 'all';
+                                locationButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-location') === 'all'));
+                            } else if (key === 'age') {
+                                selectedAge = 'all';
+                                ageButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-age') === 'all'));
+                            } else if (key === 'query') {
+                                if (searchInput) searchInput.value = '';
+                            }
+                            render();
+                        });
+                    });
+
+                    const chipsClearAll = document.getElementById('whatson-chips-clear-all');
+                    if (chipsClearAll) chipsClearAll.addEventListener('click', resetAllFilters);
+                } else {
+                    activeChipsContainer.innerHTML = '';
+                    activeChipsContainer.style.display = 'none';
+                }
+            }
+
+            // Update UI status & reset visibility
+            const isFiltered = activeCount > 0;
+            if (clearAllBtn) {
+                clearAllBtn.style.display = isFiltered ? 'inline-flex' : 'none';
+            }
+            if (panelResetBtn) {
+                panelResetBtn.style.display = isFiltered ? 'inline-block' : 'none';
+            }
+
+            const countText = isFiltered 
+                ? `Showing ${filtered.length} of ${activeShows.length} upcoming shows`
+                : `Showing all ${activeShows.length} upcoming shows`;
+
+            if (resultsCount) resultsCount.textContent = countText;
+            if (collapsedCount) collapsedCount.textContent = countText;
+
+            if (filtered.length > 0) {
+                container.innerHTML = filtered.map(s => buildWhatsOnCardHTML(s)).join('');
+            } else {
+                container.innerHTML = `
+                <div style="text-align: center; padding: 48px 24px; background: #fff; border-radius: 12px; border: 1.5px dashed var(--color-border); margin: 30px 0; width: 100%;">
+                    <i class="fa-solid fa-calendar-xmark" style="font-size: 2.5rem; color: var(--color-primary); margin-bottom: 14px; display: inline-block;"></i>
+                    <h3 style="font-size: 1.25rem; margin-bottom: 8px; font-family: var(--font-heading);">No shows match your current filters</h3>
+                    <p style="color: var(--color-text-light); max-width: 450px; margin: 0 auto 20px auto; font-size: 0.95rem;">Try adjusting your selected performance type, location, or age rating filters.</p>
+                    <button type="button" class="btn btn-secondary reset-whatson-inline-btn" style="padding: 9px 22px;"><i class="fa-solid fa-rotate-left"></i> Reset All Filters</button>
+                </div>`;
+                const inlineReset = container.querySelector('.reset-whatson-inline-btn');
+                if (inlineReset) inlineReset.addEventListener('click', resetAllFilters);
+            }
         };
 
-        render();
+        function resetAllFilters() {
+            selectedType = 'all';
+            selectedLocation = 'all';
+            selectedAge = 'all';
+            if (searchInput) searchInput.value = '';
 
-        if (searchInput) searchInput.addEventListener('input', render);
-        if (typeFilter) typeFilter.addEventListener('change', render);
+            typeButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-type') === 'all'));
+            locationButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-location') === 'all'));
+            ageButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-age') === 'all'));
+
+            render();
+        }
+
+        typeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                typeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedType = btn.getAttribute('data-type') || 'all';
+                render();
+            });
+        });
+
+        locationButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                locationButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedLocation = btn.getAttribute('data-location') || 'all';
+                render();
+            });
+        });
+
+        ageButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                ageButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedAge = btn.getAttribute('data-age') || 'all';
+                render();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', render);
+        }
+
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', resetAllFilters);
+        }
+
+        if (panelResetBtn) {
+            panelResetBtn.addEventListener('click', resetAllFilters);
+        }
+
+        render();
 
     } catch (e) {
         console.warn('What\'s On fallback:', e);
@@ -658,7 +1004,7 @@ async function loadPantomimeDirectory() {
 
 /* --- 10. Reviews Directory & Homepage Top 3 --- */
 async function loadFeaturedReviews() {
-    const container = document.querySelector('.home-featured .card-grid') || document.getElementById('home-featured-grid');
+    const container = document.getElementById('home-featured-grid') || document.querySelector('.home-featured .card-grid');
     if (!container) return;
     try {
         const res = await fetch('data/reviews.json');
@@ -670,6 +1016,45 @@ async function loadFeaturedReviews() {
             .slice(0, 3);
         container.innerHTML = featured.map(r => buildReviewCardHTML(r)).join('');
     } catch (e) {}
+}
+
+async function loadFeaturedWhatsOn() {
+    const container = document.getElementById('home-featured-whatson-grid');
+    if (!container) return;
+    try {
+        const res = await fetch('data/whatson.json');
+        if (!res.ok) return;
+        const shows = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+        const featured = shows
+            .filter(s => s.status !== 'draft' && (!s.expiryDate || s.expiryDate >= today))
+            .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999))
+            .slice(0, 3);
+        container.innerHTML = featured.length > 0
+            ? featured.map(s => buildFeaturedWhatsOnCardHTML(s)).join('')
+            : '<p style="text-align:center; color:#777; margin:20px 0;">No featured shows currently available.</p>';
+    } catch (e) {
+        console.warn('Featured What\'s On load failure:', e);
+    }
+}
+
+async function loadFeaturedNews() {
+    const container = document.getElementById('home-featured-news-grid');
+    if (!container) return;
+    try {
+        const res = await fetch('data/news.json');
+        if (!res.ok) return;
+        const news = await res.json();
+        const featured = news
+            .filter(n => n.status === 'published')
+            .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999))
+            .slice(0, 3);
+        container.innerHTML = featured.length > 0
+            ? featured.map(n => buildNewsCardHTML(n)).join('')
+            : '<p style="text-align:center; color:#777; margin:20px 0;">No featured news stories currently available.</p>';
+    } catch (e) {
+        console.warn('Featured news load failure:', e);
+    }
 }
 
 async function loadReviewsDirectory() {
@@ -721,7 +1106,60 @@ async function loadReviewsDirectory() {
 }
 
 /* --- 11. HTML Builders (Clickable Card Architecture) --- */
+function buildFeaturedWhatsOnCardHTML(s) {
+    let categoryLabel = 'Family Show';
+    const cat = (s.category || '').toLowerCase();
+    if (cat === 'panto') categoryLabel = 'Pantomime';
+    else if (cat === 'musical') categoryLabel = 'Musical';
+    else if (cat === 'theatre') categoryLabel = 'Family Theatre';
+    else if (cat === 'dance') categoryLabel = 'Dance &amp; Circus';
+
+    const plainDesc = (s.desc || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const shortDesc = plainDesc.length > 120 ? plainDesc.substring(0, 120) + '...' : plainDesc;
+
+    return `
+    <a href="whats-on.html?q=${encodeURIComponent(s.title)}" class="card whatson-featured-card clickable-card" aria-label="View What's On details for ${s.title}">
+        <div class="card-image-wrap">
+            <img src="images/${s.image}" alt="Production poster for ${s.title}" loading="lazy" decoding="async">
+        </div>
+        <div class="card-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px;">
+                <span class="tag" style="background:var(--color-primary); color:#fff;">${categoryLabel}</span>
+                ${s.isTouring ? '<span class="tag tag-touring"><i class="fa-solid fa-route"></i> UK Tour</span>' : `<span class="tag tag-age">${s.age || 'All Ages'}</span>`}
+            </div>
+            <h3>${s.title}</h3>
+            <ul class="listing-info" style="list-style:none; padding:0; margin:0 0 10px 0; font-size:0.85rem; color:var(--color-text-light);">
+                <li style="margin-bottom:4px; display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-location-dot" style="width:14px; color:var(--color-primary);"></i> <span>${s.venue}</span></li>
+                <li style="display:flex; align-items:center; gap:6px;"><i class="fa-solid fa-calendar-days" style="width:14px; color:var(--color-primary);"></i> <span>${s.dates}</span></li>
+            </ul>
+            <p>${shortDesc}</p>
+            <span class="btn btn-secondary card-action-btn">View Show &amp; Tickets</span>
+        </div>
+    </a>`;
+}
+
 function buildWhatsOnCardHTML(s) {
+    let categoryBadge = '';
+    const cat = (s.category || '').toLowerCase();
+    if (cat === 'panto') categoryBadge = '<span class="tag tag-mature" style="background:#d81b60;">Pantomime</span>';
+    else if (cat === 'musical') categoryBadge = '<span class="tag" style="background:#0284c7; color:#fff;">Musical</span>';
+    else if (cat === 'theatre') categoryBadge = '<span class="tag" style="background:#7c3aed; color:#fff;">Family Theatre</span>';
+    else if (cat === 'dance') categoryBadge = '<span class="tag" style="background:#ea580c; color:#fff;">Dance &amp; Circus</span>';
+
+    const regionBadge = s.region ? `<span class="tag" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-location-dot" style="font-size:0.75rem;"></i> ${s.region}</span>` : '';
+
+    const descLower = (s.desc || '').toLowerCase();
+    const isRelaxed = s.tags?.relaxed || s.hasRelaxed || descLower.includes('relaxed');
+    const isBsl = s.tags?.bsl || descLower.includes('bsl');
+    const isCaptioned = s.tags?.captioned || descLower.includes('captioned');
+    const isAudio = s.tags?.audioDescribed || descLower.includes('audio described');
+
+    let accessBadges = '';
+    if (isRelaxed) accessBadges += '<span class="tag tag-sensory" style="font-size:0.75rem;"><i class="fa-solid fa-heart"></i> Relaxed</span>';
+    if (isBsl) accessBadges += '<span class="tag tag-touring" style="font-size:0.75rem;"><i class="fa-solid fa-hands-asl-interpreting"></i> BSL</span>';
+    if (isCaptioned) accessBadges += '<span class="tag tag-age" style="font-size:0.75rem;"><i class="fa-solid fa-closed-captioning"></i> CAP</span>';
+    if (isAudio) accessBadges += '<span class="tag tag-mature" style="font-size:0.75rem;"><i class="fa-solid fa-headphones"></i> AD</span>';
+
     return `
     <article class="listing-card">
         <div class="listing-image">
@@ -732,9 +1170,11 @@ function buildWhatsOnCardHTML(s) {
                 <h3 class="listing-title" style="margin:0;">${s.title}</h3>
                 ${s.isTouring ? '<span class="tag tag-touring"><i class="fa-solid fa-route"></i> UK Tour</span>' : ''}
             </div>
-            <div class="card-tags" style="margin:8px 0 12px 0;">
-                <span class="tag tag-age">${s.age}</span>
-                ${s.category === 'panto' ? '<span class="tag tag-mature" style="background:#d81b60;">Pantomime</span>' : ''}
+            <div class="card-tags" style="margin:8px 0 12px 0; display:flex; flex-wrap:wrap; gap:6px;">
+                <span class="tag tag-age">${s.age || 'All Ages'}</span>
+                ${categoryBadge}
+                ${regionBadge}
+                ${accessBadges}
             </div>
             <ul class="listing-info">
                 <li><i class="fa-solid fa-location-dot"></i> <span>${s.venue}</span></li>
@@ -973,22 +1413,6 @@ function openToolkitResource(type) {
         window.print();
     }
 }
-
-function saveRatingsToDevice() {
-    try {
-        localStorage.setItem('btmc_user_dlp_ratings', JSON.stringify(userCustomRatings));
-        const count = Object.keys(userCustomRatings).length;
-        if (count > 0) {
-            showBtmcToast(`Saved ${count} custom rating${count === 1 ? '' : 's'} to your device!`, 'toast-success');
-        } else {
-            showBtmcToast("Disneyland Paris sensory ratings saved to your device!", 'toast-success');
-        }
-    } catch (e) {
-        console.error('Failed saving ratings to localStorage:', e);
-        showBtmcToast("Could not save ratings. Please check storage permissions.", "toast-error");
-    }
-}
-window.saveRatingsToDevice = saveRatingsToDevice;
 
 function openCommunityModal() {
     const modal = document.getElementById('community-modal');

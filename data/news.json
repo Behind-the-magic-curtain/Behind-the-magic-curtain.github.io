@@ -29,7 +29,8 @@
     "datePublished": "2026-09-11T22:18:02.595Z",
     "dateModified": "2026-09-13T20:52:50.843Z",
     "status": "published",
-    "rank": 1
+    "rank": 1,
+    "order": 1
   },
   {
     "id": "news_1789142148166",
@@ -52,7 +53,8 @@
     "datePublished": "2026-09-11T15:55:36.709Z",
     "dateModified": "2026-09-11T15:55:36.709Z",
     "status": "published",
-    "rank": 2
+    "rank": 2,
+    "order": 2
   },
   {
     "id": "news_1788863127199",
@@ -73,7 +75,8 @@
     "datePublished": "2026-09-08T10:25:19.941Z",
     "dateModified": "2026-09-08T10:25:19.941Z",
     "status": "published",
-    "rank": 3
+    "rank": 3,
+    "order": 3
   },
   {
     "id": "news_1788815656033",
@@ -96,7 +99,8 @@
     "datePublished": "2026-09-07T21:14:04.115Z",
     "dateModified": "2026-09-07T21:14:04.115Z",
     "status": "published",
-    "rank": 4
+    "rank": 4,
+    "order": 4
   },
   {
     "id": "news_1788815019425",
@@ -123,7 +127,8 @@
     "datePublished": "2026-09-07T21:03:23.111Z",
     "dateModified": "2026-09-07T21:03:23.111Z",
     "status": "published",
-    "rank": 5
+    "rank": 5,
+    "order": 5
   },
   {
     "id": "news_1788073741864",
@@ -139,7 +144,8 @@
     "datePublished": "2026-08-30T07:08:59.721Z",
     "dateModified": "2026-08-30T07:33:32.610Z",
     "status": "published",
-    "rank": 6
+    "rank": 6,
+    "order": 6
   },
   {
     "id": "news_1787910327655",
@@ -164,7 +170,8 @@
     "datePublished": "2026-08-28T09:45:26.242Z",
     "dateModified": "2026-08-28T10:21:02.942Z",
     "status": "published",
-    "rank": 7
+    "rank": 7,
+    "order": 7
   },
   {
     "id": "news_1788075856975",
@@ -183,7 +190,8 @@
     "datePublished": "2026-08-30T07:44:13.018Z",
     "dateModified": "2026-08-30T07:44:13.018Z",
     "status": "published",
-    "rank": 8
+    "rank": 8,
+    "order": 8
   },
   {
     "id": "news_1787918274041",
@@ -199,7 +207,8 @@
     "datePublished": "2026-08-28T11:57:52.520Z",
     "dateModified": "2026-08-28T12:18:40.140Z",
     "status": "published",
-    "rank": 9
+    "rank": 9,
+    "order": 9
   },
   {
     "id": "news_1787921601777",
@@ -215,6 +224,7 @@
     "datePublished": "2026-08-28T12:53:20.303Z",
     "dateModified": "2026-08-28T12:57:54.153Z",
     "status": "published",
-    "rank": 10
+    "rank": 10,
+    "order": 10
   }
 ]

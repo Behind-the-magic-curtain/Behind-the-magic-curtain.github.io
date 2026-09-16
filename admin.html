@@ -276,7 +276,13 @@
         .draggable-row.drag-over { border-top: 3px solid var(--color-primary); }
         .grab-handle { cursor: grab; color: #94a3b8; margin-right: 8px; }
         .rank-badge { background: #00838f; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .rank-badge-draft { background: #64748b !important; color: #fff !important; }
+        .badge-status-draft { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-status-live { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-draft-slot { color: #64748b; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
         .badge-featured { background: #ffd700; color: #222; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+        .btn-draft { background: #475569; color: #fff; border: 1px solid #334155; padding: 10px 18px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.92rem; transition: all 0.15s ease; font-family: var(--font-body); }
+        .btn-draft:hover { background: #334155; color: #fff; }
         .btn-edit { background: #00838f; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
         .btn-delete { background: #e53935; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
         
@@ -1029,12 +1035,15 @@
                                     <input type="text" id="rev-image-alt" placeholder="Description of image for accessibility & SEO">
                                 </div>
                             </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:12px;">
                                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                                    <input type="checkbox" id="rev-published" checked>
-                                    <strong>Publish to live site immediately</strong>
+                                    <input type="checkbox" id="rev-published" checked onchange="handlePublishCheckboxToggle('review', this.checked)">
+                                    <strong id="rev-published-label">Publish to live site immediately</strong>
                                 </label>
-                                <button type="submit" id="rev-submit-btn" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Save Review</button>
+                                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                    <button type="button" id="rev-draft-btn" class="btn-draft" onclick="saveReviewAsDraft()"><i class="fa-solid fa-file-pen"></i> Save as Draft</button>
+                                    <button type="submit" id="rev-submit-btn" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Save &amp; Publish Live</button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -1063,8 +1072,21 @@
                                     <input type="text" id="wo-venue" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Region / Area</label>
-                                    <input type="text" id="wo-region" value="West Midlands">
+                                    <label>Region / Area (Location Filter) *</label>
+                                    <input type="text" id="wo-region" list="wo-region-presets" placeholder="e.g. West Midlands, London & West End, UK Tour" value="West Midlands" required>
+                                    <datalist id="wo-region-presets">
+                                        <option value="West Midlands">
+                                        <option value="London &amp; West End">
+                                        <option value="UK Tour">
+                                        <option value="North West">
+                                        <option value="South East">
+                                        <option value="Yorkshire">
+                                        <option value="East Midlands">
+                                        <option value="South West">
+                                        <option value="Scotland">
+                                        <option value="Wales">
+                                    </datalist>
+                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Quick-picks: West Midlands, London &amp; West End, or UK Tour (matches What's On location filter).</small>
                                 </div>
                                 <div class="form-group">
                                     <label>Dates *</label>
@@ -1079,25 +1101,52 @@
                                     <input type="text" id="wo-runtime" placeholder="e.g. 2hrs 15mins (incl. interval)">
                                 </div>
                                 <div class="form-group">
-                                    <label>Age Advisory</label>
-                                    <input type="text" id="wo-age" value="Ages 4+">
+                                    <label>Age Advisory (Filter Tag) *</label>
+                                    <input type="text" id="wo-age" list="wo-age-presets" placeholder="e.g. Ages 4+, All Ages, Ages 7+" value="Ages 4+" required>
+                                    <datalist id="wo-age-presets">
+                                        <option value="All Ages">
+                                        <option value="Ages 0+">
+                                        <option value="Under 5s">
+                                        <option value="Ages 3+">
+                                        <option value="Ages 4+">
+                                        <option value="Ages 5+">
+                                        <option value="Ages 6+">
+                                        <option value="Ages 7+">
+                                        <option value="Ages 8+">
+                                        <option value="Ages 10+">
+                                        <option value="Ages 12+">
+                                        <option value="Ages 14+">
+                                    </datalist>
+                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Sorts into Under 5s (0+), Ages 4–6, or Ages 7+ filters on What's On.</small>
                                 </div>
                                 <div class="form-group">
-                                    <label>Category</label>
-                                    <select id="wo-category">
-                                        <option value="theatre">Theatre</option>
+                                    <label>Performance Type (Filter Category) *</label>
+                                    <select id="wo-category" required>
+                                        <option value="theatre" selected>Family Theatre / Play</option>
                                         <option value="musical">Musical</option>
                                         <option value="panto">Pantomime</option>
-                                        <option value="dance">Ballet / Dance</option>
+                                        <option value="dance">Dance &amp; Circus / Ballet</option>
                                     </select>
+                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Matches the "Type of Performance" filter buttons on the What's On guide.</small>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label>Touring Production?</label>
                                     <label class="toggle-badge-control">
                                         <input type="checkbox" id="wo-is-touring">
-                                        <span><i class="fa-solid fa-route" style="color:var(--color-primary); margin-right:4px;"></i> Yes, UK Tour</span>
+                                        <span><i class="fa-solid fa-route" style="color:var(--color-primary); margin-right:4px;"></i> Yes, UK Tour (Auto-matches UK Tour filter)</span>
                                     </label>
+                                </div>
+
+                                <div class="form-group full">
+                                    <label>Accessibility &amp; Special Performance Tags</label>
+                                    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:6px; background:#fff; padding:12px 16px; border-radius:8px; border:1px solid #e2e8f0;">
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.88rem;"><input type="checkbox" id="wo-tag-relaxed"> <span class="tag tag-sensory" style="margin:0;"><i class="fa-solid fa-heart"></i> Relaxed / Sensory Performance</span></label>
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.88rem;"><input type="checkbox" id="wo-tag-bsl"> <span class="tag tag-touring" style="margin:0;"><i class="fa-solid fa-hands-asl-interpreting"></i> BSL Interpreted</span></label>
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.88rem;"><input type="checkbox" id="wo-tag-captioned"> <span class="tag tag-age" style="margin:0;"><i class="fa-solid fa-closed-captioning"></i> Captioned (CAP)</span></label>
+                                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.88rem;"><input type="checkbox" id="wo-tag-audio"> <span class="tag tag-mature" style="margin:0;"><i class="fa-solid fa-headphones"></i> Audio Described (AD)</span></label>
+                                    </div>
+                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Selected tags render highlighted accessibility badges on the What's On card.</small>
                                 </div>
                                 
                                 <div class="form-group full">
@@ -1305,12 +1354,15 @@
                                     <div id="news-image-list"></div>
                                 </div>
                             </div>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:12px;">
                                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                                    <input type="checkbox" id="news-published" checked>
-                                    <strong>Publish live immediately</strong>
+                                    <input type="checkbox" id="news-published" checked onchange="handlePublishCheckboxToggle('news', this.checked)">
+                                    <strong id="news-published-label">Publish live immediately</strong>
                                 </label>
-                                <button type="submit" id="news-submit-btn" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story</button>
+                                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                                    <button type="button" id="news-draft-btn" class="btn-draft" onclick="saveNewsAsDraft()"><i class="fa-solid fa-file-pen"></i> Save as Draft</button>
+                                    <button type="submit" id="news-submit-btn" class="btn btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Publish News Story</button>
+                                </div>
                             </div>
                         </form>
                     </div>
