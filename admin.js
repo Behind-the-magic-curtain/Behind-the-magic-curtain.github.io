@@ -1613,7 +1613,7 @@ function renderDraggableTable(type, containerId, items) {
                 <tr>
                     <th style="width: 85px;">Rank</th>
                     <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
-                    ${type === 'reviews' ? '<th style="width: 160px;">Slot</th>' : ''}
+                    ${(type === 'reviews' || type === 'whatson' || type === 'news') ? '<th style="width: 160px;">Slot</th>' : ''}
                     ${type === 'whatson' ? '<th>Venue</th><th style="min-width: 170px;">Filter Tags</th><th>End Date</th>' : ''}
                     ${type === 'theatres' ? '<th>Location</th>' : ''}
                     ${type === 'news' ? '<th>Category</th><th>Publication Date</th>' : ''}
@@ -1624,8 +1624,13 @@ function renderDraggableTable(type, containerId, items) {
     `;
 
     let publishedCount = 0;
+    let whatsonActiveCount = 0;
+    const todayStr = new Date().toISOString().split('T')[0];
+
     items.forEach((item, index) => {
         const isDraft = item.status === 'draft';
+        const isExpired = type === 'whatson' && !!(item.expiryDate && item.expiryDate < todayStr);
+
         let rankBadgeHtml = '';
         if (isDraft) {
             rankBadgeHtml = `<span class="rank-badge rank-badge-draft">Draft</span>`;
@@ -1638,17 +1643,29 @@ function renderDraggableTable(type, containerId, items) {
             }
         }
 
+        if (type === 'whatson' && !isDraft && !isExpired) {
+            whatsonActiveCount++;
+        }
+
         let titleContent = `<strong>${item.title || item.name}</strong>`;
         if (isDraft) {
             titleContent += ` <span class="badge-status-draft"><i class="fa-solid fa-file-pen"></i> Draft</span>`;
         }
 
         let slotHtml = '';
-        if (type === 'reviews') {
+        if (type === 'reviews' || type === 'news') {
             if (isDraft) {
                 slotHtml = `<td><span class="badge-draft-slot"><i class="fa-solid fa-eye-slash"></i> Hidden (Draft)</span></td>`;
             } else {
                 slotHtml = `<td>${publishedCount <= 3 ? `<span class="badge-featured">Homepage #${publishedCount}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory</span>'}</td>`;
+            }
+        } else if (type === 'whatson') {
+            if (isDraft) {
+                slotHtml = `<td><span class="badge-draft-slot"><i class="fa-solid fa-eye-slash"></i> Hidden (Draft)</span></td>`;
+            } else if (isExpired) {
+                slotHtml = `<td><span class="badge-draft-slot" style="color:#b91c1c;"><i class="fa-solid fa-clock-rotate-left"></i> Expired (Hidden)</span></td>`;
+            } else {
+                slotHtml = `<td>${whatsonActiveCount <= 3 ? `<span class="badge-featured">Homepage #${whatsonActiveCount}</span>` : '<span style="color:#888; font-size:0.85rem;">Directory</span>'}</td>`;
             }
         }
 
