@@ -256,7 +256,166 @@
         .editor-content-area ul { padding-left: 22px; margin-bottom: 1em; }
         .editor-content-area li { margin-bottom: 0.4em; color: var(--color-text); line-height: 1.55; }
         .editor-content-area .tag { margin: 2px 4px 2px 0; vertical-align: middle; cursor: default; }
-        .editor-content-area .btn { margin: 4px 6px 4px 0; font-size: 0.88rem; padding: 8px 18px; vertical-align: middle; display: inline-flex; }
+        .editor-content-area .btn { 
+            margin: 4px 6px 4px 0; 
+            font-size: 0.88rem; 
+            padding: 8px 18px; 
+            vertical-align: middle; 
+            display: inline-flex; 
+            cursor: grab; 
+            user-select: none; 
+            position: relative;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, outline 0.15s ease;
+        }
+        .editor-content-area .btn:active { cursor: grabbing; }
+        .editor-content-area .btn.btn-selected-in-editor {
+            outline: 2.5px dashed var(--color-primary) !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 4px rgba(189, 36, 25, 0.18) !important;
+        }
+        .editor-content-area .btn.btn-being-dragged {
+            opacity: 0.45;
+        }
+        .btn-block-wrap {
+            margin: 14px 0;
+            clear: both;
+        }
+
+        /* Floating Toolbar for Editor Button Repositioning */
+        .editor-btn-floating-bar {
+            position: fixed;
+            z-index: 10050;
+            background: #1e293b;
+            color: #fff;
+            padding: 5px 8px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            pointer-events: auto;
+            animation: fadeIn 0.15s ease-out;
+        }
+        .eb-tool-btn {
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            font-size: 0.76rem;
+            font-weight: 600;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .eb-tool-btn:hover {
+            background: #334155;
+            color: #fff;
+        }
+        .eb-tool-btn.eb-delete:hover {
+            background: #dc2626;
+            color: #fff;
+        }
+        .eb-sep {
+            width: 1px;
+            height: 18px;
+            background: #475569;
+            margin: 0 2px;
+        }
+
+        /* Button Insertion / Edit Modal */
+        .editor-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.15s ease-out;
+        }
+        .editor-modal-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .editor-modal-header {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .editor-modal-header h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-family: var(--font-heading);
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+        }
+        .editor-modal-close {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: color 0.15s;
+        }
+        .editor-modal-close:hover {
+            color: #dc2626;
+            background: #fee2e2;
+        }
+        .editor-modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+        .editor-modal-footer {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-chip {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 3px 10px;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-chip:hover {
+            background: var(--color-primary);
+            color: #fff;
+            border-color: var(--color-primary);
+        }
 
         .drop-zone { border: 2px dashed #94a3b8; background: #f8fafc; padding: 25px; border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: background 0.2s ease; }
         .img-item { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: var(--radius-sm); margin-top: 8px; }
@@ -1015,6 +1174,7 @@
                                             <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
                                             <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
                                             <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                            <button type="button" onclick="insertInlineButton(this)" title="Insert CTA Button"><i class="fa-solid fa-square-arrow-up-right"></i> Button</button>
                                             <button type="button" onclick="insertVideoEmbed(this)"><i class="fa-solid fa-video"></i> Video</button>
                                         </div>
                                         <div id="rev-tips-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
@@ -1162,6 +1322,7 @@
                                             <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
                                             <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
                                             <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                            <button type="button" onclick="insertInlineButton(this)" title="Insert CTA Button"><i class="fa-solid fa-square-arrow-up-right"></i> Button</button>
                                             <button type="button" onclick="insertVideoEmbed(this)"><i class="fa-solid fa-video"></i> Video</button>
                                         </div>
                                         <div id="wo-desc-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
@@ -1225,6 +1386,7 @@
                                             <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
                                             <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
                                             <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                            <button type="button" onclick="insertInlineButton(this)" title="Insert CTA Button"><i class="fa-solid fa-square-arrow-up-right"></i> Button</button>
                                             <button type="button" onclick="insertVideoEmbed(this)"><i class="fa-solid fa-video"></i> Video</button>
                                         </div>
                                         <div id="th-access-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
@@ -1239,6 +1401,7 @@
                                             <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
                                             <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
                                             <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                            <button type="button" onclick="insertInlineButton(this)" title="Insert CTA Button"><i class="fa-solid fa-square-arrow-up-right"></i> Button</button>
                                             <button type="button" onclick="insertVideoEmbed(this)"><i class="fa-solid fa-video"></i> Video</button>
                                         </div>
                                         <div id="th-relaxed-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:120px;"></div>
@@ -1338,6 +1501,7 @@
                                             <button type="button" onclick="applyInlineFormat('italic')"><i class="fa-solid fa-italic"></i></button>
                                             <button type="button" onclick="applyInlineFormat('insertUnorderedList')"><i class="fa-solid fa-list-ul"></i> Bullet List</button>
                                             <button type="button" onclick="insertInlineLink()"><i class="fa-solid fa-link"></i> Link</button>
+                                            <button type="button" onclick="insertInlineButton(this)" title="Insert CTA Button"><i class="fa-solid fa-square-arrow-up-right"></i> Button</button>
                                             <button type="button" onclick="insertVideoEmbed(this)"><i class="fa-solid fa-video"></i> Video</button>
                                         </div>
                                         <div id="news-details-wysiwyg" class="editor-content-area" contenteditable="true" style="min-height:140px;"></div>
@@ -1753,6 +1917,132 @@
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
                 <button type="button" onclick="toggleSettingsModal()" class="btn btn-secondary">Cancel</button>
                 <button type="button" onclick="saveSettings()" class="btn btn-primary">Save Config</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Bar for Selected Button in Editor -->
+    <div id="editor-btn-floating-bar" class="editor-btn-floating-bar" style="display:none;" onmousedown="event.preventDefault()">
+        <button type="button" class="eb-tool-btn" onclick="moveActiveEditorButton('up')" title="Move Up (Previous Block)"><i class="fa-solid fa-arrow-up"></i> Up</button>
+        <button type="button" class="eb-tool-btn" onclick="moveActiveEditorButton('down')" title="Move Down (Next Block)"><i class="fa-solid fa-arrow-down"></i> Down</button>
+        <button type="button" class="eb-tool-btn" onclick="moveActiveEditorButton('left')" title="Move Left (Before Text)"><i class="fa-solid fa-arrow-left"></i> Left</button>
+        <button type="button" class="eb-tool-btn" onclick="moveActiveEditorButton('right')" title="Move Right (After Text)"><i class="fa-solid fa-arrow-right"></i> Right</button>
+        <span class="eb-sep"></span>
+        <button type="button" class="eb-tool-btn" onclick="editActiveEditorButton()" title="Edit Button Label, Link & Style"><i class="fa-solid fa-pen"></i> Edit</button>
+        <button type="button" class="eb-tool-btn eb-delete" onclick="deleteActiveEditorButton()" title="Delete Button"><i class="fa-solid fa-trash"></i></button>
+    </div>
+
+    <!-- Button Insertion & Edit Modal -->
+    <div id="btn-modal-overlay" class="editor-modal-overlay" style="display:none;" onclick="if(event.target===this) closeButtonModal();">
+        <div class="editor-modal-card" onclick="event.stopPropagation();">
+            <div class="editor-modal-header">
+                <h3 id="btn-modal-title"><i class="fa-solid fa-square-arrow-up-right" style="color:var(--color-primary); margin-right:8px;"></i> Insert Action Button</h3>
+                <button type="button" class="editor-modal-close" onclick="closeButtonModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="editor-modal-body">
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label for="btn-modal-text">Button Label / Text *</label>
+                    <input type="text" id="btn-modal-text" placeholder="e.g. Book Tickets, Official Website, Find Out More" oninput="updateButtonModalPreview()" onkeydown="if(event.key==='Enter'){event.preventDefault();commitButtonFromModal();}">
+                    <div class="btn-preset-chips" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; align-items:center;">
+                        <span style="font-size:0.75rem; color:#64748b; margin-right:2px;">Quick suggestions:</span>
+                        <button type="button" class="btn-chip" onclick="setButtonModalText('Book Tickets')">Book Tickets</button>
+                        <button type="button" class="btn-chip" onclick="setButtonModalText('Official Website')">Official Website</button>
+                        <button type="button" class="btn-chip" onclick="setButtonModalText('Book Now')">Book Now</button>
+                        <button type="button" class="btn-chip" onclick="setButtonModalText('Find Out More')">Find Out More</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label for="btn-modal-url">Destination Link (URL) *</label>
+                    <input type="url" id="btn-modal-url" placeholder="https://..." value="https://" oninput="updateButtonModalPreview()" onkeydown="if(event.key==='Enter'){event.preventDefault();commitButtonFromModal();}">
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="btn-modal-style">Button Style</label>
+                        <select id="btn-modal-style" onchange="updateButtonModalPreview()">
+                            <option value="btn-primary" selected>⭐ Primary Button (Gold/Black)</option>
+                            <option value="btn-secondary">🔗 Secondary Button (Teal Outline)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="btn-modal-placement">Placement / Alignment</label>
+                        <select id="btn-modal-placement" onchange="updateButtonModalPreview()">
+                            <option value="inline" selected>Inline (at exact cursor)</option>
+                            <option value="block-center">Own Line (Centered)</option>
+                            <option value="block-left">Own Line (Left-aligned)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="btn-modal-preview-box">
+                    <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#64748b; display:block; margin-bottom:8px;">Live Button Preview</span>
+                    <div id="btn-modal-preview-stage" style="padding:16px; background:#fafafa; border:1px dashed #cbd5e1; border-radius:6px; min-height:54px; display:flex; align-items:center; justify-content:flex-start;">
+                        <a id="btn-modal-preview-anchor" href="#" class="btn btn-primary" style="pointer-events:none; margin:0;">Book Tickets</a>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-modal-footer">
+                <button type="button" class="btn btn-secondary" style="padding:8px 16px; font-size:0.88rem;" onclick="closeButtonModal()">Cancel</button>
+                <button type="button" id="btn-modal-submit" class="btn btn-primary" style="padding:8px 20px; font-size:0.88rem;" onclick="commitButtonFromModal()"><i class="fa-solid fa-check"></i> Insert Button</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hyperlink Insertion Modal -->
+    <div id="link-modal-overlay" class="editor-modal-overlay" style="display:none;" onclick="if(event.target===this) closeLinkModal();">
+        <div class="editor-modal-card" onclick="event.stopPropagation();">
+            <div class="editor-modal-header">
+                <h3><i class="fa-solid fa-link" style="color:var(--color-primary); margin-right:8px;"></i> Insert / Edit Hyperlink</h3>
+                <button type="button" class="editor-modal-close" onclick="closeLinkModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="editor-modal-body">
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label for="link-modal-text">Link Text / Label *</label>
+                    <input type="text" id="link-modal-text" placeholder="e.g. Official Website, Click Here" onkeydown="if(event.key==='Enter'){event.preventDefault();commitLinkFromModal();}">
+                </div>
+
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label for="link-modal-url">Destination Web Address (URL) *</label>
+                    <input type="url" id="link-modal-url" placeholder="https://..." value="https://" onkeydown="if(event.key==='Enter'){event.preventDefault();commitLinkFromModal();}">
+                </div>
+
+                <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+                    <input type="checkbox" id="link-modal-newtab" checked style="width:auto; cursor:pointer;">
+                    <label for="link-modal-newtab" style="margin-bottom:0; cursor:pointer; font-weight:500;">Open link in a new browser tab</label>
+                </div>
+            </div>
+            <div class="editor-modal-footer">
+                <button type="button" class="btn btn-secondary" style="padding:8px 16px; font-size:0.88rem;" onclick="closeLinkModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" style="padding:8px 20px; font-size:0.88rem;" onclick="commitLinkFromModal()"><i class="fa-solid fa-check"></i> Apply Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Embed Modal -->
+    <div id="video-modal-overlay" class="editor-modal-overlay" style="display:none;" onclick="if(event.target===this) closeVideoModal();">
+        <div class="editor-modal-card" onclick="event.stopPropagation();">
+            <div class="editor-modal-header">
+                <h3><i class="fa-solid fa-video" style="color:var(--color-primary); margin-right:8px;"></i> Embed Video Player</h3>
+                <button type="button" class="editor-modal-close" onclick="closeVideoModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="editor-modal-body">
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label for="video-modal-url">YouTube or Vimeo Video Link *</label>
+                    <input type="url" id="video-modal-url" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/..." oninput="updateVideoModalPreview()" onkeydown="if(event.key==='Enter'){event.preventDefault();commitVideoFromModal();}">
+                    <p style="font-size:0.78rem; color:#64748b; margin:6px 0 0 0;">Supports YouTube (standard, shorts, youtu.be) and Vimeo links.</p>
+                </div>
+
+                <div class="video-modal-preview-box">
+                    <span style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#64748b; display:block; margin-bottom:8px;">Live Video Preview</span>
+                    <div id="video-modal-preview-stage" style="padding:16px; background:#fafafa; border:1px dashed #cbd5e1; border-radius:6px; min-height:90px; display:flex; align-items:center; justify-content:center; text-align:center; color:#64748b; font-size:0.85rem;">
+                        <span>Paste a video URL above to preview here</span>
+                    </div>
+                </div>
+            </div>
+            <div class="editor-modal-footer">
+                <button type="button" class="btn btn-secondary" style="padding:8px 16px; font-size:0.88rem;" onclick="closeVideoModal()">Cancel</button>
+                <button type="button" id="video-modal-submit" class="btn btn-primary" style="padding:8px 20px; font-size:0.88rem;" onclick="commitVideoFromModal()"><i class="fa-solid fa-check"></i> Insert Video</button>
             </div>
         </div>
     </div>

@@ -126,10 +126,15 @@ function saveActiveEditorSelection() {
             lastActiveEditor = editor;
             lastActiveRange = range.cloneRange();
             const text = sel.toString();
-            if (text && text.trim() !== '') {
-                lastActiveSelectedText = text;
-                lastSavedHighlightText = text;
+            if (!sel.isCollapsed && text && text.trim() !== '') {
+                lastActiveSelectedText = text.trim();
+                lastSavedHighlightText = text.trim();
                 lastSavedHighlightRange = range.cloneRange();
+            } else {
+                // User has cursor placed at a specific point without highlighting text
+                lastActiveSelectedText = '';
+                lastSavedHighlightText = '';
+                lastSavedHighlightRange = null;
             }
         }
     }
@@ -139,14 +144,28 @@ window.saveActiveEditorSelection = saveActiveEditorSelection;
 document.addEventListener('selectionchange', saveActiveEditorSelection);
 document.addEventListener('mouseup', saveActiveEditorSelection);
 document.addEventListener('keyup', saveActiveEditorSelection);
+document.addEventListener('cut', () => {
+    // When text is cut, clear any saved highlight text immediately so it never bleeds into new button/badge insertions
+    setTimeout(() => {
+        lastActiveSelectedText = '';
+        lastSavedHighlightText = '';
+        lastSavedHighlightRange = null;
+        saveActiveEditorSelection();
+    }, 10);
+});
 document.addEventListener('focusin', (e) => {
     if (e.target && e.target.classList && e.target.classList.contains('editor-content-area')) {
         lastActiveEditor = e.target;
         saveActiveEditorSelection();
     }
 });
-// Save selection on mousedown before ribbon controls (buttons or selects) take focus
+// Save selection on mousedown & pointerdown before ribbon controls (buttons or selects) take focus
 document.addEventListener('mousedown', (e) => {
+    if (e.target && e.target.closest && e.target.closest('.editor-ribbon')) {
+        saveActiveEditorSelection();
+    }
+}, true);
+document.addEventListener('pointerdown', (e) => {
     if (e.target && e.target.closest && e.target.closest('.editor-ribbon')) {
         saveActiveEditorSelection();
     }
@@ -304,6 +323,12 @@ function sanitizeEditorHtml(html) {
         }
     });
 
+    // 5. Clean up any editor-only classes and attributes on buttons
+    div.querySelectorAll('.btn').forEach(btn => {
+        btn.classList.remove('btn-selected-in-editor', 'btn-being-dragged');
+        btn.removeAttribute('draggable');
+    });
+
     return div.innerHTML.trim();
 }
 
@@ -342,11 +367,186 @@ function applyInlineFormat(command, value = null) {
     }
 }
 
-function insertInlineLink() {
-    const url = prompt('Enter web link URL (https://...):');
-    if (url) {
-        document.execCommand('createLink', false, url);
+// State for Link insertion / editing
+let linkTargetEditor = null;
+let linkTargetRange = null;
+let linkExistingAnchor = null;
+
+function insertInlineLink(triggerElement = null) {
+    saveActiveEditorSelection();
+
+    // 1. Resolve target editor
+    let targetEditor = null;
+    if (triggerElement && triggerElement.closest) {
+        const parentContainer = triggerElement.closest('.editor-container');
+        if (parentContainer) targetEditor = parentContainer.querySelector('.editor-content-area');
     }
+    if (!targetEditor && lastActiveEditor && document.body.contains(lastActiveEditor)) {
+        targetEditor = lastActiveEditor;
+    }
+    if (!targetEditor) {
+        const activeTab = Array.from(document.querySelectorAll('.tab-content')).find(t => t.style.display !== 'none');
+        if (activeTab) targetEditor = activeTab.querySelector('.editor-content-area');
+    }
+    if (!targetEditor) targetEditor = document.getElementById('wysiwyg-content') || document.querySelector('.editor-content-area');
+    if (!targetEditor) return;
+
+    linkTargetEditor = targetEditor;
+
+    // 2. Resolve range and selected text or existing anchor
+    let targetRange = null;
+    let selectedText = '';
+    let existingHref = 'https://';
+    let existingAnchor = null;
+
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+        const testRange = sel.getRangeAt(0);
+        let cont = testRange.commonAncestorContainer;
+        if (cont.nodeType === Node.TEXT_NODE) cont = cont.parentElement;
+        if (cont && cont.closest && cont.closest('.editor-content-area') === targetEditor) {
+            targetRange = testRange.cloneRange();
+            if (!sel.isCollapsed) {
+                selectedText = sel.toString().trim();
+            }
+            existingAnchor = cont.closest('a');
+        }
+    }
+
+    if (!targetRange && lastActiveRange) {
+        try {
+            if (targetEditor.contains(lastActiveRange.commonAncestorContainer)) {
+                targetRange = lastActiveRange.cloneRange();
+                let cont = targetRange.commonAncestorContainer;
+                if (cont.nodeType === Node.TEXT_NODE) cont = cont.parentElement;
+                existingAnchor = cont ? cont.closest('a') : null;
+            }
+        } catch (e) {}
+    }
+
+    if (!selectedText && lastActiveSelectedText) {
+        selectedText = lastActiveSelectedText;
+    }
+
+    if (existingAnchor) {
+        selectedText = existingAnchor.textContent.trim();
+        existingHref = existingAnchor.getAttribute('href') || 'https://';
+    }
+
+    if (!targetRange) {
+        targetRange = document.createRange();
+        targetRange.selectNodeContents(targetEditor);
+        targetRange.collapse(false);
+    }
+
+    linkTargetRange = targetRange;
+    linkExistingAnchor = existingAnchor;
+
+    const textInput = document.getElementById('link-modal-text');
+    const urlInput = document.getElementById('link-modal-url');
+    const newTabCheck = document.getElementById('link-modal-newtab');
+
+    if (textInput) textInput.value = selectedText;
+    if (urlInput) urlInput.value = existingHref;
+    if (newTabCheck) {
+        newTabCheck.checked = existingAnchor ? (existingAnchor.getAttribute('target') === '_blank') : true;
+    }
+
+    const overlay = document.getElementById('link-modal-overlay');
+    if (overlay) overlay.style.display = 'flex';
+
+    setTimeout(() => {
+        if (!selectedText && textInput) {
+            textInput.focus();
+        } else if (urlInput) {
+            urlInput.focus();
+            if (urlInput.value === 'https://') {
+                urlInput.setSelectionRange(8, 8);
+            }
+        }
+    }, 50);
+}
+
+function closeLinkModal() {
+    const overlay = document.getElementById('link-modal-overlay');
+    if (overlay) overlay.style.display = 'none';
+    linkExistingAnchor = null;
+    if (linkTargetEditor) linkTargetEditor.focus();
+}
+
+function commitLinkFromModal() {
+    const textInput = document.getElementById('link-modal-text');
+    const urlInput = document.getElementById('link-modal-url');
+    const newTabCheck = document.getElementById('link-modal-newtab');
+
+    let text = (textInput && textInput.value.trim()) ? textInput.value.trim() : '';
+    let url = (urlInput && urlInput.value.trim()) ? urlInput.value.trim() : '#';
+
+    if (url && !url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('#') && !url.startsWith('/') && !url.startsWith('mailto:') && !url.startsWith('tel:')) {
+        url = 'https://' + url;
+    }
+    if (!url || url === 'https://') url = '#';
+    if (!text) text = url;
+
+    const openInNewTab = newTabCheck ? newTabCheck.checked : true;
+
+    if (linkExistingAnchor) {
+        linkExistingAnchor.textContent = text;
+        linkExistingAnchor.setAttribute('href', url);
+        if (openInNewTab) {
+            linkExistingAnchor.setAttribute('target', '_blank');
+            linkExistingAnchor.setAttribute('rel', 'noopener noreferrer');
+        } else {
+            linkExistingAnchor.removeAttribute('target');
+            linkExistingAnchor.removeAttribute('rel');
+        }
+        closeLinkModal();
+        showToast(`🔗 Updated link to: "${url}"`, 'status-success');
+        if (linkTargetEditor) linkTargetEditor.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+    }
+
+    if (!linkTargetEditor) {
+        closeLinkModal();
+        return;
+    }
+
+    linkTargetEditor.focus();
+
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.textContent = text;
+    if (openInNewTab) {
+        anchor.target = '_blank';
+        anchor.rel = 'noopener noreferrer';
+    }
+
+    let inserted = false;
+    if (linkTargetRange && linkTargetEditor.contains(linkTargetRange.commonAncestorContainer)) {
+        try {
+            linkTargetRange.deleteContents();
+            linkTargetRange.insertNode(anchor);
+            const spaceNode = document.createTextNode('\u00A0');
+            if (anchor.nextSibling) {
+                anchor.parentNode.insertBefore(spaceNode, anchor.nextSibling);
+            } else {
+                anchor.parentNode.appendChild(spaceNode);
+            }
+            inserted = true;
+        } catch (err) {
+            console.warn('Link insert range error:', err);
+        }
+    }
+
+    if (!inserted) {
+        try {
+            linkTargetEditor.appendChild(anchor);
+        } catch (e) {}
+    }
+
+    closeLinkModal();
+    showToast(`🔗 Inserted Link: "${text}"`, 'status-success');
+    linkTargetEditor.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function escapeHtmlSnippet(str) {
@@ -358,113 +558,588 @@ function escapeHtmlSnippet(str) {
         .replace(/"/g, '&quot;');
 }
 
-function applyBadgeLabel(type, triggerElement = null) {
-    if (!type) return;
+// State for button creation / editing and repositioning
+let buttonTargetEditor = null;
+let buttonTargetRange = null;
+let buttonBeingEdited = null;
+let activeSelectedBtnInEditor = null;
 
-    // 1. Resolve target editor
+function openButtonModal(triggerElement = null, defaultStyle = 'btn-primary', existingBtnToEdit = null) {
+    saveActiveEditorSelection();
+
+    // 1. Target editor resolution
     let targetEditor = null;
-    if (triggerElement && triggerElement.closest) {
+    if (existingBtnToEdit && existingBtnToEdit.closest) {
+        targetEditor = existingBtnToEdit.closest('.editor-content-area');
+    }
+    if (!targetEditor && triggerElement && triggerElement.closest) {
         const parentContainer = triggerElement.closest('.editor-container');
-        if (parentContainer) {
-            targetEditor = parentContainer.querySelector('.editor-content-area');
-        }
+        if (parentContainer) targetEditor = parentContainer.querySelector('.editor-content-area');
     }
     if (!targetEditor && lastActiveEditor && document.body.contains(lastActiveEditor)) {
         targetEditor = lastActiveEditor;
     }
     if (!targetEditor) {
         const activeTab = Array.from(document.querySelectorAll('.tab-content')).find(t => t.style.display !== 'none');
-        if (activeTab) {
-            targetEditor = activeTab.querySelector('.editor-content-area');
-        }
+        if (activeTab) targetEditor = activeTab.querySelector('.editor-content-area');
     }
-    if (!targetEditor) {
-        targetEditor = document.getElementById('wysiwyg-content');
-    }
+    if (!targetEditor) targetEditor = document.getElementById('wysiwyg-content') || document.querySelector('.editor-content-area');
     if (!targetEditor) return;
 
-    // 2. Resolve text and range
-    let targetRange = null;
-    let selectedText = '';
+    buttonTargetEditor = targetEditor;
+    buttonBeingEdited = existingBtnToEdit;
 
+    // 2. Target range resolution
+    let targetRange = null;
     const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0 && sel.toString().trim() !== '') {
+    if (sel && sel.rangeCount > 0) {
         const testRange = sel.getRangeAt(0);
         let cont = testRange.commonAncestorContainer;
         if (cont.nodeType === Node.TEXT_NODE) cont = cont.parentElement;
         if (cont && cont.closest && cont.closest('.editor-content-area') === targetEditor) {
-            targetRange = testRange;
-            selectedText = sel.toString().trim();
+            targetRange = testRange.cloneRange();
         }
     }
-
-    if (!selectedText && lastSavedHighlightText && lastSavedHighlightRange) {
-        try {
-            if (targetEditor.contains(lastSavedHighlightRange.commonAncestorContainer)) {
-                targetRange = lastSavedHighlightRange;
-                selectedText = lastSavedHighlightText.trim();
-            }
-        } catch (e) {}
-    }
-
-    if (!selectedText && lastActiveRange && lastActiveSelectedText) {
+    if (!targetRange && lastActiveRange) {
         try {
             if (targetEditor.contains(lastActiveRange.commonAncestorContainer)) {
-                targetRange = lastActiveRange;
-                selectedText = lastActiveSelectedText.trim();
+                targetRange = lastActiveRange.cloneRange();
+            }
+        } catch (e) {}
+    }
+    if (!targetRange) {
+        targetRange = document.createRange();
+        targetRange.selectNodeContents(targetEditor);
+        targetRange.collapse(false);
+    }
+    buttonTargetRange = targetRange;
+
+    // 3. Prepopulate modal inputs
+    const titleEl = document.getElementById('btn-modal-title');
+    const submitBtn = document.getElementById('btn-modal-submit');
+    const textInput = document.getElementById('btn-modal-text');
+    const urlInput = document.getElementById('btn-modal-url');
+    const styleSelect = document.getElementById('btn-modal-style');
+    const placementSelect = document.getElementById('btn-modal-placement');
+
+    if (existingBtnToEdit) {
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square" style="color:var(--color-primary); margin-right:8px;"></i> Edit Action Button';
+        if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Update Button';
+        if (textInput) textInput.value = existingBtnToEdit.textContent.trim();
+        if (urlInput) urlInput.value = existingBtnToEdit.getAttribute('href') || 'https://';
+        if (styleSelect) styleSelect.value = existingBtnToEdit.classList.contains('btn-secondary') ? 'btn-secondary' : 'btn-primary';
+        
+        const parentWrap = existingBtnToEdit.closest('.btn-block-wrap');
+        if (parentWrap) {
+            if (parentWrap.style.textAlign === 'center') {
+                if (placementSelect) placementSelect.value = 'block-center';
+            } else {
+                if (placementSelect) placementSelect.value = 'block-left';
+            }
+        } else {
+            if (placementSelect) placementSelect.value = 'inline';
+        }
+    } else {
+        if (titleEl) titleEl.innerHTML = '<i class="fa-solid fa-square-arrow-up-right" style="color:var(--color-primary); margin-right:8px;"></i> Insert Action Button';
+        if (submitBtn) submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> Insert Button';
+        
+        // ONLY use highlighted text if the user actually highlighted text in targetEditor right now
+        let activeHighlighted = '';
+        if (targetRange && !targetRange.collapsed) {
+            activeHighlighted = targetRange.toString().trim();
+        }
+        if (textInput) textInput.value = activeHighlighted; // Strictly empty if cursor is collapsed, preventing cut text carry-over!
+        if (urlInput) urlInput.value = 'https://';
+        if (styleSelect) styleSelect.value = defaultStyle || 'btn-primary';
+        if (placementSelect) placementSelect.value = 'inline';
+    }
+
+    updateButtonModalPreview();
+
+    const overlay = document.getElementById('btn-modal-overlay');
+    if (overlay) overlay.style.display = 'flex';
+
+    setTimeout(() => {
+        if (textInput && !textInput.value) {
+            textInput.focus();
+        } else if (urlInput) {
+            urlInput.focus();
+            if (urlInput.value === 'https://') {
+                urlInput.setSelectionRange(8, 8);
+            }
+        }
+    }, 50);
+}
+
+function closeButtonModal() {
+    const overlay = document.getElementById('btn-modal-overlay');
+    if (overlay) overlay.style.display = 'none';
+    buttonBeingEdited = null;
+    if (buttonTargetEditor) {
+        buttonTargetEditor.focus();
+    }
+}
+
+function updateButtonModalPreview() {
+    const textInput = document.getElementById('btn-modal-text');
+    const urlInput = document.getElementById('btn-modal-url');
+    const styleSelect = document.getElementById('btn-modal-style');
+    const placementSelect = document.getElementById('btn-modal-placement');
+    const previewAnchor = document.getElementById('btn-modal-preview-anchor');
+    const previewStage = document.getElementById('btn-modal-preview-stage');
+
+    if (!previewAnchor || !previewStage) return;
+
+    const label = (textInput && textInput.value.trim()) ? textInput.value.trim() : 'Book Tickets';
+    const style = (styleSelect && styleSelect.value) ? styleSelect.value : 'btn-primary';
+    const placement = (placementSelect && placementSelect.value) ? placementSelect.value : 'inline';
+
+    previewAnchor.textContent = label;
+    previewAnchor.className = 'btn ' + style;
+
+    if (placement === 'block-center') {
+        previewStage.style.justifyContent = 'center';
+    } else {
+        previewStage.style.justifyContent = 'flex-start';
+    }
+}
+
+function setButtonModalText(text) {
+    const textInput = document.getElementById('btn-modal-text');
+    if (textInput) {
+        textInput.value = text;
+        updateButtonModalPreview();
+        const urlInput = document.getElementById('btn-modal-url');
+        if (urlInput) {
+            urlInput.focus();
+            if (urlInput.value === 'https://') {
+                urlInput.setSelectionRange(8, 8);
+            }
+        }
+    }
+}
+
+function commitButtonFromModal() {
+    const textInput = document.getElementById('btn-modal-text');
+    const urlInput = document.getElementById('btn-modal-url');
+    const styleSelect = document.getElementById('btn-modal-style');
+    const placementSelect = document.getElementById('btn-modal-placement');
+
+    const label = (textInput && textInput.value.trim()) ? textInput.value.trim() : 'Book Tickets';
+    let url = (urlInput && urlInput.value.trim()) ? urlInput.value.trim() : '#';
+
+    if (url && !url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('#') && !url.startsWith('/') && !url.startsWith('mailto:') && !url.startsWith('tel:')) {
+        url = 'https://' + url;
+    }
+    if (!url || url === 'https://') url = '#';
+
+    const style = (styleSelect && styleSelect.value) ? styleSelect.value : 'btn-primary';
+    const placement = (placementSelect && placementSelect.value) ? placementSelect.value : 'inline';
+
+    if (buttonBeingEdited) {
+        // Updating existing button
+        buttonBeingEdited.textContent = label;
+        buttonBeingEdited.setAttribute('href', url);
+        buttonBeingEdited.className = 'btn ' + style;
+        buttonBeingEdited.setAttribute('draggable', 'true');
+
+        const existingWrap = buttonBeingEdited.closest('.btn-block-wrap');
+        if (placement === 'block-center' || placement === 'block-left') {
+            const align = placement === 'block-center' ? 'center' : 'left';
+            if (existingWrap) {
+                existingWrap.style.textAlign = align;
+            } else {
+                const wrap = document.createElement('p');
+                wrap.className = 'btn-block-wrap';
+                wrap.style.textAlign = align;
+                wrap.style.margin = '16px 0';
+                buttonBeingEdited.parentNode.insertBefore(wrap, buttonBeingEdited);
+                wrap.appendChild(buttonBeingEdited);
+            }
+        } else {
+            // Inline: unwrap if it was in its own line wrap
+            if (existingWrap && existingWrap.childNodes.length <= 2 && existingWrap.textContent.trim() === label) {
+                existingWrap.parentNode.insertBefore(buttonBeingEdited, existingWrap);
+                existingWrap.remove();
+            }
+        }
+
+        closeButtonModal();
+        showFloatingBarForButton(buttonBeingEdited);
+        showToast(`✅ Updated Button: "${label}"`, 'status-success');
+        if (buttonTargetEditor) buttonTargetEditor.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+    }
+
+    // Creating NEW button
+    if (!buttonTargetEditor) {
+        closeButtonModal();
+        return;
+    }
+
+    buttonTargetEditor.focus();
+
+    const newBtn = document.createElement('a');
+    newBtn.href = url;
+    newBtn.className = 'btn ' + style;
+    newBtn.target = '_blank';
+    newBtn.rel = 'noopener noreferrer';
+    newBtn.textContent = label;
+    newBtn.setAttribute('draggable', 'true');
+
+    let insertedNode = newBtn;
+    if (placement === 'block-center' || placement === 'block-left') {
+        const wrap = document.createElement('p');
+        wrap.className = 'btn-block-wrap';
+        wrap.style.textAlign = placement === 'block-center' ? 'center' : 'left';
+        wrap.style.margin = '16px 0';
+        wrap.appendChild(newBtn);
+        insertedNode = wrap;
+    }
+
+    let inserted = false;
+    if (buttonTargetRange && buttonTargetEditor.contains(buttonTargetRange.commonAncestorContainer)) {
+        try {
+            buttonTargetRange.deleteContents();
+            buttonTargetRange.insertNode(insertedNode);
+            if (placement === 'inline') {
+                const spaceNode = document.createTextNode('\u00A0');
+                if (insertedNode.nextSibling) {
+                    insertedNode.parentNode.insertBefore(spaceNode, insertedNode.nextSibling);
+                } else {
+                    insertedNode.parentNode.appendChild(spaceNode);
+                }
+            }
+            inserted = true;
+        } catch (err) {
+            console.warn('Range insertion error, falling back:', err);
+        }
+    }
+
+    if (!inserted) {
+        try {
+            buttonTargetEditor.appendChild(insertedNode);
+        } catch (appendErr) {
+            console.warn('Fallback button insertion error:', appendErr);
+        }
+    }
+
+    closeButtonModal();
+    showFloatingBarForButton(newBtn);
+    showToast(`✅ Inserted Button: "${label}"`, 'status-success');
+    buttonTargetEditor.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function showFloatingBarForButton(btn) {
+    if (!btn) return;
+    if (activeSelectedBtnInEditor && activeSelectedBtnInEditor !== btn) {
+        activeSelectedBtnInEditor.classList.remove('btn-selected-in-editor');
+    }
+    activeSelectedBtnInEditor = btn;
+    btn.classList.add('btn-selected-in-editor');
+
+    const bar = document.getElementById('editor-btn-floating-bar');
+    if (!bar) return;
+    bar.style.display = 'flex';
+    positionFloatingBarForButton(btn);
+}
+
+function positionFloatingBarForButton(btn) {
+    const bar = document.getElementById('editor-btn-floating-bar');
+    if (!bar || !btn) return;
+
+    const rect = btn.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) {
+        bar.style.display = 'none';
+        return;
+    }
+
+    const barHeight = 36;
+    let top = rect.top - barHeight - 8;
+    if (top < 10) {
+        top = rect.bottom + 8;
+    }
+    let left = rect.left + (rect.width / 2) - 130;
+    if (left < 10) left = 10;
+    if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
+
+    bar.style.top = `${top}px`;
+    bar.style.left = `${left}px`;
+}
+
+function hideFloatingBar() {
+    const bar = document.getElementById('editor-btn-floating-bar');
+    if (bar) bar.style.display = 'none';
+    if (activeSelectedBtnInEditor) {
+        activeSelectedBtnInEditor.classList.remove('btn-selected-in-editor');
+        activeSelectedBtnInEditor = null;
+    }
+}
+
+function moveActiveEditorButton(direction) {
+    if (!activeSelectedBtnInEditor) return;
+    const btn = activeSelectedBtnInEditor;
+    const editor = btn.closest('.editor-content-area');
+    if (!editor) return;
+
+    const wrap = btn.closest('.btn-block-wrap');
+    const unitToMove = (wrap && wrap.childNodes.length <= 2 && wrap.textContent.trim() === btn.textContent.trim()) ? wrap : btn;
+    const parent = unitToMove.parentNode;
+    if (!parent) return;
+
+    if (direction === 'up') {
+        const prev = unitToMove.previousElementSibling;
+        if (prev) {
+            parent.insertBefore(unitToMove, prev);
+            showToast('⬆️ Moved Button Up', 'status-success');
+        } else if (parent !== editor) {
+            const grandParent = parent.parentNode;
+            if (grandParent) {
+                grandParent.insertBefore(unitToMove, parent);
+                showToast('⬆️ Moved Button Up', 'status-success');
+            }
+        }
+    } else if (direction === 'down') {
+        const next = unitToMove.nextElementSibling;
+        if (next) {
+            if (next.nextElementSibling) {
+                parent.insertBefore(unitToMove, next.nextElementSibling);
+            } else {
+                parent.appendChild(unitToMove);
+            }
+            showToast('⬇️ Moved Button Down', 'status-success');
+        } else if (parent !== editor) {
+            const grandParent = parent.parentNode;
+            if (grandParent) {
+                if (parent.nextElementSibling) {
+                    grandParent.insertBefore(unitToMove, parent.nextElementSibling);
+                } else {
+                    grandParent.appendChild(unitToMove);
+                }
+                showToast('⬇️ Moved Button Down', 'status-success');
+            }
+        }
+    } else if (direction === 'left') {
+        const prev = btn.previousSibling;
+        if (prev) {
+            btn.parentNode.insertBefore(btn, prev);
+            showToast('⬅️ Moved Button Left', 'status-success');
+        }
+    } else if (direction === 'right') {
+        const next = btn.nextSibling;
+        if (next) {
+            if (next.nextSibling) {
+                btn.parentNode.insertBefore(btn, next.nextSibling);
+            } else {
+                btn.parentNode.appendChild(btn);
+            }
+            showToast('➡️ Moved Button Right', 'status-success');
+        }
+    }
+
+    positionFloatingBarForButton(btn);
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function editActiveEditorButton() {
+    if (!activeSelectedBtnInEditor) return;
+    openButtonModal(activeSelectedBtnInEditor, null, activeSelectedBtnInEditor);
+}
+
+function deleteActiveEditorButton() {
+    if (!activeSelectedBtnInEditor) return;
+    const btn = activeSelectedBtnInEditor;
+    const wrap = btn.closest('.btn-block-wrap');
+    const editor = btn.closest('.editor-content-area');
+    
+    if (wrap && wrap.childNodes.length <= 2 && wrap.textContent.trim() === btn.textContent.trim()) {
+        wrap.remove();
+    } else {
+        btn.remove();
+    }
+    hideFloatingBar();
+    if (editor) editor.dispatchEvent(new Event('input', { bubbles: true }));
+    showToast('🗑️ Button deleted', 'status-success');
+}
+
+// Global listeners for editor buttons interaction and drag & drop
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.editor-content-area .btn');
+    if (btn) {
+        e.preventDefault();
+        e.stopPropagation();
+        showFloatingBarForButton(btn);
+        return;
+    }
+    if (!e.target.closest('#editor-btn-floating-bar') && !e.target.closest('#btn-modal-overlay')) {
+        hideFloatingBar();
+    }
+});
+
+window.addEventListener('scroll', () => {
+    if (activeSelectedBtnInEditor) positionFloatingBarForButton(activeSelectedBtnInEditor);
+}, true);
+window.addEventListener('resize', () => {
+    if (activeSelectedBtnInEditor) positionFloatingBarForButton(activeSelectedBtnInEditor);
+});
+
+let draggedEditorBtn = null;
+document.addEventListener('dragstart', (e) => {
+    const btn = e.target.closest('.editor-content-area .btn');
+    if (btn) {
+        draggedEditorBtn = btn;
+        btn.classList.add('btn-being-dragged');
+        e.dataTransfer.setData('text/plain', btn.textContent);
+        e.dataTransfer.effectAllowed = 'move';
+    }
+});
+document.addEventListener('dragend', (e) => {
+    if (draggedEditorBtn) {
+        draggedEditorBtn.classList.remove('btn-being-dragged');
+        draggedEditorBtn = null;
+    }
+});
+document.addEventListener('dragover', (e) => {
+    if (draggedEditorBtn && e.target.closest('.editor-content-area')) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+});
+document.addEventListener('drop', (e) => {
+    if (!draggedEditorBtn) return;
+    const editor = e.target.closest('.editor-content-area');
+    if (!editor) {
+        draggedEditorBtn.classList.remove('btn-being-dragged');
+        draggedEditorBtn = null;
+        return;
+    }
+
+    e.preventDefault();
+    const wrap = draggedEditorBtn.closest('.btn-block-wrap');
+    const toMove = (wrap && wrap.childNodes.length <= 2 && wrap.textContent.trim() === draggedEditorBtn.textContent.trim()) ? wrap : draggedEditorBtn;
+
+    // Guard: Prevent dropping an element inside itself or its children
+    if (toMove.contains(e.target)) {
+        draggedEditorBtn.classList.remove('btn-being-dragged');
+        showFloatingBarForButton(draggedEditorBtn);
+        draggedEditorBtn = null;
+        return;
+    }
+
+    let dropRange = null;
+    if (document.caretRangeFromPoint) {
+        dropRange = document.caretRangeFromPoint(e.clientX, e.clientY);
+    } else if (e.rangeParent) {
+        dropRange = document.createRange();
+        dropRange.setStart(e.rangeParent, e.rangeOffset);
+    }
+
+    if (dropRange && toMove.contains(dropRange.commonAncestorContainer)) {
+        draggedEditorBtn.classList.remove('btn-being-dragged');
+        showFloatingBarForButton(draggedEditorBtn);
+        draggedEditorBtn = null;
+        return;
+    }
+
+    let moved = false;
+    if (dropRange && editor.contains(dropRange.commonAncestorContainer)) {
+        try {
+            dropRange.insertNode(toMove);
+            moved = true;
+        } catch (err) {
+            console.warn('Drop insertNode error:', err);
+        }
+    }
+
+    if (!moved) {
+        try {
+            if (e.target && editor.contains(e.target) && e.target !== toMove && !toMove.contains(e.target)) {
+                e.target.parentNode.insertBefore(toMove, e.target.nextSibling);
+                moved = true;
+            } else {
+                editor.appendChild(toMove);
+                moved = true;
+            }
+        } catch (fallbackErr) {
+            console.warn('Drop fallback append error:', fallbackErr);
+        }
+    }
+
+    draggedEditorBtn.classList.remove('btn-being-dragged');
+    showFloatingBarForButton(draggedEditorBtn);
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    showToast('📍 Moved Button to new position', 'status-success');
+    draggedEditorBtn = null;
+});
+
+function applyBadgeLabel(type, triggerElement = null) {
+    if (!type) return;
+
+    if (type.startsWith('btn')) {
+        openButtonModal(triggerElement, type);
+        return;
+    }
+
+    // Badge label logic (tag-age, tag-adhd, etc.)
+    saveActiveEditorSelection();
+    let targetEditor = null;
+    if (triggerElement && triggerElement.closest) {
+        const parentContainer = triggerElement.closest('.editor-container');
+        if (parentContainer) targetEditor = parentContainer.querySelector('.editor-content-area');
+    }
+    if (!targetEditor && lastActiveEditor && document.body.contains(lastActiveEditor)) {
+        targetEditor = lastActiveEditor;
+    }
+    if (!targetEditor) {
+        const activeTab = Array.from(document.querySelectorAll('.tab-content')).find(t => t.style.display !== 'none');
+        if (activeTab) targetEditor = activeTab.querySelector('.editor-content-area');
+    }
+    if (!targetEditor) targetEditor = document.getElementById('wysiwyg-content');
+    if (!targetEditor) return;
+
+    let targetRange = null;
+    let selectedText = '';
+
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+        const testRange = sel.getRangeAt(0);
+        let cont = testRange.commonAncestorContainer;
+        if (cont.nodeType === Node.TEXT_NODE) cont = cont.parentElement;
+        if (cont && cont.closest && cont.closest('.editor-content-area') === targetEditor) {
+            targetRange = testRange.cloneRange();
+            if (!sel.isCollapsed) selectedText = sel.toString().trim();
+        }
+    }
+
+    if (!targetRange && lastActiveRange) {
+        try {
+            if (targetEditor.contains(lastActiveRange.commonAncestorContainer)) {
+                targetRange = lastActiveRange.cloneRange();
             }
         } catch (e) {}
     }
 
-    const isButton = type.startsWith('btn');
+    if (!selectedText && lastActiveSelectedText) {
+        selectedText = lastActiveSelectedText;
+    }
 
-    // If no text was highlighted, prompt with safe fallback
     if (!selectedText) {
+        const defaultBadges = {
+            'tag-age': 'Ages 7+',
+            'tag-adhd': 'Sensory Friendly',
+            'tag-sensory': 'Sensory Notes',
+            'tag-touring': 'UK Tour',
+            'tag-mature': 'Mature Themes'
+        };
+        const defaultLabel = defaultBadges[type] || 'Label';
         let entered = null;
         try {
-            const promptMsg = isButton ? 'Enter button text (e.g. Book Tickets, Official Site):' : 'Enter badge text (e.g. Ages 7+, Sensory Friendly):';
-            entered = prompt(promptMsg);
-        } catch (e) {
-            console.warn('Prompt not available or cancelled:', e);
-        }
-
-        if (entered && entered.trim()) {
-            selectedText = entered.trim();
-        } else {
-            if (isButton) {
-                selectedText = type === 'btn-primary' ? 'Book Tickets' : 'Official Site';
-            } else {
-                const defaultBadges = {
-                    'tag-age': 'Ages 7+',
-                    'tag-adhd': 'Sensory Friendly',
-                    'tag-sensory': 'Sensory Notes',
-                    'tag-touring': 'UK Tour',
-                    'tag-mature': 'Mature Themes'
-                };
-                selectedText = defaultBadges[type] || 'Label';
-            }
-        }
+            entered = prompt('Enter badge text (e.g. Ages 7+, Sensory Friendly):', defaultLabel);
+        } catch (e) {}
+        selectedText = (entered && entered.trim()) ? entered.trim() : defaultLabel;
     }
 
-    // 3. Construct HTML
-    let snippetHtml = '';
-    if (isButton) {
-        let destUrl = 'https://';
-        try {
-            const promptedUrl = prompt('Enter button destination link URL (https://...):', 'https://');
-            if (promptedUrl !== null && promptedUrl.trim() !== '') {
-                destUrl = promptedUrl.trim();
-            }
-        } catch (e) {
-            console.warn('URL prompt not available:', e);
-        }
-        if (!destUrl || destUrl === 'https://') destUrl = '#';
-        snippetHtml = `<a href="${destUrl}" class="btn ${type}" target="_blank" rel="noopener noreferrer">${escapeHtmlSnippet(selectedText)}</a>&nbsp;`;
-    } else {
-        snippetHtml = `<span class="tag ${type}">${escapeHtmlSnippet(selectedText)}</span>&nbsp;`;
-    }
-
-    // 4. Focus and insert into the target editor
+    const snippetHtml = `<span class="tag ${type}">${escapeHtmlSnippet(selectedText)}</span>&nbsp;`;
     targetEditor.focus();
 
     let inserted = false;
@@ -479,7 +1154,6 @@ function applyBadgeLabel(type, triggerElement = null) {
                 lastNode = frag.appendChild(child);
             }
             targetRange.insertNode(frag);
-
             if (lastNode) {
                 const newRange = document.createRange();
                 newRange.setStartAfter(lastNode);
@@ -488,39 +1162,43 @@ function applyBadgeLabel(type, triggerElement = null) {
                 currentSel.removeAllRanges();
                 currentSel.addRange(newRange);
                 lastActiveRange = newRange.cloneRange();
-                lastSavedHighlightRange = null;
-                lastSavedHighlightText = '';
             }
             inserted = true;
         } catch (err) {
-            console.warn('Direct range insertion failed:', err);
+            console.warn('Range insertion error:', err);
         }
     }
 
     if (!inserted) {
-        try {
-            inserted = document.execCommand('insertHTML', false, snippetHtml);
-        } catch (e) {}
-    }
-
-    if (!inserted) {
         targetEditor.insertAdjacentHTML('beforeend', snippetHtml);
-        inserted = true;
     }
 
     targetEditor.dispatchEvent(new Event('input', { bubbles: true }));
-    showToast(`Inserted ${isButton ? 'Button' : 'Badge'}: "${selectedText}"`, 'status-success');
+    showToast(`🏷️ Inserted Badge: "${selectedText}"`, 'status-success');
 }
 
 function insertInlineButton(triggerElement = null) {
-    applyBadgeLabel('btn-primary', triggerElement);
+    saveActiveEditorSelection();
+    openButtonModal(triggerElement, 'btn-primary');
 }
 
 // Global exposure for inline HTML event handlers
 window.applyInlineFormat = applyInlineFormat;
 window.insertInlineLink = insertInlineLink;
+window.closeLinkModal = closeLinkModal;
+window.commitLinkFromModal = commitLinkFromModal;
 window.applyBadgeLabel = applyBadgeLabel;
 window.insertInlineButton = insertInlineButton;
+window.openButtonModal = openButtonModal;
+window.closeButtonModal = closeButtonModal;
+window.updateButtonModalPreview = updateButtonModalPreview;
+window.setButtonModalText = setButtonModalText;
+window.commitButtonFromModal = commitButtonFromModal;
+window.moveActiveEditorButton = moveActiveEditorButton;
+window.editActiveEditorButton = editActiveEditorButton;
+window.deleteActiveEditorButton = deleteActiveEditorButton;
+window.showFloatingBarForButton = showFloatingBarForButton;
+window.hideFloatingBar = hideFloatingBar;
 
 /* --- Video Embed Engine --- */
 
@@ -544,17 +1222,14 @@ function parseVideoEmbedUrl(url) {
     return null;
 }
 
+// State for Video embed
+let videoTargetEditor = null;
+let videoTargetRange = null;
+
 function insertVideoEmbed(triggerElement = null) {
-    const url = prompt('Enter a YouTube or Vimeo URL to embed:');
-    if (!url) return;
+    saveActiveEditorSelection();
 
-    const embedUrl = parseVideoEmbedUrl(url);
-    if (!embedUrl) {
-        alert('Unrecognized link format. Please provide a standard YouTube or Vimeo URL.');
-        return;
-    }
-
-    // Find the relevant editor container
+    // 1. Resolve target editor
     let targetEditor = null;
     if (triggerElement && triggerElement.closest) {
         const parentContainer = triggerElement.closest('.editor-container');
@@ -575,22 +1250,140 @@ function insertVideoEmbed(triggerElement = null) {
     }
 
     if (!targetEditor) {
-        targetEditor = document.getElementById('wysiwyg-content');
+        targetEditor = document.getElementById('wysiwyg-content') || document.querySelector('.editor-content-area');
     }
 
-    // Responsive BTMC video container with clean fallback break
-    const videoHtml = `<div class="btmc-video-container"><iframe src="${embedUrl}" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe></div><p><br></p>`;
+    if (!targetEditor) return;
 
-    if (targetEditor) {
-        targetEditor.focus();
-        const success = document.execCommand('insertHTML', false, videoHtml);
-        if (!success) {
-            targetEditor.insertAdjacentHTML('beforeend', videoHtml);
+    videoTargetEditor = targetEditor;
+
+    // 2. Resolve target range
+    let targetRange = null;
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+        const testRange = sel.getRangeAt(0);
+        let cont = testRange.commonAncestorContainer;
+        if (cont.nodeType === Node.TEXT_NODE) cont = cont.parentElement;
+        if (cont && cont.closest && cont.closest('.editor-content-area') === targetEditor) {
+            targetRange = testRange.cloneRange();
         }
+    }
+
+    if (!targetRange && lastActiveRange) {
+        try {
+            if (targetEditor.contains(lastActiveRange.commonAncestorContainer)) {
+                targetRange = lastActiveRange.cloneRange();
+            }
+        } catch (e) {}
+    }
+
+    if (!targetRange) {
+        targetRange = document.createRange();
+        targetRange.selectNodeContents(targetEditor);
+        targetRange.collapse(false);
+    }
+
+    videoTargetRange = targetRange;
+
+    const urlInput = document.getElementById('video-modal-url');
+    if (urlInput) urlInput.value = '';
+    updateVideoModalPreview();
+
+    const overlay = document.getElementById('video-modal-overlay');
+    if (overlay) overlay.style.display = 'flex';
+
+    setTimeout(() => {
+        if (urlInput) urlInput.focus();
+    }, 50);
+}
+
+function closeVideoModal() {
+    const overlay = document.getElementById('video-modal-overlay');
+    if (overlay) overlay.style.display = 'none';
+    if (videoTargetEditor) videoTargetEditor.focus();
+}
+
+function updateVideoModalPreview() {
+    const urlInput = document.getElementById('video-modal-url');
+    const stage = document.getElementById('video-modal-preview-stage');
+    const submitBtn = document.getElementById('video-modal-submit');
+    if (!stage) return;
+
+    const url = urlInput ? urlInput.value.trim() : '';
+    if (!url) {
+        stage.innerHTML = '<span>Paste a YouTube or Vimeo URL above to preview here</span>';
+        if (submitBtn) submitBtn.disabled = false;
+        return;
+    }
+
+    const embedUrl = parseVideoEmbedUrl(url);
+    if (embedUrl) {
+        stage.innerHTML = `<div style="position:relative; width:100%; max-width:380px; aspect-ratio:16/9; margin:0 auto; border-radius:6px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.15);"><iframe src="${embedUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe></div>`;
+        if (submitBtn) submitBtn.disabled = false;
     } else {
-        document.execCommand('insertHTML', false, videoHtml);
+        stage.innerHTML = '<span style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Unrecognized video link. Please enter a valid YouTube or Vimeo URL.</span>';
     }
 }
+
+function commitVideoFromModal() {
+    const urlInput = document.getElementById('video-modal-url');
+    const url = urlInput ? urlInput.value.trim() : '';
+    if (!url) {
+        showToast('Please enter a YouTube or Vimeo URL', 'status-danger');
+        return;
+    }
+
+    const embedUrl = parseVideoEmbedUrl(url);
+    if (!embedUrl) {
+        showToast('Unrecognized format. Please provide a standard YouTube or Vimeo URL.', 'status-danger');
+        return;
+    }
+
+    if (!videoTargetEditor) {
+        closeVideoModal();
+        return;
+    }
+
+    videoTargetEditor.focus();
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'btmc-video-container';
+    wrapper.innerHTML = `<iframe src="${embedUrl}" title="Video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`;
+
+    const spacerP = document.createElement('p');
+    spacerP.innerHTML = '<br>';
+
+    const frag = document.createDocumentFragment();
+    frag.appendChild(wrapper);
+    frag.appendChild(spacerP);
+
+    let inserted = false;
+    if (videoTargetRange && videoTargetEditor.contains(videoTargetRange.commonAncestorContainer)) {
+        try {
+            videoTargetRange.deleteContents();
+            videoTargetRange.insertNode(frag);
+            inserted = true;
+        } catch (err) {
+            console.warn('Video range insertion error:', err);
+        }
+    }
+
+    if (!inserted) {
+        try {
+            videoTargetEditor.appendChild(frag);
+            inserted = true;
+        } catch (e) {}
+    }
+
+    closeVideoModal();
+    showToast('🎬 Embedded Video successfully', 'status-success');
+    videoTargetEditor.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+window.insertVideoEmbed = insertVideoEmbed;
+window.closeVideoModal = closeVideoModal;
+window.updateVideoModalPreview = updateVideoModalPreview;
+window.commitVideoFromModal = commitVideoFromModal;
 
 /* --- 3. Seamless Auto-WebP Compression Engine --- */
 async function processAndCompressImage(file) {
