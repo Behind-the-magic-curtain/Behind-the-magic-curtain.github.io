@@ -165,5 +165,28 @@
     "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
     "siteLink": "https://paddingtonthemusical.com/",
     "rank": 10
+  },
+  {
+    "id": "wo_1789570988990",
+    "title": "Birmingham Royal Ballet - Swan Lake",
+    "venue": "Birmingham Hippodrome",
+    "region": "West Midlands",
+    "dates": "Wed 23 Sep – Sat 3 Oct",
+    "expiryDate": "2026-10-03",
+    "runtime": "Approx 2hrs 45mins (incl. interval)",
+    "age": "Ages 5+",
+    "category": "dance",
+    "isTouring": false,
+    "tags": {
+      "relaxed": false,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": true
+    },
+    "image": "new-season-2026-27-hippodrome-1800x900-swan-lake.webp",
+    "desc": "<!--StartFragment--><p><b>A spellbinding celebration of classical ballet and music</b></p><p>Birmingham Royal Ballet revives Sir Peter Wright and Galina Samsova’s glorious journey into Swan Lake – with the Royal Ballet Sinfonia performing Tchaikovsky’s superb music live alongside BRB’s spectacular dancers.</p><p>Prince Siegfried is out hunting one night when he happens upon a flock of graceful swans. When one of them turns into a beautiful woman, the Prince is utterly smitten – but Odette explains that she has fallen under an evil spell cast by Baron von Rothbart, which keeps her in swan form from dawn to dusk. Can Siegfried’s love break the spell?</p><p>Find out in this exquisite production of a true ballet classic.</p><h3>Access Performances &amp; Touch Tours</h3><ul><li><p><b>Touch Tour:</b> Sat 26 Sep, 11.15am (Familiarise with set, props, and costumes)</p></li><li><p><b>Audio Described:</b> Sat 26 Sep, 2pm</p></li></ul><i>Note: BSL, Captioned, and Relaxed performances vary by date. Please check the access registration portal.</i><br><p><!--StartFragment--><!--EndFragment--></p><p><i>Credit: Céline Gittens as Odette and Odile. © Manvir Rai.</i></p><!--EndFragment-->",
+    "ticketLink": "https://www.birminghamhippodrome.com/calendar/brb-swan-lake-four/#performance_content",
+    "siteLink": "https://www.birminghamhippodrome.com/calendar/brb-swan-lake-four/#performance_content",
+    "rank": 11
   }
 ]
