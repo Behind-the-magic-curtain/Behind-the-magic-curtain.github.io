@@ -455,5 +455,28 @@
     "ticketLink": "https://www.birminghamhippodrome.com/calendar/one-tiny-penguin/#performances",
     "siteLink": "https://www.birminghamhippodrome.com/calendar/one-tiny-penguin/#performances",
     "rank": 20
+  },
+  {
+    "id": "wo_1789677824747",
+    "title": "Father Christmas",
+    "venue": "B2, Belgrade theatre, Coventry",
+    "region": "West Midlands",
+    "dates": "Thu 3 – Sun 27 Dec 2026",
+    "expiryDate": "2026-12-28",
+    "runtime": "Approx. 50mins",
+    "age": "All Ages",
+    "category": "theatre",
+    "isTouring": false,
+    "tags": {
+      "relaxed": true,
+      "bsl": true,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "father-christmas.webp",
+    "desc": "<!--StartFragment--><p>Join Santa as he awakes from a dream of sun, sea, and sand only to find it is the busiest day of the year: Christmas Eve. Families will love watching as he prepares for his Christmas deliveries, feeds his reindeer, and finally takes flight into the snowy night.</p><p>Back for another brilliant year, Christmas isn’t Christmas without this Lyric Hammersmith family favourite, co-produced with the Olivier Award-nominated Pins &amp; Needles Productions. Based on Raymond Briggs’ much-loved book and directed by Emma Earle, it is a wonderfully visual and engaging show, making it the perfect festive introduction to the theatre for very young audiences.</p><h3>Family &amp; Sensory Highlight</h3><div><div><ul><li><b>Under 6s</b> Tailor-made specifically for early years, this production is designed as an ideal first-time theatre experience for toddlers and younger children.</li><li><b>50 Mins</b> A highly accessible, bite-sized running time perfectly suited to young attention spans.&nbsp;</li><li><b>Seating &amp; Booster Logistics:</b> A limited number of Booster Seats are available to hire for free on the day on a first-come, first-served basis, or you are welcome to bring your own car booster seats. Please note: because of the steep rake, booster seats are not permitted in the balcony.&nbsp; &nbsp;</li></ul></div><div><!--StartFragment--><h3>Access Performances</h3><!--EndFragment--></div><div><ul><li><b>Relaxed performance:&nbsp;</b>&nbsp;Tue 8th Dec at 11am</li><li><b>BSL Interpreted performances</b> on Thu 10th Dec at 1.30pm and Sat 19th Dec at 11am.</li></ul></div></div><!--EndFragment-->",
+    "ticketLink": "https://www.belgrade.co.uk/events/father-christmas-26/",
+    "siteLink": "https://www.belgrade.co.uk/events/father-christmas-26/",
+    "rank": 21
   }
 ]
