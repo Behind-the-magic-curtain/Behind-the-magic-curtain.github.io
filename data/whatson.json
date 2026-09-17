@@ -340,5 +340,28 @@
     "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-enchanted-princess-ball-2026/",
     "siteLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-enchanted-princess-ball-2026/",
     "rank": 15
+  },
+  {
+    "id": "wo_1789645650373",
+    "title": "The Snowman™",
+    "venue": "Birmingham Rep",
+    "region": "West Midlands",
+    "dates": "Tue 20 Oct–Sun 1 Nov 2026",
+    "expiryDate": "2026-11-01",
+    "runtime": "1hr 30mins (incl. a 20 minute interval)",
+    "age": "All Ages",
+    "category": "theatre",
+    "isTouring": false,
+    "tags": {
+      "relaxed": true,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": true
+    },
+    "image": "the-snowman.webp",
+    "desc": "<!--StartFragment--><b>Let your imagination take flight</b>.&nbsp;<div><br></div><div>Join us for the world premiere of a brand-new production of The Snowman™ as it comes back home to Birmingham and The Rep.&nbsp;</div><div><br></div><div>For 32 years, The Snowman has enchanted theatre audiences, now, discover the next chapter of this much-loved story. Based on Raymond Briggs’ cherished book, The Rep’s sparkling new production features Howard Blake’s iconic score including the classic Walking in the Air, beautifully crafted puppets and of course, a gravity-defying friendship.</div><div><br></div><div>When a young boy’s snowman magically comes to life, an unforgettable adventure begins. Together, they journey through the night, gliding hand-in-hand across the starlit sky. Along the way they encounter Father Christmas, friendly reindeer, and a joyful gathering of snow people beneath the shimmering Northern Lights, discovering a world of wonder, friendship and winter magic.<!--EndFragment--></div>",
+    "ticketLink": "https://www.birmingham-rep.co.uk/whats-on/the-snowman-2026/",
+    "siteLink": "https://www.birmingham-rep.co.uk/whats-on/the-snowman-2026/",
+    "rank": 16
   }
 ]
