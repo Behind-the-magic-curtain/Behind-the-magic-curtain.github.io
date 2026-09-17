@@ -2729,16 +2729,20 @@ async function fetchJsonFile(owner, repo, token, path) {
     const bust = `_cb=${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const separator = path.includes('?') ? '&' : '?';
     const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}${separator}${bust}`, {
-        cache: 'no-store',
         headers: { 
             'Authorization': `Bearer ${token}`, 
-            'Accept': 'application/vnd.github.v3+json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
+            'Accept': 'application/vnd.github.v3+json'
         }
     });
     if (res.status === 404) return [];
-    if (!res.ok) throw new Error(`Could not load ${path} (Status: ${res.status})`);
+    if (!res.ok) {
+        let errDetail = res.statusText || `Status ${res.status}`;
+        try {
+            const errJson = await res.json();
+            if (errJson && errJson.message) errDetail = errJson.message;
+        } catch(e) {}
+        throw new Error(`Could not load ${path} (${errDetail})`);
+    }
     const data = await res.json();
     const binaryString = atob(data.content.replace(/\s/g, ''));
     const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
@@ -2751,12 +2755,9 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
     try {
         const bust = `_cb=${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
         const getRes = await fetch(`${url}?${bust}`, { 
-            cache: 'no-store',
             headers: { 
                 'Authorization': `Bearer ${token}`, 
-                'Accept': 'application/vnd.github.v3+json',
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache'
+                'Accept': 'application/vnd.github.v3+json'
             } 
         });
         if (getRes.ok) {
@@ -2767,8 +2768,19 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
 
     const res = await fetch(url, {
         method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' },
+        headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Content-Type': 'application/json', 
+            'Accept': 'application/vnd.github.v3+json' 
+        },
         body: JSON.stringify({ message, content: contentBase64, ...(sha && { sha }) })
     });
-    if (!res.ok) throw new Error(`GitHub error: ${res.statusText}`);
+    if (!res.ok) {
+        let errDetail = res.statusText || `Status ${res.status}`;
+        try {
+            const errJson = await res.json();
+            if (errJson && errJson.message) errDetail = errJson.message;
+        } catch(e) {}
+        throw new Error(`GitHub error: ${errDetail}`);
+    }
 }
