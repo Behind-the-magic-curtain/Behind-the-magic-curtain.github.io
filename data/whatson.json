@@ -294,5 +294,28 @@
     "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-gingerbread-boy/",
     "siteLink": "https://www.sambradshawproductions.com/current-productions/the-gingerbread-boy/",
     "rank": 13
+  },
+  {
+    "id": "wo_1789642352711",
+    "title": "The Spooky Magic Show",
+    "venue": "Stafford Gatehouse Theatre",
+    "region": "West Midlands",
+    "dates": "October 31, 2026",
+    "expiryDate": "2026-10-31",
+    "runtime": "Approx 50mins",
+    "age": "Ages 4+",
+    "category": "theatre",
+    "isTouring": true,
+    "tags": {
+      "relaxed": false,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "thespookymagicshowheader.webp",
+    "desc": "<!--StartFragment-->Rufus the Dog has taken Uncle Cadabra’s powerful magic wand thinking it was a bone and hidden in the attic.<div><br></div><div>Accidentally Rufus has caused the whole audience to be magically transported into the enchanted attic. It is up to apprentice sorcerer Sam, and helpers in the audience, to find all the ingredients needed to make a magic spell that will transport everyone home!</div><div><br></div><div>A magical story for young families, which is spooky but not scary. The show features a large number of magic tricks and illusions as well as puppets. Members of the audience take part and help Sam with many of the tricks on stage.<!--EndFragment--></div>",
+    "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-spooky-magic-show/",
+    "siteLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-spooky-magic-show/",
+    "rank": 14
   }
 ]
