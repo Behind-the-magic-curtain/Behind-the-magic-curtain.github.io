@@ -363,5 +363,28 @@
     "ticketLink": "https://www.birmingham-rep.co.uk/whats-on/the-snowman-2026/",
     "siteLink": "https://www.birmingham-rep.co.uk/whats-on/the-snowman-2026/",
     "rank": 16
+  },
+  {
+    "id": "wo_1789647649419",
+    "title": "Disney On Ice: Discover the Magic",
+    "venue": "BP Pulse LIVE",
+    "region": "West Midlands",
+    "dates": "28 Oct - 8 Nov, 2026",
+    "expiryDate": "2026-11-08",
+    "runtime": "Approx 2hrs (incl. interval)",
+    "age": "All Ages",
+    "category": "dance",
+    "isTouring": true,
+    "tags": {
+      "relaxed": false,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "doi-header.webp",
+    "desc": "<!--StartFragment-->There are few experiences quite like watching a child’s eyes light up as Mickey Mouse skates onto the ice, hearing an arena erupt with excitement when Elsa creates her icy world, or singing along with favorite Disney songs surrounded by family and friends.<div><br></div><div>This year, <b>Disney On Ice marks its 45th Anniversary,</b> honoring four and a half decades of bringing Disney stories to life through the artistry of world-class figure skating. Every production blends breathtaking skating, stunning costumes, spectacular special effects, immersive sets, dazzling lighting, and high-flying acrobatics with innovative storytelling.&nbsp;</div><div><br></div><div>Join the celebration and experience the magic that has become a cherished tradition for generations of families!<!--EndFragment--></div>",
+    "ticketLink": "https://www.axs.com/uk/series/33236/disney-on-ice-presents-discover-the-magic-bp-pulse-live-tickets?skin=bppulselive",
+    "siteLink": "https://www.disneyonice.com/en-gb/discover-the-magic/",
+    "rank": 17
   }
 ]
