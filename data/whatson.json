@@ -317,5 +317,28 @@
     "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-spooky-magic-show/",
     "siteLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-spooky-magic-show/",
     "rank": 14
+  },
+  {
+    "id": "wo_1789643011755",
+    "title": "Freezin",
+    "venue": "Stafford Gatehouse Theatre",
+    "region": "West Midlands",
+    "dates": "November 1,  2026",
+    "expiryDate": "2026-11-01",
+    "runtime": "Approx 90mins (Incl. Interval)",
+    "age": "All Ages",
+    "category": "panto",
+    "isTouring": true,
+    "tags": {
+      "relaxed": false,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "freezinheader.webp",
+    "desc": "<!--StartFragment--><b>Snow is falling… and Jack Frost is calling!</b>&nbsp;<div><br></div><div>When the wicked Jack Frost sweeps into the kingdom and casts a spell of eternal winter, fountains freeze, forests frost over and the Royal Palace is plunged into chaos! With his icy powers growing stronger by the minute, he’s determined to keep the kingdom frozen forever… But brave Princess Honour won’t let that happen!&nbsp;</div><div><br></div><div>Teaming up with the hilarious and hopelessly silly, Silly Snowy, she sets off on a magical mission to stop Jack Frost and help her sister, Queen Ellie, learn to control her extraordinary ice powers before it’s too late. Packed with dazzling costumes, spectacular scenery, toe-tapping tunes, laugh-out-loud comedy and plenty of boos for the baddie, FREEZIN’ is the ultimate October half-term treat for the whole family!</div><div><br></div><div>A 90-minute family-friendly show filled with dazzling costumes, spectacular scenery, toe-tapping <span class=\"citation-131\"></span><span class=\"citation-130 citation-131\"></span><span class=\"citation-129 citation-130 citation-131\"></span><span class=\"citation-128 citation-129 citation-130 citation-131 citation-end-131\">tunes, and slapstick comedy.</span><!--EndFragment--></div>",
+    "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-enchanted-princess-ball-2026/",
+    "siteLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-enchanted-princess-ball-2026/",
+    "rank": 15
   }
 ]
