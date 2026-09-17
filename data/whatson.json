@@ -271,5 +271,28 @@
     "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/spots-birthday-party/#Details_in",
     "siteLink": "https://www.sambradshawproductions.com/current-productions/spots-birthday-party/",
     "rank": 12
+  },
+  {
+    "id": "wo_1789642024938",
+    "title": "The Gingerbread Boy",
+    "venue": "Stafford Gatehouse Theatre",
+    "region": "West Midlands",
+    "dates": "December 12-13, 2026",
+    "expiryDate": "2026-12-13",
+    "runtime": "Approx 50mins",
+    "age": "Ages 3+",
+    "category": "theatre",
+    "isTouring": true,
+    "tags": {
+      "relaxed": false,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "thegingerbreadboy.webp",
+    "desc": "<!--StartFragment-->Deep in Fairy-tale Forest lives a remarkable boy made entirely of gingerbread!&nbsp;<div><br></div><div>His lonely world is changed forever when Blake, a young lad from a nearby village, stumbles upon his incredible cookie cottage. Together, the two boys embark on a madcap journey of discovery. And it’s Christmas Eve too … another surprise visitor is on his way!</div><div><br></div><div>Full of heart, laughter and song – and a healthy helping of cake – The Gingerbread Boy is a brand-new Christmas story about friendship and celebrating our differences. The perfect festive treat for ages 3+.<span class=\"citation-53\"></span><span class=\"citation-52 citation-53\"></span><span class=\"citation-51 citation-52 citation-53 citation-end-53\">&nbsp;</span></div><div><span class=\"citation-51 citation-52 citation-53 citation-end-53\"><br></span></div><div><span class=\"citation-51 citation-52 citation-53 citation-end-53\"><b>Ticket includes a free present for every child!</b></span><span class=\"citation-51 citation-52 citation-end-52\"></span><span class=\"citation-51 citation-end-51\"></span><!--EndFragment--></div>",
+    "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/the-gingerbread-boy/",
+    "siteLink": "https://www.sambradshawproductions.com/current-productions/the-gingerbread-boy/",
+    "rank": 13
   }
 ]
