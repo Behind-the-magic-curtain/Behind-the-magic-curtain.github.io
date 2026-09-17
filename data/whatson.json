@@ -248,5 +248,28 @@
     "ticketLink": "https://www.atgtickets.com/shows/paddington-the-musical/savoy-theatre/",
     "siteLink": "https://paddingtonthemusical.com/",
     "rank": 11
+  },
+  {
+    "id": "wo_1789641696447",
+    "title": "Spot's Birthday Party",
+    "venue": "Stafford Gatehouse Theatre",
+    "region": "West Midlands",
+    "dates": "24 October 2026",
+    "expiryDate": "2026-10-24",
+    "runtime": "Approx 50mins",
+    "age": "Ages 2+",
+    "category": "theatre",
+    "isTouring": true,
+    "tags": {
+      "relaxed": true,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "spots-birthday-party-banner.webp",
+    "desc": "<!--StartFragment--><h3>Spot is having a very special birthday party and you’re invited!</h3><div>With party hats, songs, dancing and lots of interactive party games, this is going to be the best birthday party ever! Join Steve the monkey, Tom the Crocodile and Helen the Hippo to say a big HAPPY BIRTHDAY SPOT!</div><div><br></div><div>Based on the beloved Eric Hill classic Happy Birthday Spot, this brand-new adaptation brings your favourite pup and his friends to life in <b>an interactive and accessible show suitable for ages 2+</b> and their grown ups.</div><!--EndFragment-->",
+    "ticketLink": "https://www.gatehousetheatre.co.uk/whatson-event/spots-birthday-party/#Details_in",
+    "siteLink": "https://www.sambradshawproductions.com/current-productions/spots-birthday-party/",
+    "rank": 12
   }
 ]
