@@ -1148,11 +1148,11 @@ function buildWhatsOnCardHTML(s) {
 
     const regionBadge = s.region ? `<span class="tag" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-location-dot" style="font-size:0.75rem;"></i> ${s.region}</span>` : '';
 
-    const descLower = (s.desc || '').toLowerCase();
-    const isRelaxed = s.tags?.relaxed || s.hasRelaxed || descLower.includes('relaxed');
-    const isBsl = s.tags?.bsl || descLower.includes('bsl');
-    const isCaptioned = s.tags?.captioned || descLower.includes('captioned');
-    const isAudio = s.tags?.audioDescribed || descLower.includes('audio described');
+    const hasTags = s.tags && typeof s.tags === 'object';
+    const isRelaxed = hasTags ? (s.tags.relaxed !== undefined ? !!s.tags.relaxed : !!s.hasRelaxed) : !!s.hasRelaxed;
+    const isBsl = hasTags ? !!s.tags.bsl : false;
+    const isCaptioned = hasTags ? !!s.tags.captioned : false;
+    const isAudio = hasTags ? !!s.tags.audioDescribed : false;
 
     let accessBadges = '';
     if (isRelaxed) accessBadges += '<span class="tag tag-sensory" style="font-size:0.75rem;"><i class="fa-solid fa-heart"></i> Relaxed</span>';

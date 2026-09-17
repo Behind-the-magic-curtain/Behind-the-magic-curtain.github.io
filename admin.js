@@ -1551,16 +1551,17 @@ function enterEditWhatsOn(id) {
     document.getElementById('wo-category').value = item.category || 'theatre';
     document.getElementById('wo-is-touring').checked = !!item.isTouring;
 
-    // Accessibility filter tags
-    const descLower = (item.desc || '').toLowerCase();
+    // Accessibility filter tags - strictly honor user's saved tag preferences; never scan description text
     const relaxedCb = document.getElementById('wo-tag-relaxed');
     const bslCb = document.getElementById('wo-tag-bsl');
     const capCb = document.getElementById('wo-tag-captioned');
     const audioCb = document.getElementById('wo-tag-audio');
-    if (relaxedCb) relaxedCb.checked = !!(item.tags?.relaxed || item.hasRelaxed || descLower.includes('relaxed'));
-    if (bslCb) bslCb.checked = !!(item.tags?.bsl || descLower.includes('bsl'));
-    if (capCb) capCb.checked = !!(item.tags?.captioned || descLower.includes('captioned'));
-    if (audioCb) audioCb.checked = !!(item.tags?.audioDescribed || descLower.includes('audio described'));
+
+    const tags = (item.tags && typeof item.tags === 'object') ? item.tags : null;
+    if (relaxedCb) relaxedCb.checked = tags ? (tags.relaxed !== undefined ? !!tags.relaxed : !!item.hasRelaxed) : !!item.hasRelaxed;
+    if (bslCb) bslCb.checked = tags ? !!tags.bsl : false;
+    if (capCb) capCb.checked = tags ? !!tags.captioned : false;
+    if (audioCb) audioCb.checked = tags ? !!tags.audioDescribed : false;
 
     document.getElementById('wo-desc-wysiwyg').innerHTML = item.desc || '';
     document.getElementById('wo-ticket-link').value = item.ticketLink || '';
@@ -2004,6 +2005,9 @@ async function handleWhatsOnSubmit() {
         const updated = editId ? shows.map(w => w.id === editId ? entry : w) : [...shows, entry];
         updated.forEach((w, idx) => w.rank = idx + 1);
 
+        currentCache.whatson = updated;
+        renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
+
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/whatson.json', btoa(unescape(encodeURIComponent(JSON.stringify(updated, null, 2)))), `Save What's On: ${title}`);
         showToast(`✅ Successfully saved "${title}"!`, 'status-success');
         cancelEditMode();
@@ -2356,34 +2360,46 @@ function buildFullReviewPageHtml(d) {
 /* --- 7. Table Rendering & Drag/Drop Reordering --- */
 async function loadManagementDashboard() {
     const creds = getCredentials();
-    if (!creds) return;
+
+    async function loadData(path) {
+        if (creds && creds.owner && creds.repo && creds.token) {
+            try {
+                return await fetchJsonFile(creds.owner, creds.repo, creds.token, path);
+            } catch (err) {
+                console.warn(`GitHub fetch failed for ${path}, trying local fallback:`, err);
+            }
+        }
+        const res = await fetch(`${path}?_cb=${Date.now()}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Could not load ${path}`);
+        return await res.json();
+    }
 
     try {
-        const reviews = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/reviews.json');
+        const reviews = await loadData('data/reviews.json');
         currentCache.reviews = reviews.sort((a,b) => ((a.order !== undefined ? Number(a.order) : Number(a.rank)) || 0) - ((b.order !== undefined ? Number(b.order) : Number(b.rank)) || 0));
         renderDraggableTable('reviews', 'manage-reviews-table-container', currentCache.reviews);
     } catch (err) {}
 
     try {
-        const whatson = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/whatson.json');
+        const whatson = await loadData('data/whatson.json');
         currentCache.whatson = whatson.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
         renderDraggableTable('whatson', 'manage-whatson-table-container', currentCache.whatson);
     } catch (err) {}
 
     try {
-        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        const theatres = await loadData('data/theatres.json');
         currentCache.theatres = theatres.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
         renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
     } catch (err) {}
 
     try {
-        const news = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/news.json');
+        const news = await loadData('data/news.json');
         currentCache.news = news.sort((a,b) => ((a.order !== undefined ? Number(a.order) : Number(a.rank)) || 0) - ((b.order !== undefined ? Number(b.order) : Number(b.rank)) || 0));
         renderDraggableTable('news', 'manage-news-table-container', currentCache.news);
     } catch (err) {}
 
     try {
-        const dlp = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/disneyland.json');
+        const dlp = await loadData('data/disneyland.json');
         currentCache.disneyland = dlp;
         renderDisneylandTable('manage-disneyland-table-container', currentCache.disneyland);
     } catch (err) {}
@@ -2710,8 +2726,16 @@ function toggleSettingsModal() {
 }
 
 async function fetchJsonFile(owner, repo, token, path) {
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    const bust = `_cb=${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    const separator = path.includes('?') ? '&' : '?';
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}${separator}${bust}`, {
+        cache: 'no-store',
+        headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Accept': 'application/vnd.github.v3+json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+        }
     });
     if (res.status === 404) return [];
     if (!res.ok) throw new Error(`Could not load ${path} (Status: ${res.status})`);
@@ -2725,7 +2749,16 @@ async function commitGitHubFile(owner, repo, token, path, contentBase64, message
     const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
     let sha = null;
     try {
-        const getRes = await fetch(url, { headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' } });
+        const bust = `_cb=${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+        const getRes = await fetch(`${url}?${bust}`, { 
+            cache: 'no-store',
+            headers: { 
+                'Authorization': `Bearer ${token}`, 
+                'Accept': 'application/vnd.github.v3+json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            } 
+        });
         if (getRes.ok) {
             const data = await getRes.json();
             sha = data.sha;
