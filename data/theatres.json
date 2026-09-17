@@ -78,5 +78,15 @@
     "accessibility": "Level access into the main foyer, wheelchair accessible seating spaces in both the Main Stage and B2 auditorium, and infrared hearing enhancement systems available.",
     "relaxed": "Regular relaxed performances and sensory-adapted touch tours available for key seasonal productions. Quiet family spaces can be accessed upon request via front-of-house staff.",
     "rank": 8
+  },
+  {
+    "id": "th_1789644274622",
+    "name": "Winter Gardens Blackpool",
+    "location": "Blackpool",
+    "image": "wintergardens.webp",
+    "website": "https://www.wintergardensblackpool.co.uk/",
+    "accessibility": "<!--StartFragment-->Level access, ramps, and lifts are available throughout the venue. The theatre operates the Nimbus Disability Access Card (Digital Access Pass) scheme, enabling visitors to register their requirements and easily book accessible seating and essential companion tickets online. Accessible toilets are located within the complex, and assistance dogs are welcome.<!--EndFragment-->",
+    "relaxed": "<!--StartFragment-->As a major receiving house for large-scale UK touring productions, relaxed, BSL, and audio-described performances depend on the individual visiting theatre companies. Check specific show listings for adapted performance dates. Sensory warnings (such as strobe lighting, loud noises, and pyrotechnics) are detailed on the individual event pages.<!--EndFragment-->",
+    "rank": 9
   }
 ]
