@@ -1,5 +1,23 @@
 [
   {
+    "id": "news_1791393866982",
+    "title": "The magic of pantomime has officially arrived in Birmingham!",
+    "slug": "sleeping-beauty-birmingham-hippodrome-launch.html",
+    "category": "Theatre News",
+    "author": "Katy Rose Meaney",
+    "summary": "The star-studded cast of Sleeping Beauty recently gathered at Middleton Hall for the official launch of Birmingham Hippodrome’s spectacular Christmas pantomime.",
+    "bodyHtml": "<!--StartFragment--><h2 style=\"margin-right: 0cm; margin-left: 0cm;\">The magic of pantomime has officially arrived in Birmingham!</h2><div style=\"margin: 1em 0cm; color: rgb(0, 0, 0);\">The star-studded cast of <b>Sleeping Beauty</b> recently came together for the official launch of Birmingham Hippodrome’s spectacular Christmas pantomime.</div><div style=\"margin: 1em 0cm; color: rgb(0, 0, 0);\">BAFTA award-winning TV presenter <b>Rylan</b> makes his Birmingham panto debut as the <b>Diva of Dreams</b>, joining Birmingham panto favourite <b>Matt Slack</b> as Lester the Jester, musical theatre star <b>Zoe Birkett</b> as the wicked Carabosse, and acclaimed pantomime dame <b>Andrew Ryan</b> as Queen Patsy of Pantoland!</div><div style=\"margin: 1em 0cm; color: rgb(0, 0, 0);\">Completing the magical line-up are rising musical theatre stars <b>Ben Culleton</b> as Prince Peter of Perry Barr and <b>Keziah Ibe</b> as Princess Aurora.</div><div style=\"margin: 1em 0cm; color: rgb(0, 0, 0);\">The full cast’s first get-together at the magnificent Middleton Hall offered a first glimpse at the characters and costumes that will bring this year’s spectacular production to life.</div><div style=\"margin: 1em 0cm; color: rgb(0, 0, 0);\">Produced by <b>Crossroads Pantomimes</b>, the world’s biggest pantomime producer, <i>Sleeping Beauty</i> promises a spectacular festive adventure, with <b>lavish sets and costumes direct from The London Palladium</b>, plus magic, music, comedy and dazzling special effects.</div><div style=\"margin: 1em 0cm; color: rgb(0, 0, 0);\">Don’t snooze on booking your seats for Birmingham’s biggest festive spectacular!</div><!--EndFragment-->",
+    "detailsHtml": "<!--StartFragment--><div style=\"margin: 1em 0cm;\"><!--StartFragment--><h3>Key Accessible Performances &amp; Highlights:</h3><ul style=\"color: rgb(34, 34, 34); margin: 8px 0px 14px;\"><li style=\"margin: 0px 0px 6px;\"><b>BSL Interpreted:</b> Sun 10 Jan (1pm &amp; 5.15pm) – Interpreted by Rachel Tipping &amp; Clare Edwards</li><li style=\"margin: 0px 0px 6px;\"><b>Captioned:</b> Sun 17 Jan (1pm &amp; 5.15pm)</li><li style=\"margin: 0px 0px 6px;\"><b>Audio Described:</b> Wed 13 Jan (2pm) &amp; Sat 16 Jan (2.30pm)</li><li style=\"margin: 0px;\"><b>Relaxed Performance: Thu 28 Jan (12:00 noon)</b></li></ul><div><b><a href=\"https://www.birminghamhippodrome.com/calendar/sleeping-beauty/#performances\" class=\"btn btn-primary\" target=\"_blank\" rel=\"noopener noreferrer\">Book Tickets</a>&nbsp;<br></b></div><!--EndFragment--></div><!--EndFragment-->",
+    "mainImage": "sleeping-beauty-full-cast-photo-simon-hadley.webp",
+    "galleryImages": [],
+    "dateDrafted": "2026-10-07T17:24:24.910Z",
+    "datePublished": "2026-10-07T17:24:24.910Z",
+    "dateModified": "2026-10-07T17:24:24.910Z",
+    "status": "published",
+    "order": 1,
+    "rank": 1
+  },
+  {
     "id": "news_1789716187415",
     "title": "UK Theatre Awards 2026 Nominations: Our Midlands Top Picks",
     "slug": "uk-theatre-awards-2026-nominations.html",
@@ -14,8 +32,8 @@
     "datePublished": "2026-09-18T07:23:05.550Z",
     "dateModified": "2026-09-18T07:23:05.550Z",
     "status": "published",
-    "order": 1,
-    "rank": 1
+    "order": 2,
+    "rank": 2
   },
   {
     "id": "news_1789681983778",
@@ -32,7 +50,7 @@
     "datePublished": null,
     "dateModified": "2026-09-17T21:53:03.258Z",
     "status": "draft",
-    "order": 2,
+    "order": 3,
     "rank": 1000
   },
   {
@@ -50,7 +68,7 @@
     "datePublished": null,
     "dateModified": "2026-09-17T21:38:40.947Z",
     "status": "draft",
-    "order": 3,
+    "order": 4,
     "rank": 1001
   },
   {
@@ -68,7 +86,7 @@
     "datePublished": null,
     "dateModified": "2026-09-17T21:12:56.766Z",
     "status": "draft",
-    "order": 4,
+    "order": 5,
     "rank": 1002
   },
   {
@@ -86,7 +104,7 @@
     "datePublished": null,
     "dateModified": "2026-09-16T11:38:06.792Z",
     "status": "draft",
-    "order": 5,
+    "order": 6,
     "rank": 1003
   },
   {
@@ -119,8 +137,8 @@
     "datePublished": "2026-09-11T22:18:02.595Z",
     "dateModified": "2026-09-13T20:52:50.843Z",
     "status": "published",
-    "rank": 2,
-    "order": 6
+    "rank": 3,
+    "order": 7
   },
   {
     "id": "news_1789142148166",
@@ -143,8 +161,8 @@
     "datePublished": "2026-09-11T15:55:36.709Z",
     "dateModified": "2026-09-11T15:55:36.709Z",
     "status": "published",
-    "rank": 3,
-    "order": 7
+    "rank": 4,
+    "order": 8
   },
   {
     "id": "news_1788863127199",
@@ -165,8 +183,8 @@
     "datePublished": "2026-09-08T10:25:19.941Z",
     "dateModified": "2026-09-08T10:25:19.941Z",
     "status": "published",
-    "rank": 4,
-    "order": 8
+    "rank": 5,
+    "order": 9
   },
   {
     "id": "news_1788815656033",
@@ -189,8 +207,8 @@
     "datePublished": "2026-09-07T21:14:04.115Z",
     "dateModified": "2026-09-07T21:14:04.115Z",
     "status": "published",
-    "rank": 5,
-    "order": 9
+    "rank": 6,
+    "order": 10
   },
   {
     "id": "news_1788815019425",
@@ -217,8 +235,8 @@
     "datePublished": "2026-09-07T21:03:23.111Z",
     "dateModified": "2026-09-07T21:03:23.111Z",
     "status": "published",
-    "rank": 6,
-    "order": 10
+    "rank": 7,
+    "order": 11
   },
   {
     "id": "news_1788073741864",
@@ -234,8 +252,8 @@
     "datePublished": "2026-08-30T07:08:59.721Z",
     "dateModified": "2026-08-30T07:33:32.610Z",
     "status": "published",
-    "rank": 7,
-    "order": 11
+    "rank": 8,
+    "order": 12
   },
   {
     "id": "news_1787910327655",
@@ -260,8 +278,8 @@
     "datePublished": "2026-08-28T09:45:26.242Z",
     "dateModified": "2026-08-28T10:21:02.942Z",
     "status": "published",
-    "rank": 8,
-    "order": 12
+    "rank": 9,
+    "order": 13
   },
   {
     "id": "news_1788075856975",
@@ -280,8 +298,8 @@
     "datePublished": "2026-08-30T07:44:13.018Z",
     "dateModified": "2026-08-30T07:44:13.018Z",
     "status": "published",
-    "rank": 9,
-    "order": 13
+    "rank": 10,
+    "order": 14
   },
   {
     "id": "news_1787918274041",
@@ -297,8 +315,8 @@
     "datePublished": "2026-08-28T11:57:52.520Z",
     "dateModified": "2026-08-28T12:18:40.140Z",
     "status": "published",
-    "rank": 10,
-    "order": 14
+    "rank": 11,
+    "order": 15
   },
   {
     "id": "news_1787921601777",
@@ -314,7 +332,7 @@
     "datePublished": "2026-08-28T12:53:20.303Z",
     "dateModified": "2026-08-28T12:57:54.153Z",
     "status": "published",
-    "rank": 11,
-    "order": 15
+    "rank": 12,
+    "order": 16
   }
 ]
