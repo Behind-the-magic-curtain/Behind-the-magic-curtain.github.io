@@ -37,7 +37,8 @@
                     <li><a href="theatre-guide.html" class="active">Theatre Guide</a></li>
                     <li><a href="tips-for-parents.html">Tips for Parents</a></li>
                     <li><a href="reviews.html">Reviews</a></li>
-                    <li><a href="disneyland-paris.html">Disneyland Paris</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="pantomime.html">Panto Guide</a></li>
                 </ul>
             </nav>
         </div>
@@ -47,17 +48,28 @@
         <section class="page-header">
             <div class="container">
                 <h1>Theatre Accessibility Guide</h1>
-                <p>Sensory-friendly, relaxed, and accessible theatre across the West Midlands and beyond.</p>
+                <p>Sensory-friendly, relaxed, and accessible theatre &amp; arena guides across the Midlands and beyond.</p>
             </div>
         </section>
 
-        <!-- Search & Location Filter Controls -->
+        <!-- Search, Location Filter & Dynamic Quick-Jump Controls -->
         <section class="filter-section">
-            <div class="container" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
-                <input type="search" id="theatre-search-input" placeholder="Search theatre name, accessibility features..." style="flex: 1 1 260px; padding: 10px 18px; border-radius: 50px; border: 1.5px solid var(--color-border); outline: none; font-family: var(--font-body); font-size: 0.95rem;">
-                <select id="theatre-location-filter" style="padding: 10px 18px; border-radius: 50px; border: 1.5px solid var(--color-border); outline: none; background: #ffffff; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; cursor: pointer;">
-                    <option value="all">All Locations</option>
-                </select>
+            <div class="container" style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 14px;">
+                    <div style="position: relative; flex: 1 1 280px; display: flex; align-items: center;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 16px; color: var(--color-text-light); pointer-events: none;"></i>
+                        <input type="search" id="theatre-search-input" placeholder="Search venue name, city, Changing Places, sensory room, ear defenders..." style="width: 100%; padding: 11px 18px 11px 42px; border-radius: 50px; border: 1.5px solid var(--color-border); outline: none; font-family: var(--font-body); font-size: 0.95rem;">
+                    </div>
+                    <select id="theatre-location-filter" aria-label="Filter venues by location" style="padding: 11px 18px; border-radius: 50px; border: 1.5px solid var(--color-border); outline: none; background: #ffffff; font-family: var(--font-body); font-size: 0.95rem; font-weight: 600; cursor: pointer;">
+                        <option value="all">All Locations</option>
+                    </select>
+                    <button type="button" id="theatre-clear-filters-btn" class="btn btn-secondary" style="display: none; padding: 9px 18px; border-radius: 50px; font-size: 0.88rem;">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Filters
+                    </button>
+                </div>
+                <!-- Dynamically populated from data/theatres.json in Admin rank order -->
+                <div id="theatre-quick-jump" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px;"></div>
+                <div id="theatre-results-status" style="font-size: 0.88rem; color: var(--color-text-light); font-weight: 500;"></div>
             </div>
         </section>
 

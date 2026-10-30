@@ -2017,6 +2017,35 @@ async function handleWhatsOnSubmit() {
     }
 }
 
+async function ensureLocalImageUploadedToGitHub(owner, repo, token, imageName) {
+    if (!imageName) return;
+    const path = `images/${imageName}`;
+    const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    try {
+        const checkRes = await fetch(`${url}?_cb=${Date.now()}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+        if (checkRes.ok) return; // Already exists in GitHub repo
+    } catch (e) {}
+
+    // Fetch from local workspace and upload to GitHub
+    const localRes = await fetch(`images/${imageName}?_cb=${Date.now()}`);
+    if (!localRes.ok) return;
+    const blob = await localRes.blob();
+    const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve((reader.result || '').toString().split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+    if (base64) {
+        await commitGitHubFile(owner, repo, token, path, base64, `Upload theatre photo: ${imageName}`);
+    }
+}
+
 async function handleTheatreSubmit() {
     const creds = getCredentials();
     if (!creds) return;
@@ -2024,16 +2053,20 @@ async function handleTheatreSubmit() {
     const editId = document.getElementById('th-edit-id').value;
     const name = document.getElementById('th-name').value.trim();
 
-    showToast('⏳ Saving Theatre Guide...', 'status-loading');
+    showToast('⏳ Saving Theatre Guide & syncing venue photo...', 'status-loading');
     try {
         for (let item of theatreImages) {
             if (item.base64) {
                 await commitGitHubFile(creds.owner, creds.repo, creds.token, `images/${item.name}`, item.base64, `Upload theatre photo: ${item.name}`);
+            } else if (item.name) {
+                await ensureLocalImageUploadedToGitHub(creds.owner, creds.repo, creds.token, item.name);
             }
         }
 
-        const theatres = await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
-        const primaryImage = theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'theatre-default.webp' : 'theatre-default.webp');
+        const theatres = (currentCache.theatres && currentCache.theatres.length > 0)
+            ? [...currentCache.theatres]
+            : await fetchJsonFile(creds.owner, creds.repo, creds.token, 'data/theatres.json');
+        const primaryImage = theatreImages.length > 0 ? theatreImages[0].name : (editId ? theatres.find(t => t.id === editId)?.image || 'birmingham-hippodrome.webp' : 'birmingham-hippodrome.webp');
 
         const entry = {
             id: editId || 'th_' + Date.now(),
@@ -2048,6 +2081,7 @@ async function handleTheatreSubmit() {
 
         const updatedTheatres = editId ? theatres.map(t => t.id === editId ? entry : t) : [...theatres, entry];
         updatedTheatres.forEach((t, idx) => t.rank = idx + 1);
+        currentCache.theatres = updatedTheatres;
 
         await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/theatres.json', btoa(unescape(encodeURIComponent(JSON.stringify(updatedTheatres, null, 2)))), `Save theatre: ${name}`);
         showToast(`✅ Successfully saved "${name}"!`, 'status-success');
@@ -2057,6 +2091,53 @@ async function handleTheatreSubmit() {
         showToast(`❌ Error: ${err.message}`, 'status-error');
     }
 }
+
+async function syncLocalTheatresToGitHub() {
+    const creds = getCredentials();
+    if (!creds) return;
+
+    const btn = document.getElementById('btn-sync-theatres-gh');
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing Photos & Data...';
+    }
+
+    showToast('⏳ Uploading venue photos and syncing Theatre Guide to GitHub...', 'status-loading');
+    try {
+        const list = (currentCache.theatres && currentCache.theatres.length > 0)
+            ? [...currentCache.theatres]
+            : await (await fetch(`data/theatres.json?_cb=${Date.now()}`, { cache: 'no-store' })).json();
+
+        list.forEach((t, idx) => t.rank = idx + 1);
+
+        for (const t of list) {
+            if (t.image) {
+                await ensureLocalImageUploadedToGitHub(creds.owner, creds.repo, creds.token, t.image);
+            }
+        }
+
+        await commitGitHubFile(
+            creds.owner,
+            creds.repo,
+            creds.token,
+            'data/theatres.json',
+            btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))),
+            `Sync full Theatre Guide (${list.length} venues) & photos`
+        );
+
+        showToast(`✅ Synced all ${list.length} venues & photos to GitHub!`, 'status-success');
+        loadManagementDashboard();
+    } catch (err) {
+        showToast(`❌ GitHub Sync Error: ${err.message}`, 'status-error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = origHtml;
+        }
+    }
+}
+window.syncLocalTheatresToGitHub = syncLocalTheatresToGitHub;
 
 async function handleDisneylandSubmit() {
     const creds = getCredentials();
@@ -2387,8 +2468,36 @@ async function loadManagementDashboard() {
     } catch (err) {}
 
     try {
-        const theatres = await loadData('data/theatres.json');
-        currentCache.theatres = theatres.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
+        const remoteTheatres = await loadData('data/theatres.json');
+        let localTheatres = [];
+        try {
+            const localRes = await fetch(`data/theatres.json?_cb=${Date.now()}`, { cache: 'no-store' });
+            if (localRes.ok) localTheatres = await localRes.json();
+        } catch (e) {}
+
+        // Merge local additions/standardized profiles if remote has fewer entries
+        let mergedTheatres = Array.isArray(remoteTheatres) ? [...remoteTheatres] : [];
+        if (Array.isArray(localTheatres) && localTheatres.length > 0) {
+            if (mergedTheatres.length < localTheatres.length) {
+                const remoteMap = new Map(mergedTheatres.map(t => [t.id, t]));
+                mergedTheatres = localTheatres.map(lt => {
+                    const rt = remoteMap.get(lt.id);
+                    if (!rt) return lt;
+                    // Use standardized/expanded profile if remote had short placeholder or inline span
+                    const useLocal = (rt.accessibility || '').includes('font-size: 15.2px') || (rt.accessibility || '').length < (lt.accessibility || '').length;
+                    return useLocal ? { ...rt, accessibility: lt.accessibility, relaxed: lt.relaxed, website: lt.website || rt.website, image: rt.image || lt.image } : rt;
+                });
+                // Append any custom remote entries not in localTheatres
+                const localIds = new Set(localTheatres.map(lt => lt.id));
+                remoteTheatres.forEach(rt => {
+                    if (!localIds.has(rt.id)) mergedTheatres.push(rt);
+                });
+                mergedTheatres.forEach((t, i) => t.rank = i + 1);
+            }
+        }
+
+        currentCache.theatres = mergedTheatres.sort((a,b) => (Number(a.rank)||0) - (Number(b.rank)||0));
+        updateTheatreLocationDatalist(currentCache.theatres);
         renderDraggableTable('theatres', 'manage-theatres-table-container', currentCache.theatres);
     } catch (err) {}
 
@@ -2407,6 +2516,81 @@ async function loadManagementDashboard() {
     loadNavToggles();
 }
 
+function updateTheatreLocationDatalist(theatres = []) {
+    const datalist = document.getElementById('th-location-datalist');
+    if (!datalist) return;
+    const locations = [...new Set(theatres.map(t => (t.location || '').trim()).filter(Boolean))];
+    datalist.innerHTML = locations.map(loc => `<option value="${loc}"></option>`).join('');
+}
+
+async function moveItemRank(type, index, direction) {
+    const list = currentCache[type];
+    if (!Array.isArray(list)) return;
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+
+    const [movedItem] = list.splice(index, 1);
+    list.splice(targetIndex, 0, movedItem);
+
+    if (type === 'reviews' || type === 'news') {
+        let publishedRank = 1;
+        let draftRank = 1000;
+        list.forEach((item, idx) => {
+            item.order = idx + 1;
+            if (item.status === 'published') {
+                item.rank = publishedRank++;
+            } else {
+                item.rank = draftRank++;
+            }
+        });
+    } else {
+        list.forEach((item, idx) => item.rank = idx + 1);
+    }
+
+    const containerMap = {
+        reviews: 'manage-reviews-table-container',
+        whatson: 'manage-whatson-table-container',
+        theatres: 'manage-theatres-table-container',
+        news: 'manage-news-table-container'
+    };
+    if (type === 'theatres') updateTheatreLocationDatalist(list);
+    renderDraggableTable(type, containerMap[type], list);
+
+    const creds = getCredentials();
+    if (!creds) return;
+    showToast(`⏳ Saving new ${type} order...`, 'status-loading');
+    try {
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, `data/${type}.json`, btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), `Re-order ${type}`);
+        showToast(`✅ ${type} order updated!`, 'status-success');
+    } catch (err) {
+        showToast(`❌ Failed to save order: ${err.message}`, 'status-error');
+    }
+}
+window.moveItemRank = moveItemRank;
+
+async function changeTheatreLocationInline(id, newLocation) {
+    const cleanLoc = (newLocation || '').trim();
+    if (!cleanLoc) return;
+    const list = currentCache.theatres || [];
+    const target = list.find(t => t.id === id);
+    if (!target || target.location === cleanLoc) return;
+
+    target.location = cleanLoc;
+    updateTheatreLocationDatalist(list);
+    renderDraggableTable('theatres', 'manage-theatres-table-container', list);
+
+    const creds = getCredentials();
+    if (!creds) return;
+    showToast(`⏳ Moving "${target.name}" to ${cleanLoc}...`, 'status-loading');
+    try {
+        await commitGitHubFile(creds.owner, creds.repo, creds.token, 'data/theatres.json', btoa(unescape(encodeURIComponent(JSON.stringify(list, null, 2)))), `Move theatre ${target.name} to ${cleanLoc}`);
+        showToast(`✅ Moved "${target.name}" to ${cleanLoc}!`, 'status-success');
+    } catch (err) {
+        showToast(`❌ Error saving location: ${err.message}`, 'status-error');
+    }
+}
+window.changeTheatreLocationInline = changeTheatreLocationInline;
+
 function renderDraggableTable(type, containerId, items) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -2420,11 +2604,11 @@ function renderDraggableTable(type, containerId, items) {
         <table class="crud-table" id="table-${type}">
             <thead>
                 <tr>
-                    <th style="width: 85px;">Rank</th>
-                    <th>${type === 'theatres' ? 'Theatre Name' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
+                    <th style="width: 120px;">Rank &amp; Order</th>
+                    <th>${type === 'theatres' ? 'Theatre / Venue' : (type === 'whatson' ? 'Show Title' : 'Title')}</th>
                     ${(type === 'reviews' || type === 'whatson' || type === 'news') ? '<th style="width: 160px;">Slot</th>' : ''}
                     ${type === 'whatson' ? '<th>Venue</th><th style="min-width: 170px;">Filter Tags</th><th>End Date</th>' : ''}
-                    ${type === 'theatres' ? '<th>Location</th>' : ''}
+                    ${type === 'theatres' ? '<th style="width: 220px;">City / Location (Editable)</th>' : ''}
                     ${type === 'news' ? '<th>Category</th><th>Publication Date</th>' : ''}
                     <th style="width: 180px;">Actions</th>
                 </tr>
@@ -2457,6 +2641,17 @@ function renderDraggableTable(type, containerId, items) {
         }
 
         let titleContent = `<strong>${item.title || item.name}</strong>`;
+        if (type === 'theatres' && item.image) {
+            titleContent = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="images/${item.image}" alt="${item.name}" style="width:48px; height:36px; object-fit:cover; border-radius:4px; border:1px solid #cbd5e1; flex-shrink:0;" onerror="this.style.display='none'">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <div style="font-size:0.74rem; color:#64748b;">${item.image}</div>
+                    </div>
+                </div>
+            `;
+        }
         if (isDraft) {
             titleContent += ` <span class="badge-status-draft"><i class="fa-solid fa-file-pen"></i> Draft</span>`;
         }
@@ -2486,11 +2681,20 @@ function renderDraggableTable(type, containerId, items) {
             newsMetaHtml = `<td>${item.category || 'News'}</td><td>${dateStr}</td>`;
         }
 
+        const upDisabled = index === 0 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : '';
+        const downDisabled = index === items.length - 1 ? 'disabled style="opacity:0.3; cursor:not-allowed;"' : '';
+
         tableHtml += `
             <tr class="draggable-row" draggable="true" data-type="${type}" data-index="${index}">
                 <td>
-                    <span class="grab-handle"><i class="fa-solid fa-bars"></i></span>
-                    ${rankBadgeHtml}
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <span class="grab-handle" title="Drag to reorder"><i class="fa-solid fa-bars"></i></span>
+                        ${rankBadgeHtml}
+                        <span style="display:inline-flex; flex-direction:column; gap:2px; margin-left:2px;">
+                            <button type="button" onclick="moveItemRank('${type}', ${index}, -1)" title="Move Up" ${upDisabled} style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; line-height:1;"><i class="fa-solid fa-chevron-up"></i></button>
+                            <button type="button" onclick="moveItemRank('${type}', ${index}, 1)" title="Move Down" ${downDisabled} style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:0.65rem; cursor:pointer; line-height:1;"><i class="fa-solid fa-chevron-down"></i></button>
+                        </span>
+                    </div>
                 </td>
                 <td>${titleContent}</td>
                 ${slotHtml}
@@ -2506,7 +2710,11 @@ function renderDraggableTable(type, containerId, items) {
                     </td>
                     <td>${item.expiryDate || '<span style="color:#aaa;">No Expiry</span>'}</td>
                 ` : ''}
-                ${type === 'theatres' ? `<td>${item.location}</td>` : ''}
+                ${type === 'theatres' ? `
+                    <td>
+                        <input type="text" value="${(item.location || '').replace(/"/g, '&quot;')}" list="th-location-datalist" title="Change city/location group and press Enter or click away" onchange="changeTheatreLocationInline('${item.id}', this.value)" style="width:100%; padding:6px 10px; font-size:0.84rem; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc; font-weight:600; color:#1e293b;">
+                    </td>
+                ` : ''}
                 ${newsMetaHtml}
                 <td>
                     <div style="display:flex; gap:6px;">

@@ -684,7 +684,9 @@ async function loadWhatsOnDirectory() {
                     const reg = (s.region || '').toLowerCase();
                     const ven = (s.venue || '').toLowerCase();
                     if (selectedLocation === 'midlands') {
-                        const isMidlands = reg.includes('midlands') || ['birmingham', 'wolverhampton', 'lichfield', 'belgrade', 'coventry', 'stafford'].some(c => ven.includes(c));
+                        const isMidlands = reg.includes('midlands') ||
+                            ['staffordshire', 'warwickshire', 'worcestershire', 'shropshire', 'derbyshire', 'leicestershire', 'nottinghamshire', 'northamptonshire'].some(r => reg.includes(r)) ||
+                            ['birmingham', 'wolverhampton', 'lichfield', 'belgrade', 'coventry', 'stafford', 'stoke', 'regent', 'newcastle-under-lyme', 'new vic', 'stratford', 'warwick', 'mac', 'hippodrome', 'rep', 'alexandra', 'bp pulse', 'utilita', 'symphony hall', 'town hall', 'leicester', 'curve', 'derby', 'nottingham', 'tamworth', 'cannock', 'malvern', 'worcester'].some(c => ven.includes(c));
                         if (!isMidlands) return false;
                     } else if (selectedLocation === 'london') {
                         const isLondon = reg.includes('london') || ['london', 'west end', 'savoy'].some(c => ven.includes(c));
@@ -695,19 +697,24 @@ async function loadWhatsOnDirectory() {
                     }
                 }
 
-                // 4. Age Rating Filter
+                // 4. Age Rating Filter (Inclusive Child-Suitability Matching)
                 if (selectedAge !== 'all') {
-                    const ageStr = (s.age || '').toLowerCase();
-                    const numMatch = ageStr.match(/\d+/);
+                    const ageRaw = (s.age || '').toLowerCase().trim();
+                    const numMatch = ageRaw.match(/\d+/);
                     const ageNum = numMatch ? parseInt(numMatch[0], 10) : 0;
+                    const isAllAges = ageRaw.includes('all') || ageRaw.includes('family') || ageRaw === '0+' || ageRaw.includes('ages 0+');
+
                     if (selectedAge === 'under5') {
-                        const isUnder5 = ageStr.includes('all') || ageNum < 5;
+                        // Suitable for under 5s (0-4): All Ages, 0+, Under 5s, 2+, 3+, 4+
+                        const isUnder5 = isAllAges || ageRaw.includes('under') || (numMatch && ageNum <= 4);
                         if (!isUnder5) return false;
                     } else if (selectedAge === '4plus') {
-                        const is4to6 = ageNum >= 4 && ageNum <= 6;
+                        // Suitable for ages 4-6: All Ages, 0+, plus shows starting between 4 and 6 (e.g. 4+, 5+, 6+)
+                        const is4to6 = isAllAges || (numMatch && ageNum >= 4 && ageNum <= 6);
                         if (!is4to6) return false;
                     } else if (selectedAge === '7plus') {
-                        const is7plus = ageNum >= 7;
+                        // Suitable for ages 7+: Shows starting at 7+ or 10+, plus universal family/all ages shows
+                        const is7plus = isAllAges || (numMatch && ageNum >= 7);
                         if (!is7plus) return false;
                     }
                 }
@@ -890,6 +897,9 @@ async function loadTheatreGuideDirectory() {
     const container = document.getElementById('theatre-list');
     const searchInput = document.getElementById('theatre-search-input');
     const locationSelect = document.getElementById('theatre-location-filter');
+    const quickJumpContainer = document.getElementById('theatre-quick-jump');
+    const resultsStatus = document.getElementById('theatre-results-status');
+    const clearBtn = document.getElementById('theatre-clear-filters-btn');
     if (!container) return;
 
     try {
@@ -898,63 +908,145 @@ async function loadTheatreGuideDirectory() {
         const theatres = await res.json();
         theatres.sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
+        // Preserve Admin Studio rank order for locations
+        const locations = [...new Set(theatres.map(t => (t.location || '').trim()).filter(Boolean))];
+
         if (locationSelect) {
-            const locations = [...new Set(theatres.map(t => t.location).filter(Boolean))].sort();
-            locationSelect.innerHTML = '<option value="all">All Locations</option>' + locations.map(l => `<option value="${l}">${l}</option>`).join('');
+            locationSelect.innerHTML = '<option value="all">All Locations (' + theatres.length + ')</option>' +
+                locations.map(l => {
+                    const count = theatres.filter(t => (t.location || '').trim() === l).length;
+                    return `<option value="${l}">${l} (${count})</option>`;
+                }).join('');
         }
 
         const urlParams = new URLSearchParams(window.location.search);
         const queryParam = urlParams.get('q');
+        const locParam = urlParams.get('location');
         if (queryParam && searchInput) searchInput.value = queryParam;
+        if (locParam && locationSelect && locations.includes(locParam)) {
+            locationSelect.value = locParam;
+        }
+
+        const renderQuickJumpPills = (activeLoc) => {
+            if (!quickJumpContainer) return;
+            const allActive = activeLoc === 'all';
+            let pillsHtml = `<button type="button" class="filter-btn ${allActive ? 'active' : ''}" data-jump-loc="all" style="padding: 6px 14px; font-size: 0.84rem; border-radius: 50px;">All Venues (${theatres.length})</button>`;
+            locations.forEach(loc => {
+                const count = theatres.filter(t => (t.location || '').trim() === loc).length;
+                const isActive = activeLoc === loc;
+                pillsHtml += `<button type="button" class="filter-btn ${isActive ? 'active' : ''}" data-jump-loc="${loc}" style="padding: 6px 14px; font-size: 0.84rem; border-radius: 50px;"><i class="fa-solid fa-location-dot" style="font-size:0.75rem; margin-right:4px;"></i>${loc} (${count})</button>`;
+            });
+            quickJumpContainer.innerHTML = pillsHtml;
+
+            quickJumpContainer.querySelectorAll('[data-jump-loc]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetLoc = btn.getAttribute('data-jump-loc') || 'all';
+                    if (locationSelect) {
+                        locationSelect.value = targetLoc;
+                    }
+                    render();
+                });
+            });
+        };
 
         const render = () => {
             const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
             const loc = locationSelect ? locationSelect.value : 'all';
+            const isFiltered = q.length > 0 || loc !== 'all';
+
+            renderQuickJumpPills(loc);
+
+            if (clearBtn) {
+                clearBtn.style.display = isFiltered ? 'inline-flex' : 'none';
+            }
 
             const filtered = theatres.filter(t => {
-                const matchesText = `${t.name} ${t.location} ${t.accessibility} ${t.relaxed || ''}`.toLowerCase().includes(q);
-                const matchesLoc = loc === 'all' || t.location === loc;
+                const haystack = `${t.name} ${t.location} ${t.accessibility} ${t.relaxed || ''}`.toLowerCase();
+                let matchesText = true;
+                if (q) {
+                    const words = q.split(/\s+/).filter(Boolean);
+                    matchesText = haystack.includes(q) || words.every(w => haystack.includes(w));
+                }
+                const matchesLoc = loc === 'all' || (t.location || '').trim() === loc;
                 return matchesText && matchesLoc;
             });
 
+            if (resultsStatus) {
+                resultsStatus.textContent = isFiltered
+                    ? `Showing ${filtered.length} of ${theatres.length} accessible venues`
+                    : `Showing all ${theatres.length} accessible venues across ${locations.length} locations`;
+            }
+
             if (filtered.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#777; margin:30px 0;">No matching theatre venues found.</p>';
+                container.innerHTML = `
+                <div style="text-align: center; padding: 42px 20px; background: #fff; border-radius: 12px; border: 1.5px dashed var(--color-border); margin: 24px 0;">
+                    <i class="fa-solid fa-masks-theater" style="font-size: 2.2rem; color: var(--color-primary); margin-bottom: 12px; display: inline-block;"></i>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 8px; font-family: var(--font-heading);">No matching theatre venues found</h3>
+                    <p style="color: var(--color-text-light); max-width: 440px; margin: 0 auto 16px auto; font-size: 0.92rem;">Try clearing your search or selecting "All Locations" to browse all Midlands &amp; UK theatre accessibility guides.</p>
+                    <button type="button" class="btn btn-secondary" id="theatre-empty-reset-btn" style="padding: 8px 20px;">Reset All Filters</button>
+                </div>`;
+                const emptyReset = document.getElementById('theatre-empty-reset-btn');
+                if (emptyReset) emptyReset.addEventListener('click', resetTheatreFilters);
                 return;
             }
 
             const groups = {};
             filtered.forEach(t => {
-                const region = t.location || 'Other Venues';
+                const region = (t.location || 'Other Venues').trim();
                 if (!groups[region]) groups[region] = [];
                 groups[region].push(t);
             });
 
-            container.innerHTML = Object.keys(groups).map(region => `
-                <div class="theatre-region-group" style="margin-bottom: 45px;">
-                    <h2 style="font-size:1.6rem; color:var(--color-primary); border-bottom:2px solid #e0e0e0; padding-bottom:8px; margin-bottom:20px;">
-                        <i class="fa-solid fa-location-dot"></i> ${region}
+            container.innerHTML = Object.keys(groups).map(region => {
+                const regionSlug = region.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                return `
+                <div class="theatre-region-group" id="region-${regionSlug}" style="margin-bottom: 45px;">
+                    <h2 style="font-size:1.6rem; color:var(--color-primary); border-bottom:2px solid #e0e0e0; padding-bottom:8px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                        <span><i class="fa-solid fa-location-dot"></i> ${region}</span>
+                        <span style="font-size:0.85rem; font-weight:600; color:var(--color-text-light);">${groups[region].length} ${groups[region].length === 1 ? 'Venue' : 'Venues'}</span>
                     </h2>
                     <div class="theatre-region-cards">
                         ${groups[region].map(t => buildTheatreCardHTML(t)).join('')}
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         };
+
+        function resetTheatreFilters() {
+            if (searchInput) searchInput.value = '';
+            if (locationSelect) locationSelect.value = 'all';
+            render();
+        }
 
         render();
 
         if (searchInput) searchInput.addEventListener('input', render);
         if (locationSelect) locationSelect.addEventListener('change', render);
+        if (clearBtn) clearBtn.addEventListener('click', resetTheatreFilters);
 
     } catch (e) {
         console.warn('Theatre load failure:', e);
     }
 }
 
-/* --- 8. News Directory --- */
+/* --- 8. News Directory (9-Tile Progressive Pagination & Filter Bar) --- */
 async function loadNewsDirectory() {
     const container = document.getElementById('news-feed-list');
     if (!container) return;
+
+    const searchInput = document.getElementById('news-search-input');
+    const searchClearBtn = document.getElementById('news-search-clear');
+    const resultsCount = document.getElementById('news-results-count');
+    const categoryPillsContainer = document.getElementById('news-category-pills');
+    const paginationWrap = document.getElementById('news-pagination-wrap');
+    const viewMoreBtn = document.getElementById('news-view-more-btn');
+    const moreCounter = document.getElementById('news-more-counter');
+    const endMsg = document.getElementById('news-end-msg');
+
+    const PAGE_SIZE = 9;
+    let visibleCount = PAGE_SIZE;
+    let selectedCategory = 'all';
+    let searchQuery = '';
 
     try {
         const res = await fetch('data/news.json');
@@ -965,11 +1057,157 @@ async function loadNewsDirectory() {
             .filter(n => n.status === 'published')
             .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999));
 
-        container.innerHTML = published.length > 0
-            ? published.map(n => buildNewsCardHTML(n)).join('')
-            : '<p style="text-align:center; color:#777; margin:30px 0;">No news stories published yet. Check back soon!</p>';
+        // Check for URL query params (e.g. ?category=Spotlight or ?q=panto)
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = urlParams.get('q') || '';
+        const initialCategory = urlParams.get('category') || 'all';
+
+        if (initialQuery && searchInput) {
+            searchInput.value = initialQuery;
+            searchQuery = initialQuery;
+            if (searchClearBtn) searchClearBtn.style.display = 'inline-block';
+        }
+
+        // Dynamically build category pills from published news
+        if (categoryPillsContainer) {
+            const rawCats = published
+                .map(n => (n.category || '').trim())
+                .filter(Boolean);
+            const uniqueCats = Array.from(new Set(rawCats));
+
+            if (initialCategory !== 'all' && uniqueCats.some(c => c.toLowerCase() === initialCategory.toLowerCase())) {
+                selectedCategory = initialCategory;
+            }
+
+            let pillsHTML = `<button type="button" class="filter-btn ${selectedCategory === 'all' ? 'active' : ''}" data-category="all">All Stories</button>`;
+            uniqueCats.forEach(cat => {
+                const isActive = selectedCategory.toLowerCase() === cat.toLowerCase();
+                pillsHTML += `<button type="button" class="filter-btn ${isActive ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+            });
+            categoryPillsContainer.innerHTML = pillsHTML;
+
+            categoryPillsContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+                categoryPillsContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedCategory = btn.getAttribute('data-category') || 'all';
+                visibleCount = PAGE_SIZE; // Reset to first 9 on filter change
+                render();
+            });
+        }
+
+        const getFilteredNews = () => {
+            const q = searchQuery.toLowerCase().trim();
+            return published.filter(n => {
+                const cat = (n.category || '').trim();
+                const matchesCat = selectedCategory === 'all' || cat.toLowerCase() === selectedCategory.toLowerCase();
+                if (!matchesCat) return false;
+
+                if (!q) return true;
+                const haystack = `${n.title || ''} ${n.summary || ''} ${cat} ${n.author || ''}`.toLowerCase();
+                const words = q.split(/\s+/).filter(Boolean);
+                return haystack.includes(q) || words.every(w => haystack.includes(w));
+            });
+        };
+
+        const render = () => {
+            const filtered = getFilteredNews();
+            const totalMatching = filtered.length;
+            const toShow = filtered.slice(0, visibleCount);
+
+            if (totalMatching === 0) {
+                container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: #fff; border-radius: 12px; border: 1.5px dashed var(--color-border); margin: 20px 0;">
+                    <i class="fa-regular fa-newspaper" style="font-size: 2.2rem; color: var(--color-primary); margin-bottom: 12px; display: inline-block;"></i>
+                    <h3 style="font-size: 1.2rem; margin-bottom: 8px; font-family: var(--font-heading);">No matching news stories found</h3>
+                    <p style="color: var(--color-text-light); max-width: 440px; margin: 0 auto 16px auto; font-size: 0.92rem;">Try adjusting your search terms or selecting "All Stories" to browse all latest updates.</p>
+                    <button type="button" class="btn btn-secondary" id="news-empty-reset-btn" style="padding: 8px 20px;">Reset Filters</button>
+                </div>`;
+                const resetBtn = document.getElementById('news-empty-reset-btn');
+                if (resetBtn) resetBtn.addEventListener('click', resetNewsFilters);
+                if (resultsCount) resultsCount.textContent = '0 stories found';
+                if (paginationWrap) paginationWrap.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = toShow.map(n => buildNewsCardHTML(n)).join('');
+
+            if (resultsCount) {
+                resultsCount.textContent = `Showing ${toShow.length} of ${totalMatching} ${totalMatching === 1 ? 'story' : 'stories'}`;
+            }
+
+            if (paginationWrap) {
+                paginationWrap.style.display = 'block';
+            }
+
+            const remaining = totalMatching - toShow.length;
+            if (viewMoreBtn) {
+                if (remaining > 0) {
+                    viewMoreBtn.style.display = 'inline-flex';
+                    if (moreCounter) {
+                        moreCounter.textContent = `+${Math.min(remaining, PAGE_SIZE)}`;
+                    }
+                } else {
+                    viewMoreBtn.style.display = 'none';
+                }
+            }
+
+            if (endMsg) {
+                endMsg.style.display = (totalMatching > PAGE_SIZE && remaining === 0) ? 'block' : 'none';
+            }
+        };
+
+        function resetNewsFilters() {
+            if (searchInput) searchInput.value = '';
+            searchQuery = '';
+            if (searchClearBtn) searchClearBtn.style.display = 'none';
+            selectedCategory = 'all';
+            if (categoryPillsContainer) {
+                categoryPillsContainer.querySelectorAll('.filter-btn').forEach(b => {
+                    if (b.getAttribute('data-category') === 'all') b.classList.add('active');
+                    else b.classList.remove('active');
+                });
+            }
+            visibleCount = PAGE_SIZE;
+            render();
+        }
+
+        if (viewMoreBtn) {
+            viewMoreBtn.addEventListener('click', () => {
+                visibleCount += PAGE_SIZE;
+                render();
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                if (searchClearBtn) searchClearBtn.style.display = searchQuery ? 'inline-block' : 'none';
+                visibleCount = PAGE_SIZE;
+                render();
+            });
+        }
+
+        if (searchClearBtn) {
+            searchClearBtn.addEventListener('click', () => {
+                if (searchInput) searchInput.value = '';
+                searchQuery = '';
+                searchClearBtn.style.display = 'none';
+                visibleCount = PAGE_SIZE;
+                render();
+                if (searchInput) searchInput.focus();
+            });
+        }
+
+        // Initial render
+        render();
+
     } catch (e) {
         console.warn('News load failure:', e);
+        if (container) {
+            container.innerHTML = '<p style="text-align:center; color:#777; margin:30px 0;">Unable to load news stories at this time.</p>';
+        }
     }
 }
 
@@ -1177,7 +1415,12 @@ function buildWhatsOnCardHTML(s) {
                 ${accessBadges}
             </div>
             <ul class="listing-info">
-                <li><i class="fa-solid fa-location-dot"></i> <span>${s.venue}</span></li>
+                <li>
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>
+                        <a href="theatre-guide.html?q=${encodeURIComponent((s.venue || '').split(',')[0].replace(/\s*\([^)]*\)/g, '').trim())}" title="View accessibility &amp; sensory guide for ${s.venue}" style="color: inherit; text-decoration: underline; text-decoration-color: var(--color-primary); text-underline-offset: 3px; font-weight: 600;">${s.venue}</a>
+                    </span>
+                </li>
                 <li><i class="fa-solid fa-calendar-days"></i> <span>${s.dates}</span></li>
                 ${s.runtime ? `<li><i class="fa-solid fa-clock"></i> <span>${s.runtime}</span></li>` : ''}
             </ul>
@@ -1185,6 +1428,7 @@ function buildWhatsOnCardHTML(s) {
             <div style="margin-top: auto; display: flex; gap: 12px; flex-wrap: wrap;">
                 ${s.ticketLink ? `<a href="${s.ticketLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Book Tickets</a>` : ''}
                 ${s.siteLink ? `<a href="${s.siteLink}" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Production Website</a>` : ''}
+                <a href="theatre-guide.html?q=${encodeURIComponent((s.venue || '').split(',')[0].replace(/\s*\([^)]*\)/g, '').trim())}" class="btn btn-secondary" style="background: transparent; color: var(--color-accent); border: 1.5px solid var(--color-accent);"><i class="fa-solid fa-universal-access"></i> Venue Access Guide</a>
             </div>
         </div>
     </article>`;
@@ -1210,19 +1454,26 @@ function buildNewsCardHTML(n) {
 }
 
 function buildTheatreCardHTML(t) {
+    const rawName = (t.name || '').trim();
+    let showSearchQuery = rawName.replace(/\s*\([^)]*\)/g, '').trim();
+    if (rawName.toLowerCase().includes('the rep')) showSearchQuery = 'Birmingham Rep';
+
     return `
-    <article class="theatre-card">
+    <article class="theatre-card" id="venue-${t.id || ''}">
         <div class="theatre-img-container">
-            <img src="images/${t.image}" alt="Exterior view of ${t.name}" loading="lazy" decoding="async">
+            <img src="images/${t.image}" alt="View of ${t.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='images/birmingham-hippodrome.webp';">
         </div>
         <div class="theatre-info">
             <h2>${t.name}</h2>
             <span class="theatre-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i> ${t.location}</span>
             <div class="theatre-meta">
-                <p><strong>Accessibility:</strong> ${t.accessibility}</p>
-                <p><strong>Relaxed Performances & Sensory Rooms:</strong> ${t.relaxed}</p>
+                <div><strong>Accessibility:</strong> ${t.accessibility}</div>
+                <div style="margin-top: 12px;"><strong>Relaxed Performances &amp; Sensory Support:</strong> ${t.relaxed}</div>
             </div>
-            ${t.website ? `<a href="${t.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Theatre Website</a>` : ''}
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+                ${t.website ? `<a href="${t.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><i class="fa-solid fa-arrow-up-right-from-square"></i> Visit Theatre Website</a>` : ''}
+                <a href="whats-on.html?q=${encodeURIComponent(showSearchQuery)}" class="btn btn-secondary" style="background: transparent; color: var(--color-primary); border: 1.5px solid var(--color-primary);"><i class="fa-solid fa-calendar-days"></i> Upcoming Shows Here</a>
+            </div>
         </div>
     </article>`;
 }

@@ -58,10 +58,46 @@
             </div>
         </section>
 
-        <section class="page-content">
+        <section class="page-content" style="padding-top: 24px;">
             <div class="container">
+                <!-- News Filter Toolbar: Search + Category Pills -->
+                <div class="news-toolbar-wrapper" style="margin-bottom: 28px;">
+                    <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                        <!-- News Search Input -->
+                        <div class="whatson-search-box" style="flex: 1; min-width: 260px; max-width: 440px;">
+                            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="news-search-input" placeholder="Search news headlines, shows & topics..." aria-label="Search news stories">
+                            <button type="button" id="news-search-clear" class="search-clear-btn" aria-label="Clear search" title="Clear search">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <!-- Story Count Status -->
+                        <div id="news-results-count" style="font-size: 0.88rem; font-weight: 600; color: var(--color-text-light);">
+                            Loading stories...
+                        </div>
+                    </div>
+
+                    <!-- Category Pills Container -->
+                    <div class="filter-buttons" id="news-category-pills" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <button type="button" class="filter-btn active" data-category="all">All Stories</button>
+                    </div>
+                </div>
+
+                <!-- 9-Tile News Grid -->
                 <div class="card-grid" id="news-feed-list">
                     <!-- Dynamically populated from data/news.json -->
+                </div>
+
+                <!-- Progressive Disclosure: View More Footer -->
+                <div id="news-pagination-wrap" style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+                    <button type="button" id="news-view-more-btn" class="btn btn-primary" style="padding: 12px 32px; font-size: 0.95rem; font-weight: 700; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; box-shadow: var(--shadow-md); transition: all 0.25s ease;">
+                        <i class="fa-solid fa-chevron-down"></i>
+                        <span>View More Stories</span>
+                        <span id="news-more-counter" style="background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;"></span>
+                    </button>
+                    <p id="news-end-msg" style="display: none; color: var(--color-text-light); font-size: 0.92rem; font-weight: 600; margin-top: 10px;">
+                        <i class="fa-solid fa-circle-check" style="color: var(--color-accent); margin-right: 6px;"></i> You've caught up with all our latest stories!
+                    </p>
                 </div>
             </div>
         </section>

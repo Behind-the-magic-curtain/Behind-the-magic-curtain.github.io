@@ -1267,6 +1267,7 @@
                                         <option value="All Ages">
                                         <option value="Ages 0+">
                                         <option value="Under 5s">
+                                        <option value="Ages 2+">
                                         <option value="Ages 3+">
                                         <option value="Ages 4+">
                                         <option value="Ages 5+">
@@ -1277,7 +1278,7 @@
                                         <option value="Ages 12+">
                                         <option value="Ages 14+">
                                     </datalist>
-                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Sorts into Under 5s (0+), Ages 4–6, or Ages 7+ filters on What's On.</small>
+                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Sorts into Under 5s (0–4), Ages 4–6, or Ages 7+ filters on What's On.</small>
                                 </div>
                                 <div class="form-group">
                                     <label>Performance Type (Filter Category) *</label>
@@ -1371,7 +1372,9 @@
                                 </div>
                                 <div class="form-group">
                                     <label>City / Location *</label>
-                                    <input type="text" id="th-location" required>
+                                    <input type="text" id="th-location" list="th-location-datalist" placeholder="e.g. Birmingham, Coventry, Nottingham..." required>
+                                    <datalist id="th-location-datalist"></datalist>
+                                    <small style="color:var(--color-text-light); font-size:0.75rem; margin-top:3px; display:block;">Select an existing regional group or type a new location name to move/group this venue.</small>
                                 </div>
                                 <div class="form-group full">
                                     <label>Official Website</label>
@@ -1422,7 +1425,15 @@
                         </form>
                     </div>
                     <div class="admin-card">
-                        <h2>Manage Theatres (Drag ☰ to Reorder)</h2>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+                            <div>
+                                <h2 style="margin:0; border:none; padding:0;">Manage Theatres (Drag ☰ or Use ↑/↓ to Reorder)</h2>
+                                <p style="margin:4px 0 0 0; font-size:0.84rem; color:var(--color-text-light);">Reordering venues or changing their location below automatically updates regional section order, dropdown filters, and quick-jump pills on the live Theatre Guide.</p>
+                            </div>
+                            <button type="button" id="btn-sync-theatres-gh" class="btn btn-secondary" onclick="syncLocalTheatresToGitHub()" style="padding:9px 16px; font-size:0.85rem; white-space:nowrap;">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Sync All Theatres &amp; Photos to GitHub
+                            </button>
+                        </div>
                         <div class="crud-table-wrap">
                             <div id="manage-theatres-table-container"></div>
                         </div>
@@ -2048,7 +2059,7 @@
     </div>
 
     <div id="status-toast"></div>
-    <script src="admin.js?v=2.0.1"></script>
+    <script src="admin.js?v=2.0.2"></script>
     <script src="newsletter.js"></script>
 </body>
 </html>
