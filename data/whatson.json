@@ -478,5 +478,28 @@
     "ticketLink": "https://www.belgrade.co.uk/events/father-christmas-26/",
     "siteLink": "https://www.belgrade.co.uk/events/father-christmas-26/",
     "rank": 21
+  },
+  {
+    "id": "wo_1793807855470",
+    "title": "Jersey Boys – 20th Anniversary UK Tour",
+    "venue": "Alexandra Theatre",
+    "region": "West Midlands",
+    "dates": "Playing until November 21st (UK and Ireland tour: Until August 2027)",
+    "expiryDate": "2026-11-22",
+    "runtime": "2hrs 30mins (incl. interval)",
+    "age": "Ages 11+",
+    "category": "musical",
+    "isTouring": true,
+    "tags": {
+      "relaxed": false,
+      "bsl": false,
+      "captioned": false,
+      "audioDescribed": false
+    },
+    "image": "jb-atg-on-sale-show-page-assets-sep25-1920x1080-title-treatment.webp",
+    "desc": "<!--StartFragment--><span style=\"color: rgb(33, 33, 33);\"><p>The Broadway sensation <b>Jersey Boys</b> is on it's 20th Anniversary tour across the UK and Ireland.&nbsp;</p><p><br></p><p>This must see musical features a behind the scenes glimpse into the lives of the Four Seasons, the ups, the downs and the debts that fold into a beautifully told story of grit and determination.&nbsp;</p><p>I'm Beggin' you not to miss your chance to catch the boys on tour.</p><p><br></p><p></p><p class=\"btn-block-wrap\" style=\"text-align: center; margin: 16px 0px;\"><a href=\"https://behindthemagiccurtain.co.uk/jersey-boys-uk-tour.html\" class=\"btn btn-primary\" target=\"_blank\" rel=\"noopener noreferrer\">Full review!</a></p><p></p><h3>Accessible performances:</h3><p style=\"font-weight: 600; font-style: italic;\">Thursday 12th November 2026 – 19:30: Audio Described</p></span><p><em><span style=\"font-weight: 600;\">Thursday 19th November 2026 – 19:30: Captioned</span></em></p><!--EndFragment-->",
+    "ticketLink": "https://www.atgtickets.com/shows/jersey-boys/the-alexandra-theatre-birmingham/calendar/?gclsrc=aw.ds&gad_source=1&gad_campaignid=23594195937&gbraid=0AAAABBjfowzy92V31j8yAayWlJJBnyDPR&gclid=CjwKCAiAzKvXBhBAEiwABLl9AnBs5H6UnRpPZyVxGiLjKXH3s-lp-hUT1GieAlFBbAbFbRwcNZzBsRoCDCQQAvD_BwE",
+    "siteLink": "https://jerseyboysmusical.co.uk/",
+    "rank": 22
   }
 ]
